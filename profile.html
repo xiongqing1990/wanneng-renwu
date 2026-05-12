@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>我的 - 万能任务</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background: #f5f5f5;
+            max-width: 375px;
+            margin: 0 auto;
+            min-height: 100vh;
+            padding-bottom: 80px;
+        }
+        
+        .status-bar {
+            background: #000;
+            color: #fff;
+            padding: 10px 15px;
+            display: flex;
+            justify-content: space-between;
+            font-size: 14px;
+            font-weight: 600;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 30px 15px 25px;
+            color: #fff;
+            position: relative;
+        }
+        
+        .edit-btn {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: rgba(255,255,255,0.3);
+            border: none;
+            color: #fff;
+            padding: 6px 12px;
+            border-radius: 15px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        
+        .edit-btn:active {
+            background: rgba(255,255,255,0.5);
+        }
+        
+        .avatar-wrapper {
+            text-align: center;
+            margin-bottom: 15px;
+        }
+        
+        .avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.3);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            margin-bottom: 10px;
+            position: relative;
+        }
+        
+        .avatar-edit {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            width: 24px;
+            height: 24px;
+            background: #007AFF;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            cursor: pointer;
+        }
+        
+        .user-name {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        
+        .user-id {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+        
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            padding: 20px 15px;
+            background: #fff;
+            margin: 15px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        
+        .stat-item {
+            text-align: center;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        
+        .stat-item:active {
+            transform: scale(0.95);
+        }
+        
+        .stat-value {
+            font-size: 24px;
+            font-weight: 600;
+            color: #007AFF;
+            margin-bottom: 4px;
+        }
+        
+        .stat-label {
+            font-size: 12px;
+            color: #999;
+        }
+        
+        .menu-list {
+            padding: 0 15px;
+        }
+        
+        .menu-item {
+            background: #fff;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            transition: all 0.2s;
+        }
+        
+        .menu-item:active {
+            transform: scale(0.98);
+            box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+        }
+        
+        .menu-icon {
+            font-size: 24px;
+            width: 30px;
+            text-align: center;
+        }
+        
+        .menu-text {
+            flex: 1;
+            font-size: 15px;
+            color: #333;
+        }
+        
+        .menu-badge {
+            background: #FF3B30;
+            color: #fff;
+            border-radius: 10px;
+            padding: 2px 8px;
+            font-size: 12px;
+            margin-right: 8px;
+        }
+        
+        .menu-arrow {
+            color: #999;
+            font-size: 16px;
+        }
+        
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            max-width: 375px;
+            width: 100%;
+            background: #fff;
+            border-top: 1px solid #E5E5E5;
+            display: flex;
+            justify-content: space-around;
+            padding: 8px 0;
+            padding-bottom: calc(8px + env(safe-area-inset-bottom));
+            box-shadow: 0 -1px 5px rgba(0,0,0,0.05);
+        }
+        
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2px;
+            text-decoration: none;
+            color: #999;
+            font-size: 11px;
+            transition: color 0.2s;
+        }
+        
+        .nav-item.active {
+            color: #007AFF;
+        }
+        
+        .nav-icon {
+            font-size: 24px;
+            margin-bottom: 1px;
+        }
+        
+        /* 弹窗样式 */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal-overlay.show {
+            display: flex;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        .modal {
+            background: #fff;
+            width: 90%;
+            max-width: 340px;
+            border-radius: 16px;
+            padding: 20px;
+            animation: scaleIn 0.3s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        @keyframes scaleIn {
+            from { transform: scale(0.9); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .modal-title {
+            font-size: 18px;
+            font-weight: 600;
+        }
+        
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #999;
+            padding: 0 5px;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-label {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 8px;
+            display: block;
+        }
+        
+        .form-input {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 15px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        
+        .form-input:focus {
+            border-color: #007AFF;
+        }
+        
+        .modal-submit {
+            width: 100%;
+            padding: 12px;
+            background: #007AFF;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: background 0.2s;
+        }
+        
+        .modal-submit:active {
+            background: #0056CC;
+        }
+    </style>
+</head>
+<body>
+    <div class="status-bar">
+        <span>9:41</span>
+        <span>🔋 100% 📶</span>
+    </div>
+    
+    <div class="header">
+        <button class="edit-btn" onclick="showEditModal()">编辑资料</button>
+        <div class="avatar-wrapper">
+            <div class="avatar">
+                👨💼
+                <div class="avatar-edit" onclick="showNotification('更换头像功能开发中')">✏️</div>
+            </div>
+            <div class="user-name" id="userName">张三</div>
+            <div class="user-id">ID: 10086</div>
+        </div>
+    </div>
+    
+    <div class="stats">
+        <div class="stat-item" onclick="showNotification('我的任务功能开发中')">
+            <div class="stat-value" id="completedCount">23</div>
+            <div class="stat-label">完成任务</div>
+        </div>
+        <div class="stat-item" onclick="showNotification('发布任务功能开发中')">
+            <div class="stat-value" id="publishedCount">18</div>
+            <div class="stat-label">发布任务</div>
+        </div>
+        <div class="stat-item" onclick="showNotification('评分详情开发中')">
+            <div class="stat-value" id="ratingValue">4.8</div>
+            <div class="stat-label">评分</div>
+        </div>
+    </div>
+    
+    <div class="menu-list">
+        <div class="menu-item" onclick="showMyTasks()">
+            <span class="menu-icon">📋</span>
+            <span class="menu-text">我的任务</span>
+            <span class="menu-badge">3</span>
+            <span class="menu-arrow">›</span>
+        </div>
+        <div class="menu-item" onclick="showEarnings()">
+            <span class="menu-icon">💰</span>
+            <span class="menu-text">收入明细</span>
+            <span class="menu-arrow">›</span>
+        </div>
+        <div class="menu-item" onclick="showReviews()">
+            <span class="menu-icon">⭐</span>
+            <span class="menu-text">我的评价</span>
+            <span class="menu-arrow">›</span>
+        </div>
+        <div class="menu-item" onclick="showSettings()">
+            <span class="menu-icon">⚙️</span>
+            <span class="menu-text">设置</span>
+            <span class="menu-arrow">›</span>
+        </div>
+        <div class="menu-item" onclick="showHelp()">
+            <span class="menu-icon">❓</span>
+            <span class="menu-text">帮助与反馈</span>
+            <span class="menu-arrow">›</span>
+        </div>
+        <div class="menu-item" onclick="logout()" style="margin-top: 20px;">
+            <span class="menu-icon">🚪</span>
+            <span class="menu-text">退出登录</span>
+            <span class="menu-arrow">›</span>
+        </div>
+    </div>
+    
+    <div class="bottom-nav">
+        <a href="index.html" class="nav-item">
+            <span class="nav-icon">📋</span>
+            <span>任务</span>
+        </a>
+        <a href="chat.html" class="nav-item">
+            <span class="nav-icon">💬</span>
+            <span>聊天</span>
+        </a>
+        <a href="plan.html" class="nav-item">
+            <span class="nav-icon">📅</span>
+            <span>计划</span>
+        </a>
+        <a href="profile.html" class="nav-item active">
+            <span class="nav-icon">👤</span>
+            <span>我的</span>
+        </a>
+    </div>
+    
+    <!-- 编辑资料弹窗 -->
+    <div class="modal-overlay" id="editModal">
+        <div class="modal">
+            <div class="modal-header">
+                <div class="modal-title">编辑资料</div>
+                <button class="modal-close" onclick="closeEditModal()">×</button>
+            </div>
+            <div class="form-group">
+                <label class="form-label">昵称</label>
+                <input type="text" class="form-input" id="nicknameInput" placeholder="输入昵称">
+            </div>
+            <div class="form-group">
+                <label class="form-label">个性签名</label>
+                <input type="text" class="form-input" id="bioInput" placeholder="输入个性签名">
+            </div>
+            <button class="modal-submit" onclick="saveProfile()">保存</button>
+        </div>
+    </div>
+    
+    <script>
+        // 检查登录状态
+        function checkLogin() {
+            if (localStorage.getItem('isLoggedIn') !== 'true') {
+                window.location.href = 'login.html?redirect=profile.html';
+                return false;
+            }
+            return true;
+        }
+        
+        // 加载用户信息
+        function loadUserInfo() {
+            const username = localStorage.getItem('username') || '张三';
+            const bio = localStorage.getItem('userBio') || '';
+            
+            document.getElementById('userName').textContent = username;
+            document.getElementById('nicknameInput').value = username;
+            document.getElementById('bioInput').value = bio;
+            
+            // 更新统计数据（这里可以从localStorage或后端获取）
+            updateStats();
+        }
+        
+        function updateStats() {
+            // 这里可以从localStorage读取实际数据
+            const completed = localStorage.getItem('completedTasks') || 23;
+            const published = localStorage.getItem('publishedTasks') || 18;
+            const rating = localStorage.getItem('userRating') || 4.8;
+            
+            document.getElementById('completedCount').textContent = completed;
+            document.getElementById('publishedCount').textContent = published;
+            document.getElementById('ratingValue').textContent = rating;
+        }
+        
+        // 编辑资料
+        function showEditModal() {
+            document.getElementById('editModal').classList.add('show');
+        }
+        
+        function closeEditModal() {
+            document.getElementById('editModal').classList.remove('show');
+        }
+        
+        function saveProfile() {
+            const nickname = document.getElementById('nicknameInput').value.trim();
+            const bio = document.getElementById('bioInput').value.trim();
+            
+            if (!nickname) {
+                showNotification('请输入昵称');
+                return;
+            }
+            
+            localStorage.setItem('username', nickname);
+            localStorage.setItem('userBio', bio);
+            
+            document.getElementById('userName').textContent = nickname;
+            closeEditModal();
+            showNotification('✅ 资料已更新');
+        }
+        
+        // 菜单功能
+        function showMyTasks() {
+            showNotification('📋 我的任务 - 开发中');
+        }
+        
+        function showEarnings() {
+            showNotification('💰 收入明细 - 开发中');
+        }
+        
+        function showReviews() {
+            showNotification('⭐ 我的评价 - 开发中');
+        }
+        
+        function showSettings() {
+            showNotification('⚙️ 设置 - 开发中');
+        }
+        
+        function showHelp() {
+            showNotification('❓ 帮助与反馈 - 开发中');
+        }
+        
+        function logout() {
+            if (confirm('确定要退出登录吗？')) {
+                localStorage.removeItem('isLoggedIn');
+                localStorage.removeItem('username');
+                showNotification('👋 已退出登录');
+                setTimeout(() => {
+                    window.location.href = 'login.html';
+                }, 1000);
+            }
+        }
+        
+        // 通知提示
+        function showNotification(message) {
+            const existingNotification = document.querySelector('.notification');
+            if (existingNotification) {
+                existingNotification.remove();
+            }
+            
+            const notification = document.createElement('div');
+            notification.className = 'notification';
+            notification.style.cssText = `
+                position: fixed;
+                top: 60px;
+                left: 50%;
+                transform: translateX(-50%);
+                background: rgba(0,0,0,0.8);
+                color: #fff;
+                padding: 10px 20px;
+                border-radius: 8px;
+                font-size: 14px;
+                z-index: 10000;
+                animation: fadeIn 0.3s ease;
+            `;
+            
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.style.opacity = '0';
+                notification.style.transition = 'opacity 0.3s';
+                setTimeout(() => notification.remove(), 300);
+            }, 2000);
+        }
+        
+        // 点击弹窗外部关闭
+        document.getElementById('editModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeEditModal();
+            }
+        });
+        
+        // 初始化
+        if (checkLogin()) {
+            loadUserInfo();
+        }
+    </script>
+</body>
+</html>

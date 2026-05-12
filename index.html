@@ -1,0 +1,758 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>万能任务 - 首页</title>
+    <link rel="manifest" href="manifest.json">
+    <style>
+        * {
+            margin:0;
+            padding:0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background: #f5f5f5;
+            max-width: 375px;
+            margin:0 auto;
+            min-height: 100vh;
+            padding-bottom: 80px;
+        }
+        
+        /* 头部优化：更简洁 */
+        .header {
+            background: #fff;
+            padding: 12px 15px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+        
+        .header h1 {
+            font-size: 20px;
+            font-weight: 700;
+            color: #1a1a1a;
+        }
+        
+        .header-actions {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+        
+        .header-btn {
+            background: none;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            padding: 5px;
+        }
+        
+        .user-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        
+        /* 搜索框优化 */
+        .search-box {
+            background: #f5f5f5;
+            border-radius: 20px;
+            padding: 10px 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s;
+        }
+        
+        .search-box:focus-within {
+            background: #e8f0fe;
+            box-shadow: 0 0 0 2px rgba(0,122,255,0.2);
+        }
+        
+        .search-box input {
+            border: none;
+            background: none;
+            flex: 1;
+            font-size: 14px;
+            outline: none;
+            color: #333;
+        }
+        
+        .search-box input::placeholder {
+            color: #999;
+        }
+        
+        /* 筛选栏优化：更紧凑 */
+        .filter-bar {
+            background: #fff;
+            padding: 10px 15px;
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+        }
+        
+        .filter-bar::-webkit-scrollbar {
+            display: none;
+        }
+        
+        .filter-item {
+            padding: 6px 14px;
+            background: #f5f5f5;
+            border-radius: 16px;
+            font-size: 13px;
+            white-space: nowrap;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: none;
+            color: #666;
+        }
+        
+        .filter-item.active {
+            background: #007AFF;
+            color: #fff;
+            font-weight: 500;
+        }
+        
+        .filter-item:hover {
+            background: #e8f0fe;
+        }
+        
+        .filter-item.active:hover {
+            background: #0051D5;
+        }
+        
+        /* 排序栏 */
+        .sort-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 15px;
+            background: #fff;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .sort-options {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .sort-option {
+            font-size: 13px;
+            color: #999;
+            cursor: pointer;
+            transition: color 0.3s;
+            background: none;
+            border: none;
+            padding: 5px 0;
+        }
+        
+        .sort-option.active {
+            color: #007AFF;
+            font-weight: 600;
+        }
+        
+        .view-mode {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .view-btn {
+            background: none;
+            border: none;
+            font-size: 18px;
+            cursor: pointer;
+            padding: 5px;
+            opacity: 0.5;
+            transition: opacity 0.3s;
+        }
+        
+        .view-btn.active {
+            opacity: 1;
+        }
+        
+        /* 任务列表优化 */
+        .task-list {
+            padding: 10px 15px;
+        }
+        
+        /* 任务卡片优化：更大气 */
+        .task-card {
+            background: #fff;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            transition: all 0.3s;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .task-card:active {
+            transform: scale(0.98);
+            box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+        }
+        
+        .task-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 10px;
+        }
+        
+        .task-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1a1a1a;
+            flex: 1;
+            line-height: 1.4;
+            margin-right: 10px;
+        }
+        
+        .task-budget {
+            font-size: 18px;
+            font-weight: 700;
+            color: #007AFF;
+            white-space: nowrap;
+        }
+        
+        .task-desc {
+            font-size: 13px;
+            color: #666;
+            line-height: 1.5;
+            margin-bottom: 12px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        
+        .task-tags {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+            margin-bottom: 10px;
+        }
+        
+        .task-tag {
+            padding: 3px 8px;
+            background: #f0f7ff;
+            color: #007AFF;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 500;
+        }
+        
+        .task-tag.hot {
+            background: #fff0f0;
+            color: #ff3b30;
+        }
+        
+        .task-tag.urgent {
+            background: #fff8e1;
+            color: #ff9500;
+        }
+        
+        .task-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 12px;
+            color: #999;
+        }
+        
+        .task-publisher {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .publisher-avatar {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+        }
+        
+        .task-meta {
+            display: flex;
+            gap: 10px;
+        }
+        
+        /* 空状态优化 */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+        }
+        
+        .empty-icon {
+            font-size: 64px;
+            margin-bottom: 15px;
+            opacity: 0.6;
+        }
+        
+        .empty-title {
+            font-size: 16px;
+            color: #333;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+        
+        .empty-desc {
+            font-size: 14px;
+            color: #999;
+            line-height: 1.5;
+        }
+        
+        /* 加载动画 */
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #999;
+            font-size: 14px;
+        }
+        
+        .loading::after {
+            content: '...';
+            animation: dots 1.5s steps(4, end) infinite;
+        }
+        
+        @keyframes dots {
+            0%, 20% { content: '.'; }
+            40% { content: '..'; }
+            60%, 100% { content: '...'; }
+        }
+        
+        /* 拉拽刷新 */
+        .pull-refresh {
+            text-align: center;
+            padding: 10px;
+            color: #999;
+            font-size: 13px;
+            display: none;
+        }
+        
+        /* FAB按钮优化 */
+        .fab {
+            position: fixed;
+            bottom: 80px;
+            right: 20px;
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #007AFF, #0051D5);
+            color: #fff;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0,122,255,0.4);
+            transition: all 0.3s;
+            z-index: 100;
+        }
+        
+        .fab:active {
+            transform: scale(0.9);
+            box-shadow: 0 2px 6px rgba(0,122,255,0.4);
+        }
+        
+        /* 底部导航优化 */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            max-width: 375px;
+            width: 100%;
+            background: #fff;
+            border-top: 1px solid #eee;
+            display: flex;
+            justify-content: space-around;
+            padding: 8px 0;
+            padding-bottom: calc(8px + env(safe-area-inset-bottom));
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
+        }
+        
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2px;
+            text-decoration: none;
+            color: #999;
+            font-size: 10px;
+            transition: color 0.3s;
+        }
+        
+        .nav-item.active {
+            color: #007AFF;
+        }
+        
+        .nav-icon {
+            font-size: 22px;
+        }
+        
+        /* 骨架屏加载 */
+        .skeleton {
+            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+            background-size: 200% 100%;
+            animation: loading 1.5s infinite;
+            border-radius: 4px;
+        }
+        
+        @keyframes loading {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-top">
+            <h1>万能任务</h1>
+            <div class="header-actions">
+                <button class="header-btn" onclick="showNotification('🔔 通知功能即将开放')">🔔</button>
+                <div class="user-avatar" id="userAvatar" onclick="goToProfile()">👤</div>
+            </div>
+        </div>
+        <div class="search-box">
+            <span>🔍</span>
+            <input type="text" placeholder="搜索任务、技能、需求..." id="searchInput">
+        </div>
+    </div>
+    
+    <div class="filter-bar">
+        <button class="filter-item active" onclick="filterCategory('all', this)">全部</button>
+        <button class="filter-item" onclick="filterCategory('设计', this)">🎨 设计</button>
+        <button class="filter-item" onclick="filterCategory('开发', this)">💻 开发</button>
+        <button class="filter-item" onclick="filterCategory('写作', this)">📝 写作</button>
+        <button class="filter-item" onclick="filterCategory('其他', this)">📦 其他</button>
+    </div>
+    
+    <div class="filter-bar" style="background: #f9f9f9;">
+        <button class="filter-item" onclick="filterBudget('all', this)">全部预算</button>
+        <button class="filter-item" onclick="filterBudget('0-500', this)">¥0-500</button>
+        <button class="filter-item" onclick="filterBudget('500-1000', this)">¥500-1000</button>
+        <button class="filter-item" onclick="filterBudget('1000+', this)">¥1000+</button>
+    </div>
+    
+    <div class="sort-bar">
+        <div class="sort-options">
+            <button class="sort-option active" onclick="sortTasks('newest', this)">最新</button>
+            <button class="sort-option" onclick="sortTasks('budget-high', this)">预算优先</button>
+            <button class="sort-option" onclick="sortTasks('budget-low', this)">低价优先</button>
+        </div>
+        <div class="view-mode">
+            <button class="view-btn active" onclick="changeViewMode('list', this)">📋</button>
+            <button class="view-btn" onclick="changeViewMode('grid', this)">📊</button>
+        </div>
+    </div>
+    
+    <div class="pull-refresh" id="pullRefresh">松开刷新...</div>
+    
+    <div class="task-list" id="taskList">
+        <!-- 任务列表将通过JS动态生成 -->
+    </div>
+    
+    <div class="loading" id="loadingMore" style="display:none;">加载更多</div>
+    
+    <button class="fab" onclick="checkLoginBeforePublish()">+</button>
+    
+    <div class="bottom-nav">
+        <a href="index.html" class="nav-item active">
+            <span class="nav-icon">📋</span>
+            <span>任务</span>
+        </a>
+        <a href="chat.html" class="nav-item">
+            <span class="nav-icon">💬</span>
+            <span>聊天</span>
+        </a>
+        <a href="plan.html" class="nav-item">
+            <span class="nav-icon">📅</span>
+            <span>计划</span>
+        </a>
+        <a href="profile.html" class="nav-item">
+            <span class="nav-icon">👤</span>
+            <span>我的</span>
+        </a>
+    </div>
+    
+    <script>
+        // 任务数据（更丰富）
+        const tasks = [
+            { id: 1, title: '设计公司Logo', desc: '需要为一个科技公司设计现代风格的Logo，要求简洁、易识别，适用于各种场景', category: '设计', budget: 800, time: '2天前', publisher: '张三', avatar: '👨‍💼', views: 128, applicants: 5, tags: ['热门', '紧急'], deadline: '3天后' },
+            { id: 2, title: '开发微信小程序', desc: '开发一个任务管理小程序，包含发布、接单、聊天功能，要求使用uni-app框架', category: '开发', budget: 3000, time: '1天前', publisher: '李四', avatar: '👨‍💻', views: 256, applicants: 8, tags: ['高预算'], deadline: '7天后' },
+            { id: 3, title: '撰写产品文案', desc: '为一款智能手表撰写营销文案，用于京东详情页，要求突出产品卖点', category: '写作', budget: 500, time: '3小时前', publisher: '王五', avatar: '👨‍💼', views: 89, applicants: 3, tags: [], deadline: '2天后' },
+            { id: 4, title: 'PPT美化设计', desc: '现有20页PPT需要美化，要求商务风格，配色专业，适合投资路演使用', category: '设计', budget: 300, time: '5小时前', publisher: '赵六', avatar: '👩‍💼', views: 67, applicants: 2, tags: ['紧急'], deadline: '1天后' },
+            { id: 5, title: '翻译英文文档', desc: '将产品说明书翻译成英文，约5000字，要求专业准确', category: '写作', budget: 800, time: '1天前', publisher: '孙七', avatar: '👨‍💼', views: 112, applicants: 4, tags: [], deadline: '5天后' },
+            { id: 6, title: '网站前端开发', desc: '使用Vue.js开发企业官网前端页面，要求响应式设计', category: '开发', budget: 5000, time: '3天前', publisher: '周八', avatar: '👩‍💻', views: 189, applicants: 6, tags: ['高预算'], deadline: '10天后' }
+        ];
+        
+        let currentCategory = 'all';
+        let currentBudgetRange = 'all';
+        let currentSearchKeyword = '';
+        let currentSort = 'newest';
+        let currentViewMode = 'list';
+        let displayedTasks = 6; // 初始显示任务数
+        
+        // 检查登录状态
+        function checkLoginStatus() {
+            const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+            const username = localStorage.getItem('username') || '用户';
+            const userAvatar = document.getElementById('userAvatar');
+            
+            if (isLoggedIn) {
+                userAvatar.textContent = username.charAt(0).toUpperCase();
+                userAvatar.style.background = 'linear-gradient(135deg, #667eea, #764ba2)';
+                userAvatar.onclick = () => window.location.href = 'profile.html';
+            } else {
+                userAvatar.textContent = '👤';
+                userAvatar.onclick = () => window.location.href = 'login.html?redirect=index.html';
+            }
+        }
+        
+        // 筛选任务
+        function filterTasks() {
+            let filtered = tasks.filter(task => {
+                // 分类筛选
+                if (currentCategory !== 'all' && task.category !== currentCategory) return false;
+                // 预算筛选
+                if (currentBudgetRange !== 'all') {
+                    if (currentBudgetRange === '0-500' && task.budget > 500) return false;
+                    if (currentBudgetRange === '500-1000' && (task.budget < 500 || task.budget > 1000)) return false;
+                    if (currentBudgetRange === '1000+' && task.budget < 1000) return false;
+                }
+                // 关键词搜索
+                if (currentSearchKeyword) {
+                    const keyword = currentSearchKeyword.toLowerCase();
+                    return task.title.toLowerCase().includes(keyword) || 
+                           task.desc.toLowerCase().includes(keyword) ||
+                           task.category.toLowerCase().includes(keyword);
+                }
+                return true;
+            });
+            
+            // 排序
+            if (currentSort === 'newest') {
+                // 按时间排序（这里简单模拟）
+                filtered.sort((a, b) => b.id - a.id);
+            } else if (currentSort === 'budget-high') {
+                filtered.sort((a, b) => b.budget - a.budget);
+            } else if (currentSort === 'budget-low') {
+                filtered.sort((a, b) => a.budget - b.budget);
+            }
+            
+            return filtered;
+        }
+        
+        // 渲染任务列表
+        function renderTasks() {
+            const list = document.getElementById('taskList');
+            const filtered = filterTasks();
+            const displayCount = Math.min(displayedTasks, filtered.length);
+            const tasksToShow = filtered.slice(0, displayCount);
+            
+            if (filtered.length === 0) {
+                list.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">📭</div>
+                        <div class="empty-title">暂无匹配的任务</div>
+                        <div class="empty-desc">试试调整筛选条件或搜索关键词</div>
+                    </div>
+                `;
+                document.getElementById('loadingMore').style.display = 'none';
+                return;
+            }
+            
+            let html = '';
+            
+            tasksToShow.forEach(task => {
+                const tagsHtml = task.tags.map(tag => {
+                    let className = 'task-tag';
+                    if (tag === '热门' || tag === '高预算') className += ' hot';
+                    if (tag === '紧急') className += ' urgent';
+                    return `<span class="${className}">${tag}</span>`;
+                }).join('');
+                
+                html += `
+                    <div class="task-card" onclick="viewTask(${task.id})">
+                        <div class="task-card-header">
+                            <div class="task-title">${task.title}</div>
+                            <div class="task-budget">¥${task.budget}</div>
+                        </div>
+                        <div class="task-desc">${task.desc}</div>
+                        ${tagsHtml ? `<div class="task-tags">${tagsHtml}</div>` : ''}
+                        <div class="task-footer">
+                            <div class="task-publisher">
+                                <div class="publisher-avatar">${task.avatar}</div>
+                                <span>${task.publisher}</span>
+                            </div>
+                            <div class="task-meta">
+                                <span>👁️ ${task.views}</span>
+                                <span>📝 ${task.applicants}</span>
+                                <span>⏰ ${task.deadline}</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            list.innerHTML = html;
+            
+            // 显示/隐藏"加载更多"
+            if (displayedTasks < filtered.length) {
+                document.getElementById('loadingMore').style.display = 'block';
+            } else {
+                document.getElementById('loadingMore').style.display = 'none';
+            }
+        }
+        
+        // 筛选分类
+        function filterCategory(category, element) {
+            currentCategory = category;
+            document.querySelectorAll('.filter-bar').item(0).querySelectorAll('.filter-item').forEach(item => item.classList.remove('active'));
+            element.classList.add('active');
+            displayedTasks = 6; // 重置显示数量
+            renderTasks();
+        }
+        
+        // 筛选预算
+        function filterBudget(range, element) {
+            currentBudgetRange = range;
+            document.querySelectorAll('.filter-bar').item(1).querySelectorAll('.filter-item').forEach(item => item.classList.remove('active'));
+            element.classList.add('active');
+            displayedTasks = 6;
+            renderTasks();
+        }
+        
+        // 排序
+        function sortTasks(sortType, element) {
+            currentSort = sortType;
+            document.querySelectorAll('.sort-option').forEach(item => item.classList.remove('active'));
+            element.classList.add('active');
+            renderTasks();
+        }
+        
+        // 切换视图模式
+        function changeViewMode(mode, element) {
+            currentViewMode = mode;
+            document.querySelectorAll('.view-btn').forEach(item => item.classList.remove('active'));
+            element.classList.add('active');
+            showNotification(`已切换到${mode === 'list' ? '列表' : '网格'}视图`);
+            // 这里可以实现不同的布局
+        }
+        
+        // 查看任务详情
+        function viewTask(id) {
+            window.location.href = `task-detail.html?id=${id}`;
+        }
+        
+        // 发布任务前检查登录
+        function checkLoginBeforePublish() {
+            if (localStorage.getItem('isLoggedIn') === 'true') {
+                window.location.href = 'publish.html';
+            } else {
+                showNotification('📱 请先登录再发布任务');
+                setTimeout(() => {
+                    window.location.href = 'login.html?redirect=publish.html';
+                }, 1500);
+            }
+        }
+        
+        // 跳转到个人主页
+        function goToProfile() {
+            const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+            if (isLoggedIn) {
+                window.location.href = 'profile.html';
+            } else {
+                window.location.href = 'login.html?redirect=index.html';
+            }
+        }
+        
+        // 搜索功能（防抖）
+        let searchTimeout;
+        document.getElementById('searchInput').addEventListener('input', (e) => {
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(() => {
+                currentSearchKeyword = e.target.value.trim();
+                displayedTasks = 6;
+                renderTasks();
+            }, 300);
+        });
+        
+        // 加载更多
+        window.addEventListener('scroll', () => {
+            if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 100) {
+                const filtered = filterTasks();
+                if (displayedTasks < filtered.length) {
+                    displayedTasks += 4;
+                    renderTasks();
+                }
+            }
+        });
+        
+        // 显示通知
+        function showNotification(msg) {
+            const existingNotification = document.querySelector('.notification');
+            if (existingNotification) {
+                existingNotification.remove();
+            }
+            
+            const notification = document.createElement('div');
+            notification.className = 'notification';
+            notification.style.cssText = `
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                background: rgba(0,0,0,0.8);
+                color: #fff;
+                padding: 15px 30px;
+                border-radius: 8px;
+                font-size: 14px;
+                z-index: 1000;
+                animation: fadeIn 0.3s ease;
+            `;
+            
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes fadeIn {
+                    from { opacity: 0; transform: translate(-50%, -50%) scale(0.9); }
+                    to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+                }
+            `;
+            document.head.appendChild(style);
+            
+            notification.textContent = msg;
+            document.body.appendChild(notification);
+            setTimeout(() => notification.remove(), 2000);
+        }
+        
+        // 初始化
+        checkLoginStatus();
+        renderTasks();
+    </script>
+</body>
+</html>

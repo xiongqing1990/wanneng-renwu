@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="万能任务">
+    <meta name="theme-color" content="#007AFF">
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="icon-192.png">
+    <title>安装万能任务APP</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px 30px;
+            max-width: 400px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+
+        h1 {
+            text-align: center;
+            color: #007AFF;
+            margin-bottom: 10px;
+            font-size: 24px;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+
+        .step {
+            background: #f5f5f7;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .step h3 {
+            color: #007AFF;
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+
+        .step p {
+            color: #333;
+            line-height: 1.6;
+            font-size: 14px;
+        }
+
+        .step .icon {
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+
+        .button {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            background: #007AFF;
+            color: white;
+            text-align: center;
+            border-radius: 12px;
+            text-decoration: none;
+            font-weight: 600;
+            margin-top: 20px;
+            font-size: 16px;
+        }
+
+        .button:hover {
+            background: #0051D5;
+        }
+
+        .ios-instructions {
+            background: #fff3cd;
+            border-left: 4px solid #ff9500;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+
+        .ios-instructions h4 {
+            color: #ff9500;
+            margin-bottom: 8px;
+        }
+
+        .android-instructions {
+            background: #d4edda;
+            border-left: 4px solid #34c759;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+
+        .android-instructions h4 {
+            color: #34c759;
+            margin-bottom: 8px;
+        }
+
+        code {
+            background: #e0e0e0;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📱 安装万能任务APP</h1>
+        <p class="subtitle">企业级任务管理平台</p>
+
+        <div class="step">
+            <div class="icon">1️⃣</div>
+            <h3>获取访问地址</h3>
+            <p>确保你的手机和电脑连接同一个WiFi网络，然后在手机浏览器访问：</p>
+            <p style="margin-top: 10px; font-weight: 600; color: #007AFF;">
+                你需要先查看电脑的IP地址<br>
+                然后在手机上访问：<br>
+                <code>http://你的IP:8080/mobile-preview.html</code>
+            </p>
+        </div>
+
+        <div class="step">
+            <div class="icon">2️⃣</div>
+            <h3>安装到主屏幕</h3>
+            <p>访问后，将应用"安装"到手机主屏幕，获得原生APP体验：</p>
+        </div>
+
+        <div class="ios-instructions">
+            <h4>📱 iPhone 用户</h4>
+            <p>1. 点击底部的"分享"按钮<br>
+               2. 下滑找到"添加到主屏幕"<br>
+               3. 点击"添加"确认</p>
+        </div>
+
+        <div class="android-instructions">
+            <h4>🤖 Android 用户</h4>
+            <p>1. 点击浏览器右上角菜单<br>
+               2. 选择"添加到主屏幕"或"安装应用"<br>
+               3. 确认安装</p>
+        </div>
+
+        <a href="mobile-preview.html" class="button">🚀 立即体验</a>
+
+        <div style="margin-top: 30px; padding: 20px; background: #f5f5f7; border-radius: 12px;">
+            <h3 style="color: #34c759; margin-bottom: 10px;">✨ 功能特性</h3>
+            <ul style="list-style: none; color: #333;">
+                <li style="margin-bottom: 8px;">✅ 添加、完成、删除任务</li>
+                <li style="margin-bottom: 8px;">📊 实时统计完成情况</li>
+                <li style="margin-bottom: 8px;">💾 本地存储，数据不丢失</li>
+                <li style="margin-bottom: 8px;">🎨 工业级UI设计</li>
+                <li>⚡ 流畅的动画效果</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        // 注册Service Worker（如果支持）
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function() {
+                navigator.serviceWorker.register('service-worker.js')
+                    .then(function(registration) {
+                        console.log('ServiceWorker registration successful: ', registration.scope);
+                    })
+                    .catch(function(err) {
+                        console.log('ServiceWorker registration failed: ', err);
+                    });
+            });
+        }
+
+        // 检测是否在PWA模式中
+        if (window.matchMedia('(display-mode: standalone)').matches) {
+            document.querySelector('.container').innerHTML = '<h1>✅ 已安装成功！</h1><p>你可以在主屏幕找到万能任务APP的图标了。</p>';
+        }
+    </script>
+</body>
+</html>

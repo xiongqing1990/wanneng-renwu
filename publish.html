@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>发布任务 - 万能任务</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: #f5f5f5;
+            max-width: 375px;
+            margin: 0 auto;
+            min-height: 100vh;
+            padding-bottom: 80px;
+        }
+        
+        .header {
+            background: #fff;
+            padding: 15px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .back-btn {
+            font-size: 20px;
+            cursor: pointer;
+            background: none;
+            border: none;
+            padding: 5px;
+        }
+        
+        .header-title {
+            font-size: 18px;
+            font-weight: 600;
+        }
+        
+        .form-container {
+            padding: 15px;
+            padding-bottom: 20px;
+        }
+        
+        .form-group {
+            background: #fff;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        
+        .form-label {
+            font-size: 14px;
+            color: #333;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-weight: 500;
+        }
+        
+        .form-input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            outline: none;
+            font-family: inherit;
+            transition: border-color 0.3s;
+        }
+        
+        .form-input:focus {
+            border-color: #007AFF;
+        }
+        
+        .form-textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            outline: none;
+            resize: vertical;
+            min-height: 120px;
+            font-family: inherit;
+            transition: border-color 0.3s;
+        }
+        
+        .form-textarea:focus {
+            border-color: #007AFF;
+        }
+        
+        .category-select {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+        
+        .category-option {
+            padding: 12px;
+            background: #f5f5f5;
+            border-radius: 8px;
+            font-size: 14px;
+            cursor: pointer;
+            border: 2px solid transparent;
+            text-align: center;
+            transition: all 0.3s;
+        }
+        
+        .category-option:hover {
+            background: #e8f0fe;
+        }
+        
+        .category-option.selected {
+            background: #007AFF;
+            color: #fff;
+            border-color: #007AFF;
+        }
+        
+        .budget-suggestion {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #fff;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 13px;
+            margin-top: 10px;
+            line-height: 1.4;
+            display: none;
+        }
+        
+        .publish-btn {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #007AFF, #0051D5);
+            color: #fff;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 20px;
+            box-shadow: 0 4px 12px rgba(0,122,255,0.3);
+            transition: all 0.3s;
+        }
+        
+        .publish-btn:active {
+            transform: scale(0.98);
+            box-shadow: 0 2px 6px rgba(0,122,255,0.3);
+        }
+        
+        .ai-badge {
+            display: inline-flex;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: #fff;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 11px;
+            margin-left: 5px;
+        }
+        
+        .tips {
+            background: #fff8e1;
+            border-left: 3px solid #ffc107;
+            padding: 10px 12px;
+            margin-top: 10px;
+            font-size: 12px;
+            color: #666;
+            line-height: 1.6;
+            border-radius: 0 8px 8px 0;
+        }
+        
+        .image-upload {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .upload-btn {
+            width: 80px;
+            height: 80px;
+            border: 2px dashed #ddd;
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: #999;
+            font-size: 12px;
+            transition: all 0.3s;
+        }
+        
+        .upload-btn:hover {
+            border-color: #007AFF;
+            color: #007AFF;
+        }
+        
+        .upload-btn span {
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <button class="back-btn" onclick="goBack()">←</button>
+        <div class="header-title">发布任务</div>
+    </div>
+    
+    <div class="form-container">
+        <div class="form-group">
+            <label class="form-label">📝 任务标题 <span style="color: #ff4444;">*</span></label>
+            <input type="text" class="form-input" id="taskTitle" placeholder="简要描述你的任务（例如：设计公司Logo）" maxlength="50">
+            <div style="text-align: right; font-size: 12px; color: #999; margin-top: 5px;">
+                <span id="titleCount">0</span>/50
+            </div>
+        </div>
+        
+        <div class="form-group">
+            <label class="form-label">📄 任务描述 <span style="color: #ff4444;">*</span></label>
+            <textarea class="form-textarea" id="taskDesc" placeholder="详细描述任务要求、交付标准、参考案例等&#10;&#10;例如：&#10;- 设计风格：现代简约&#10;- 应用场景：网站、名片、宣传册&#10;- 交付格式：AI、PNG、JPG" maxlength="500"></textarea>
+            <div style="text-align: right; font-size: 12px; color: #999; margin-top: 5px;">
+                <span id="descCount">0</span>/500
+            </div>
+        </div>
+        
+        <div class="form-group">
+            <label class="form-label">🏷️ 任务分类 <span style="color: #ff4444;">*</span></label>
+            <div class="category-select" id="categorySelect">
+                <div class="category-option" onclick="selectCategory(this, '设计')">🎨 设计</div>
+                <div class="category-option" onclick="selectCategory(this, '开发')">💻 开发</div>
+                <div class="category-option" onclick="selectCategory(this, '写作')">📝 写作</div>
+                <div class="category-option" onclick="selectCategory(this, '其他')">📦 其他</div>
+            </div>
+            <div class="budget-suggestion" id="budgetSuggestion">
+                <span class="ai-badge">🤖 AI</span> <span id="suggestionText"></span>
+            </div>
+        </div>
+        
+        <div class="form-group">
+            <label class="form-label">💰 预算（¥）<span class="ai-badge">🤖 AI 建议</span></label>
+            <input type="number" class="form-input" id="taskBudget" placeholder="输入预算金额" min="1">
+            <div class="tips">
+                💡 合理的预算能吸引更多优质服务商。建议参考AI建议设置预算。
+            </div>
+        </div>
+        
+        <div class="form-group">
+            <label class="form-label">⏰ 交付时间 <span style="color: #ff4444;">*</span></label>
+            <input type="text" class="form-input" id="taskDuration" placeholder="例如：3天、1周、10天" maxlength="10">
+        </div>
+        
+        <div class="form-group">
+            <label class="form-label">📷 参考图片（可选）</label>
+            <div class="image-upload">
+                <div class="upload-btn" onclick="uploadImage()">
+                    <span>📷</span>
+                    <div>添加图片</div>
+                </div>
+            </div>
+            <div class="tips">
+                💡 上传参考图片能让服务商更好地理解你的需求
+            </div>
+        </div>
+        
+        <button class="publish-btn" onclick="publishTask()">🚀 发布任务</button>
+    </div>
+    
+    <script>
+        const suggestData = {
+            '设计': { min: 500, max: 3000, text: '设计类任务建议预算 ¥500-3000，根据复杂度和修改次数调整' },
+            '开发': { min: 1000, max: 10000, text: '开发类任务建议预算 ¥1000-10000，根据功能复杂度和工期调整' },
+            '写作': { min: 200, max: 1500, text: '写作类任务建议预算 ¥200-1500，根据字数和专业度调整' },
+            '其他': { min: 100, max: 2000, text: '其他类任务建议预算 ¥100-2000，根据具体情况调整' }
+        };
+        
+        let selectedCategory = '';
+        
+        // 检查登录状态
+        function checkLogin() {
+            if (localStorage.getItem('isLoggedIn') !== 'true') {
+                showNotification('📱 请先登录再发布任务');
+                setTimeout(() => {
+                    window.location.href = 'login.html?redirect=publish.html';
+                }, 1500);
+                return false;
+            }
+            return true;
+        }
+        
+        // 页面加载时检查登录状态
+        if (!checkLogin()) {
+            // 会重定向到登录页
+        }
+        
+        // 字数统计
+        document.getElementById('taskTitle').addEventListener('input', function() {
+            document.getElementById('titleCount').textContent = this.value.length;
+        });
+        
+        document.getElementById('taskDesc').addEventListener('input', function() {
+            document.getElementById('descCount').textContent = this.value.length;
+        });
+        
+        function selectCategory(element, category) {
+            document.querySelectorAll('.category-option').forEach(opt => opt.classList.remove('selected'));
+            element.classList.add('selected');
+            selectedCategory = category;
+            
+            // 显示AI预算建议
+            const suggestion = suggestData[category];
+            if (suggestion) {
+                document.getElementById('suggestionText').textContent = suggestion.text;
+                document.getElementById('budgetSuggestion').style.display = 'block';
+                document.getElementById('taskBudget').placeholder = `建议 ¥${suggestion.min}-${suggestion.max}`;
+            }
+        }
+        
+        function uploadImage() {
+            showNotification('📱 即将开放：图片上传功能');
+        }
+        
+        function publishTask() {
+            const title = document.getElementById('taskTitle').value.trim();
+            const desc = document.getElementById('taskDesc').value.trim();
+            const budget = document.getElementById('taskBudget').value;
+            const duration = document.getElementById('taskDuration').value.trim();
+            
+            // 表单验证
+            if (!title) {
+                showNotification('⚠️ 请输入任务标题');
+                document.getElementById('taskTitle').focus();
+                return;
+            }
+            
+            if (title.length < 5) {
+                showNotification('⚠️ 任务标题至少需要5个字');
+                document.getElementById('taskTitle').focus();
+                return;
+            }
+            
+            if (!desc) {
+                showNotification('⚠️ 请输入任务描述');
+                document.getElementById('taskDesc').focus();
+                return;
+            }
+            
+            if (!selectedCategory) {
+                showNotification('⚠️ 请选择任务分类');
+                return;
+            }
+            
+            if (!budget || budget <= 0) {
+                showNotification('⚠️ 请输入有效的预算金额');
+                document.getElementById('taskBudget').focus();
+                return;
+            }
+            
+            if (!duration) {
+                showNotification('⚠️ 请输入交付时间');
+                document.getElementById('taskDuration').focus();
+                return;
+            }
+            
+            // 显示发布成功动画
+            const btn = document.querySelector('.publish-btn');
+            btn.textContent = '⏳ 发布中...';
+            btn.disabled = true;
+            
+            setTimeout(() => {
+                showNotification('✅ 任务发布成功！');
+                
+                setTimeout(() => {
+                    window.location.href = 'index.html';
+                }, 1500);
+            }, 1000);
+        }
+        
+        function goBack() {
+            if (confirm('返回后已填写的内容会丢失，确定要返回吗？')) {
+                window.location.href = 'index.html';
+            }
+        }
+        
+        function showNotification(msg) {
+            // 移除已有的通知
+            const existingNotification = document.querySelector('.notification');
+            if (existingNotification) {
+                existingNotification.remove();
+            }
+            
+            const notification = document.createElement('div');
+            notification.className = 'notification';
+            notification.style.cssText = `
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                background: rgba(0,0,0,0.8);
+                color: #fff;
+                padding: 15px 30px;
+                border-radius: 8px;
+                font-size: 14px;
+                z-index: 1000;
+                animation: fadeIn 0.3s ease;
+            `;
+            
+            // 添加动画
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes fadeIn {
+                    from { opacity: 0; transform: translate(-50%, -50%) scale(0.9); }
+                    to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+                }
+            `;
+            document.head.appendChild(style);
+            
+            notification.textContent = msg;
+            document.body.appendChild(notification);
+            setTimeout(() => notification.remove(), 2000);
+        }
+    </script>
+</body>
+</html>

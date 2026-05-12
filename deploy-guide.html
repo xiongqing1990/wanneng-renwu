@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>部署教程 - 万能任务APP</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            text-align: center;
+            color: #fff;
+            margin-bottom: 30px;
+            padding: 20px;
+        }
+        
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            font-size: 16px;
+            opacity: 0.9;
+        }
+        
+        .step-card {
+            background: #fff;
+            border-radius: 16px;
+            padding: 30px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        
+        .step-number {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: #fff;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+        
+        .step-title {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: #333;
+        }
+        
+        .step-content {
+            font-size: 14px;
+            color: #666;
+            line-height: 1.8;
+        }
+        
+        .step-content code {
+            background: #f5f5f5;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            color: #007AFF;
+        }
+        
+        .screenshot {
+            width: 100%;
+            border-radius: 12px;
+            margin: 15px 0;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        
+        .button {
+            display: inline-block;
+            background: #007AFF;
+            color: #fff;
+            padding: 12px 30px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            margin: 10px 0;
+            text-align: center;
+        }
+        
+        .button:hover {
+            background: #0051D5;
+        }
+        
+        .file-list {
+            background: #f9f9f9;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 15px 0;
+        }
+        
+        .file-item {
+            padding: 8px 0;
+            font-size: 14px;
+            color: #333;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .file-icon {
+            font-size: 18px;
+        }
+        
+        .tip {
+            background: #FFF9E6;
+            border-left: 4px solid #FF9500;
+            padding: 12px 15px;
+            border-radius: 4px;
+            margin: 15px 0;
+            font-size: 14px;
+            color: #666;
+        }
+        
+        .success {
+            background: #E8F5E9;
+            border-left: 4px solid #34C759;
+            padding: 12px 15px;
+            border-radius: 4px;
+            margin: 15px 0;
+            font-size: 14px;
+            color: #666;
+        }
+        
+        .footer {
+            text-align: center;
+            color: #fff;
+            padding: 20px;
+            font-size: 14px;
+            opacity: 0.8;
+        }
+        
+        .demo-link {
+            background: rgba(255,255,255,0.2);
+            color: #fff;
+            padding: 15px;
+            border-radius: 12px;
+            margin: 20px 0;
+            text-align: center;
+        }
+        
+        .demo-link a {
+            color: #fff;
+            font-size: 18px;
+            font-weight: 600;
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚀 部署教程</h1>
+            <p>3步让你的APP上线，手机直接访问</p>
+        </div>
+        
+        <div class="step-card">
+            <div class="step-number">1</div>
+            <div class="step-title">打开 Netlify Drop</div>
+            <div class="step-content">
+                <p>在浏览器中打开 Netlify Drop 页面：</p>
+                <div style="text-align: center; margin: 20px 0;">
+                    <a href="https://app.netlify.com/drop" class="button" target="_blank">👉 点击这里打开 Netlify Drop</a>
+                </div>
+                <div class="tip">
+                    💡 <strong>提示：</strong>Netlify Drop 是免费的，无需注册账号，直接拖拽文件即可部署
+                </div>
+            </div>
+        </div>
+        
+        <div class="step-card">
+            <div class="step-number">2</div>
+            <div class="step-title">拖拽文件到网页</div>
+            <div class="step-content">
+                <p>将以下文件<strong>全部选中</strong>，然后<strong>拖拽到网页中</strong>：</p>
+                <div class="file-list">
+                    <div class="file-item"><span class="file-icon">📄</span> index.html</div>
+                    <div class="file-item"><span class="file-icon">📄</span> chat.html</div>
+                    <div class="file-item"><span class="file-icon">📄</span> chat-detail.html</div>
+                    <div class="file-item"><span class="file-icon">📄</span> task-detail.html</div>
+                    <div class="file-item"><span class="file-icon">📄</span> plan.html</div>
+                    <div class="file-item"><span class="file-icon">📄</span> profile.html</div>
+                    <div class="file-item"><span class="file-icon">📄</span> publish.html</div>
+                    <div class="file-item"><span class="file-icon">📄</span> manifest.json</div>
+                </div>
+                <div class="tip">
+                    ⚠️ <strong>注意：</strong>必须拖拽<strong>所有文件</strong>，不能只拖一个！
+                </div>
+                <p style="margin-top: 15px;">拖拽后，网页会显示上传进度条，等待上传完成...</p>
+            </div>
+        </div>
+        
+        <div class="step-card">
+            <div class="step-number">3</div>
+            <div class="step-title">获取链接，手机访问</div>
+            <div class="step-content">
+                <p>上传完成后，Netlify 会自动给你一个链接，类似：</p>
+                <div style="background: #f5f5f5; padding: 15px; border-radius: 8px; margin: 15px 0; font-family: monospace; color: #007AFF;">
+                    https://xxx.netlify.app
+                </div>
+                <div class="success">
+                    ✅ <strong>完成！</strong>用手机浏览器打开这个链接，就能使用你的APP了！
+                </div>
+                <p style="margin-top: 15px;"><strong>进阶操作：</strong>添加到手机主屏幕，像原生APP一样使用</p>
+                <ol style="margin: 10px 0 10px 20px; line-height: 2;">
+                    <li>用手机浏览器打开链接</li>
+                    <li>点击浏览器菜单（通常是右上角三个点）</li>
+                    <li>选择 <strong>"添加到主屏幕"</strong></li>
+                    <li>完成！桌面上会出现APP图标</li>
+                </ol>
+            </div>
+        </div>
+        
+        <div class="step-card">
+            <div class="step-title">📱 手机测试检查清单</div>
+            <div class="step-content">
+                <p>部署后，在手机上测试这些功能：</p>
+                <div class="file-list">
+                    <div class="file-item"><span class="file-icon">✅</span> 首页任务列表能正常显示</div>
+                    <div class="file-item"><span class="file-icon">✅</span> 点击任务能查看详情</div>
+                    <div class="file-item"><span class="file-icon">✅</span> 聊天列表能打开</div>
+                    <div class="file-item"><span class="file-icon">✅</span> 能发送聊天消息</div>
+                    <div class="file-item"><span class="file-icon">✅</span> 底部导航能正常切换</div>
+                    <div class="file-item"><span class="file-icon">✅</span> 发布任务页面能正常显示</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="demo-link">
+            <p style="margin-bottom: 10px;">🎯 部署成功后，你的链接会显示在这里：</p>
+            <p style="font-size: 14px; opacity: 0.8;">（部署后自动生成，复制分享给朋友试试！）</p>
+        </div>
+        
+        <div class="footer">
+            <p>万能任务APP · 部署教程</p>
+            <p style="margin-top: 5px; font-size: 12px;">有任何问题，随时联系我 📱</p>
+        </div>
+    </div>
+</body>
+</html>

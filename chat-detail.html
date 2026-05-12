@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>聊天详情 - 万能任务</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background: #EDEDED;
+            max-width: 375px;
+            margin: 0 auto;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .header {
+            background: #07C160;
+            padding: 12px 15px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: #fff;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .back-btn {
+            font-size: 24px;
+            cursor: pointer;
+            background: none;
+            border: none;
+            color: #fff;
+            padding: 5px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .header-info {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .header-name {
+            font-size: 17px;
+            font-weight: 600;
+        }
+        
+        .header-status {
+            font-size: 12px;
+            opacity: 0.8;
+            margin-top: 2px;
+        }
+        
+        .header-actions {
+            display: flex;
+            gap: 15px;
+            font-size: 20px;
+        }
+        
+        .header-actions span {
+            cursor: pointer;
+        }
+        
+        .chat-body {
+            flex: 1;
+            padding: 15px;
+            overflow-y: auto;
+            max-height: calc(100vh - 160px);
+            background: #EDEDED;
+        }
+        
+        .time-divider {
+            text-align: center;
+            margin: 15px 0;
+            color: #999;
+            font-size: 12px;
+        }
+        
+        .message {
+            margin-bottom: 15px;
+            display: flex;
+            gap: 10px;
+            align-items: flex-start;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .message.other {
+            justify-content: flex-start;
+        }
+        
+        .message.mine {
+            justify-content: flex-end;
+        }
+        
+        .msg-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 6px;
+            background: linear-gradient(135deg, #07C160, #06AD56);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            flex-shrink: 0;
+            color: #fff;
+        }
+        
+        .msg-content-wrapper {
+            max-width: 70%;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .message.mine .msg-content-wrapper {
+            align-items: flex-end;
+        }
+        
+        .msg-content {
+            padding: 10px 15px;
+            border-radius: 8px;
+            font-size: 15px;
+            line-height: 1.5;
+            word-break: break-word;
+            position: relative;
+        }
+        
+        .message.other .msg-content {
+            background: #fff;
+            border-top-left-radius: 2px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+        }
+        
+        .message.mine .msg-content {
+            background: #95EC69;
+            border-top-right-radius: 2px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+        }
+        
+        .msg-meta {
+            font-size: 11px;
+            color: #999;
+            margin-top: 4px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        
+        .msg-status {
+            font-size: 12px;
+        }
+        
+        .msg-status.sending {
+            opacity: 0.5;
+        }
+        
+        .msg-status.sent {
+            color: #999;
+        }
+        
+        .msg-status.read {
+            color: #07C160;
+        }
+        
+        .input-area {
+            background: #F7F7F7;
+            padding: 8px 10px;
+            display: flex;
+            align-items: flex-end;
+            gap: 8px;
+            border-top: 1px solid #E5E5E5;
+            padding-bottom: calc(8px + env(safe-area-inset-bottom));
+        }
+        
+        .input-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 6px;
+            background: #fff;
+            border: 1px solid #E5E5E5;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            cursor: pointer;
+            flex-shrink: 0;
+            transition: background 0.2s;
+        }
+        
+        .input-btn:active {
+            background: #E5E5E5;
+        }
+        
+        .msg-input-wrapper {
+            flex: 1;
+            background: #fff;
+            border-radius: 6px;
+            border: 1px solid #E5E5E5;
+            min-height: 36px;
+            max-height: 100px;
+            overflow-y: auto;
+            padding: 8px 12px;
+            font-size: 15px;
+            outline: none;
+            line-height: 1.4;
+        }
+        
+        .send-btn {
+            background: #07C160;
+            color: #fff;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 15px;
+            cursor: pointer;
+            flex-shrink: 0;
+            transition: background 0.2s;
+        }
+        
+        .send-btn:active {
+            background: #06AD56;
+        }
+        
+        .scroll-bottom-btn {
+            position: fixed;
+            bottom: 120px;
+            right: 20px;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.9);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            cursor: pointer;
+            z-index: 99;
+        }
+        
+        .scroll-bottom-btn.show {
+            display: flex;
+        }
+        
+        /* 长按菜单 */
+        .msg-context-menu {
+            position: fixed;
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+            padding: 8px 0;
+            z-index: 1000;
+            display: none;
+            min-width: 140px;
+        }
+        
+        .msg-context-menu.show {
+            display: block;
+            animation: fadeIn 0.2s ease;
+        }
+        
+        .msg-menu-item {
+            padding: 10px 18px;
+            font-size: 14px;
+            color: #333;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        
+        .msg-menu-item:active {
+            background: #f5f5f5;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <button class="back-btn" onclick="goBack()">←</button>
+        <div class="header-info">
+            <div class="header-name" id="chatName">张三</div>
+            <div class="header-status" id="chatStatus">在线</div>
+        </div>
+        <div class="header-actions">
+            <span onclick="viewTask()">📋</span>
+            <span onclick="viewProfile()">👤</span>
+        </div>
+    </div>
+    
+    <div class="chat-body" id="chatBody">
+        <div class="time-divider">今天 10:30</div>
+    </div>
+    
+    <div class="scroll-bottom-btn" id="scrollBottomBtn" onclick="scrollToBottom()">↓</div>
+    
+    <div class="input-area">
+        <div class="input-btn" onclick="showOptions()">+</div>
+        <div class="msg-input-wrapper" 
+             contenteditable="true" 
+             id="messageInput" 
+             oninput="handleInput()"
+             onkeypress="handleKeyPress(event)">输入消息...</div>
+        <button class="send-btn" id="sendBtn" onclick="sendMessage()">发送</button>
+    </div>
+    
+    <!-- 消息长按菜单 -->
+    <div class="msg-context-menu" id="msgContextMenu">
+        <div class="msg-menu-item" onclick="copyMessage()">📋 复制</div>
+        <div class="msg-menu-item" onclick="deleteMessage()">🗑️ 删除</div>
+        <div class="msg-menu-item" onclick="forwardMessage()">↗️ 转发</div>
+    </div>
+    
+    <script>
+        let currentChatId = 1;
+        let messages = [];
+        let selectedMsgIndex = null;
+        
+        // 初始化聊天数据
+        const chatData = {
+            1: { name: '张三', avatar: '👨', taskId: 1, status: '在线' },
+            2: { name: '李四', avatar: '👩', taskId: 2, status: '离线' },
+            3: { name: '王五', avatar: '🧑', taskId: 3, status: '正在输入...' },
+            4: { name: '赵六', avatar: '👨🦱', taskId: 4, status: '在线' },
+            5: { name: '孙七', avatar: '👩🦰', taskId: 1, status: '离线' },
+            6: { name: '周八', avatar: '🧔', taskId: 2, status: '在线' },
+            7: { name: '吴九', avatar: '👩🦱', taskId: 3, status: '离线' },
+            8: { name: '郑十', avatar: '👨🦲', taskId: 4, status: '正在输入...' }
+        };
+        
+        const messageData = {
+            1: [
+                { type: 'other', avatar: '👨', text: '你好，我对你发布的任务感兴趣', time: '10:30', status: '' },
+                { type: 'mine', text: '好的，请说一下你的经验', time: '10:31', status: 'read' },
+                { type: 'other', avatar: '👨', text: '我有5年设计经验，做过100+ Logo设计案例', time: '10:32', status: '' },
+                { type: 'mine', text: '能看看你的作品集吗？', time: '10:33', status: 'read' },
+                { type: 'other', avatar: '👨', text: '这是我的作品集链接...', time: '10:34', status: '' }
+            ],
+            2: [
+                { type: 'other', avatar: '👩', text: '这个开发任务什么时候要？', time: '昨天 14:20', status: '' },
+                { type: 'mine', text: '下周五之前', time: '昨天 14:22', status: 'sent' },
+                { type: 'other', avatar: '👩', text: '没问题，可以接', time: '昨天 14:23', status: '' }
+            ]
+        };
+        
+        function getQueryParam(param) {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get(param);
+        }
+        
+        function loadChat() {
+            currentChatId = parseInt(getQueryParam('id') || '1');
+            const chat = chatData[currentChatId] || chatData[1];
+            
+            document.getElementById('chatName').textContent = chat.name;
+            document.getElementById('chatStatus').textContent = chat.status;
+            
+            messages = messageData[currentChatId] || [];
+            renderMessages();
+            
+            setTimeout(() => scrollToBottom(), 100);
+        }
+        
+        function renderMessages() {
+            const chatBody = document.getElementById('chatBody');
+            chatBody.innerHTML = '<div class="time-divider">今天 10:30</div>';
+            
+            messages.forEach((msg, index) => {
+                const msgDiv = document.createElement('div');
+                msgDiv.className = `message ${msg.type}`;
+                msgDiv.oncontextmenu = (e) => showMsgMenu(e, index);
+                
+                let avatarHtml = '';
+                if (msg.type === 'other') {
+                    avatarHtml = `<div class="msg-avatar">${msg.avatar}</div>`;
+                }
+                
+                let statusHtml = '';
+                if (msg.type === 'mine' && msg.status) {
+                    let statusIcon = '☑️';
+                    if (msg.status === 'sent') statusIcon = '✓';
+                    if (msg.status === 'read') statusIcon = '✓✓';
+                    statusHtml = `<div class="msg-meta"><span class="msg-status ${msg.status}">${statusIcon}</span></div>`;
+                }
+                
+                msgDiv.innerHTML = `
+                    ${avatarHtml}
+                    <div class="msg-content-wrapper">
+                        <div class="msg-content">${msg.text}</div>
+                        ${statusHtml}
+                    </div>
+                `;
+                
+                chatBody.appendChild(msgDiv);
+            });
+        }
+        
+        function sendMessage() {
+            const input = document.getElementById('messageInput');
+            const text = input.textContent.trim();
+            if (!text) return;
+            
+            const newMsg = {
+                type: 'mine',
+                text: text,
+                time: new Date().toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' }),
+                status: 'sending'
+            };
+            
+            messages.push(newMsg);
+            renderMessages();
+            
+            input.textContent = '';
+            scrollToBottom();
+            
+            // 模拟消息发送
+            setTimeout(() => {
+                newMsg.status = 'sent';
+                renderMessages();
+            }, 500);
+            
+            // 模拟对方回复
+            setTimeout(() => {
+                newMsg.status = 'read';
+                const replyMsg = {
+                    type: 'other',
+                    avatar: chatData[currentChatId].avatar,
+                    text: '收到，我考虑一下',
+                    time: new Date().toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' }),
+                    status: ''
+                };
+                messages.push(replyMsg);
+                renderMessages();
+                scrollToBottom();
+            }, 1500);
+        }
+        
+        function handleInput() {
+            const input = document.getElementById('messageInput');
+            const sendBtn = document.getElementById('sendBtn');
+            
+            if (input.textContent.trim()) {
+                sendBtn.style.background = '#07C160';
+            } else {
+                sendBtn.style.background = '#ccc';
+            }
+        }
+        
+        function handleKeyPress(event) {
+            if (event.key === 'Enter' && !event.shiftKey) {
+                event.preventDefault();
+                sendMessage();
+            }
+        }
+        
+        function scrollToBottom() {
+            const chatBody = document.getElementById('chatBody');
+            chatBody.scrollTop = chatBody.scrollHeight;
+            document.getElementById('scrollBottomBtn').classList.remove('show');
+        }
+        
+        function showOptions() {
+            showNotification('功能开发中：图片、相机、文件等');
+        }
+        
+        function viewTask() {
+            const taskId = chatData[currentChatId].taskId;
+            window.location.href = `task-detail.html?id=${taskId}`;
+        }
+        
+        function viewProfile() {
+            showNotification('查看资料功能开发中');
+        }
+        
+        // 消息长按菜单
+        function showMsgMenu(event, msgIndex) {
+            event.preventDefault();
+            selectedMsgIndex = msgIndex;
+            
+            const menu = document.getElementById('msgContextMenu');
+            menu.style.top = event.clientY + 'px';
+            menu.style.left = (event.clientX - 70) + 'px';
+            menu.classList.add('show');
+        }
+        
+        function copyMessage() {
+            if (selectedMsgIndex !== null) {
+                const text = messages[selectedMsgIndex].text;
+                navigator.clipboard.writeText(text).then(() => {
+                    showNotification('已复制到剪贴板');
+                });
+            }
+            closeMsgMenu();
+        }
+        
+        function deleteMessage() {
+            if (selectedMsgIndex !== null && confirm('确定要删除这条消息吗？')) {
+                messages.splice(selectedMsgIndex, 1);
+                renderMessages();
+                showNotification('已删除消息');
+            }
+            closeMsgMenu();
+        }
+        
+        function forwardMessage() {
+            showNotification('转发功能开发中');
+            closeMsgMenu();
+        }
+        
+        function closeMsgMenu() {
+            document.getElementById('msgContextMenu').classList.remove('show');
+            selectedMsgIndex = null;
+        }
+        
+        // 监听滚动
+        document.addEventListener('DOMContentLoaded', () => {
+            const chatBody = document.getElementById('chatBody');
+            chatBody.addEventListener('scroll', () => {
+                const btn = document.getElementById('scrollBottomBtn');
+                if (chatBody.scrollTop < chatBody.scrollHeight - chatBody.clientHeight - 100) {
+                    btn.classList.add('show');
+                } else {
+                    btn.classList.remove('show');
+                }
+            });
+        });
+        
+        function goBack() {
+            window.location.href = 'chat.html';
+        }
+        
+        // 通知提示
+        function showNotification(message) {
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 60px;
+                left: 50%;
+                transform: translateX(-50%);
+                background: rgba(0,0,0,0.8);
+                color: #fff;
+                padding: 10px 20px;
+                border-radius: 8px;
+                font-size: 14px;
+                z-index: 10000;
+                animation: fadeIn 0.3s ease;
+            `;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.style.opacity = '0';
+                notification.style.transition = 'opacity 0.3s';
+                setTimeout(() => notification.remove(), 300);
+            }, 2000);
+        }
+        
+        // 点击空白处关闭菜单
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.msg-context-menu')) {
+                closeMsgMenu();
+            }
+        });
+        
+        // 初始化
+        loadChat();
+    </script>
+</body>
+</html>

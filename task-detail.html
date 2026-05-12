@@ -1,0 +1,767 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>任务详情 - 万能任务</title>
+    <style>
+        * {
+            margin:0;
+            padding:0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: #f5f5f5;
+            max-width: 375px;
+            margin:0 auto;
+            min-height: 100vh;
+            padding-bottom: 100px;
+        }
+        
+        .header {
+            background: #fff;
+            padding: 12px 15px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border-bottom: 1px solid #eee;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        
+        .back-btn {
+            font-size: 20px;
+            cursor: pointer;
+            background: none;
+            border: none;
+            padding: 5px;
+            transition: transform 0.3s;
+        }
+        
+        .back-btn:active {
+            transform: scale(0.9);
+        }
+        
+        .header-title {
+            font-size: 17px;
+            font-weight: 600;
+            flex: 1;
+        }
+        
+        .header-actions {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .header-btn {
+            background: none;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            padding: 5px;
+            transition: transform 0.3s;
+        }
+        
+        .header-btn:active {
+            transform: scale(0.9);
+        }
+        
+        .task-content {
+            padding: 15px;
+        }
+        
+        .task-card {
+            background: #fff;
+            border-radius: 12px;
+            padding: 18px;
+            margin-bottom: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+        }
+        
+        .task-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 12px;
+        }
+        
+        .task-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #1a1a1a;
+            flex: 1;
+            line-height: 1.4;
+            margin-right: 10px;
+        }
+        
+        .task-budget {
+            font-size: 24px;
+            font-weight: 700;
+            color: #007AFF;
+            white-space: nowrap;
+        }
+        
+        .task-tags {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+            margin-bottom: 12px;
+        }
+        
+        .task-tag {
+            padding: 4px 10px;
+            background: #f0f7ff;
+            color: #007AFF;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 500;
+        }
+        
+        .task-tag.hot {
+            background: #fff0f0;
+            color: #ff3b30;
+        }
+        
+        .task-tag.urgent {
+            background: #fff8e1;
+            color: #ff9500;
+        }
+        
+        .task-desc {
+            font-size: 14px;
+            color: #333;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+        
+        .task-info {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 15px;
+            padding: 12px;
+            background: #f9f9f9;
+            border-radius: 8px;
+        }
+        
+        .info-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            color: #666;
+            font-size: 13px;
+        }
+        
+        .publisher {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 15px;
+            background: #f9f9f9;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+        
+        .publisher-avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: #fff;
+        }
+        
+        .publisher-info {
+            flex: 1;
+        }
+        
+        .publisher-name {
+            font-size: 15px;
+            font-weight: 600;
+            margin-bottom: 4px;
+            color: #1a1a1a;
+        }
+        
+        .publisher-rating {
+            font-size: 12px;
+            color: #999;
+        }
+        
+        .btn-group {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .btn {
+            flex: 1;
+            padding: 10px;
+            border-radius: 8px;
+            border: none;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .btn:active {
+            transform: scale(0.98);
+        }
+        
+        .btn-primary {
+            background: #007AFF;
+            color: #fff;
+        }
+        
+        .btn-primary:active {
+            background: #0051D5;
+        }
+        
+        .btn-secondary {
+            background: #f5f5f5;
+            color: #333;
+        }
+        
+        .btn-secondary:active {
+            background: #e0e0e0;
+        }
+        
+        .requirements-card {
+            background: #fff;
+            border-radius: 12px;
+            padding: 18px;
+            margin-bottom: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+        }
+        
+        .card-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: #1a1a1a;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .requirements-list {
+            padding-left: 20px;
+            color: #666;
+            line-height: 1.8;
+            font-size: 14px;
+        }
+        
+        .similar-tasks {
+            background: #fff;
+            border-radius: 12px;
+            padding: 18px;
+            margin-bottom: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+        }
+        
+        .similar-task-item {
+            padding: 12px 0;
+            border-bottom: 1px solid #f0f0f0;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        
+        .similar-task-item:last-child {
+            border-bottom: none;
+        }
+        
+        .similar-task-item:active {
+            background: #f9f9f9;
+        }
+        
+        .similar-task-title {
+            font-size: 14px;
+            font-weight: 500;
+            color: #1a1a1a;
+            margin-bottom: 6px;
+        }
+        
+        .similar-task-budget {
+            font-size: 14px;
+            color: #007AFF;
+            font-weight: 600;
+        }
+        
+        .bottom-bar {
+            position: fixed;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            max-width: 375px;
+            width: 100%;
+            background: #fff;
+            padding: 15px;
+            border-top: 1px solid #eee;
+            padding-bottom: calc(15px + env(safe-area-inset-bottom));
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
+        }
+        
+        .accept-btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #007AFF, #0051D5);
+            color: #fff;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0,122,255,0.3);
+            transition: all 0.3s;
+        }
+        
+        .accept-btn:active {
+            transform: scale(0.98);
+            box-shadow: 0 2px 6px rgba(0,122,255,0.3);
+        }
+        
+        .share-sheet {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: #fff;
+            border-radius: 16px 16px 0 0;
+            padding: 20px;
+            z-index: 1000;
+            transform: translateY(100%);
+            transition: transform 0.3s ease;
+            max-width: 375px;
+            margin: 0 auto;
+        }
+        
+        .share-sheet.show {
+            transform: translateY(0);
+        }
+        
+        .share-title {
+            text-align: center;
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+        
+        .share-options {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .share-option {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+        }
+        
+        .share-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+        
+        .share-name {
+            font-size: 12px;
+            color: #666;
+        }
+        
+        .share-cancel {
+            width: 100%;
+            padding: 15px;
+            background: #f5f5f5;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            color: #333;
+        }
+        
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 999;
+            display: none;
+        }
+        
+        .overlay.show {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <button class="back-btn" onclick="goBack()">←</button>
+        <div class="header-title">任务详情</div>
+        <div class="header-actions">
+            <button class="header-btn" onclick="shareTask()">📤</button>
+            <button class="header-btn" id="favoriteBtn" onclick="toggleFavorite()">🤍</button>
+        </div>
+    </div>
+    
+    <div class="task-content">
+        <div class="task-card" style="position: relative;">
+            <div class="task-header">
+                <div class="task-title" id="taskTitle">设计公司Logo</div>
+                <div class="task-budget" id="taskBudget">¥800</div>
+            </div>
+            <div class="task-tags" id="taskTags">
+                <span class="task-tag">📍 远程</span>
+                <span class="task-tag" id="taskCategory">🏷️ 设计</span>
+                <span class="task-tag hot">🔥 热门</span>
+            </div>
+            <div class="task-desc" id="taskDesc">
+                需要为一个科技公司设计现代风格的Logo，要求简洁、易识别，适用于各种场景（网站、名片、宣传册等）。希望设计师有相关经验，能提供多个方案供选择。
+            </div>
+            <div class="task-info">
+                <div class="info-item">📅 <span id="taskTime">3天</span></div>
+                <div class="info-item">👁️ <span id="taskViews">128</span> 浏览</div>
+                <div class="info-item">📝 <span id="taskApplicants">5</span> 人报名</div>
+                <div class="info-item">⏰ 截止：<span id="taskDeadline">2026-05-20</span></div>
+            </div>
+        </div>
+        
+        <div class="task-card">
+            <div class="publisher">
+                <div class="publisher-avatar" id="publisherAvatar">👨‍💼</div>
+                <div class="publisher-info">
+                    <div class="publisher-name" id="publisherName">张三 · 发布者</div>
+                    <div class="publisher-rating">⭐ 4.8 | 已完成 23 个任务</div>
+                </div>
+            </div>
+            <div class="btn-group">
+                <button class="btn btn-secondary" onclick="contactPublisher()">💬 联系他</button>
+                <button class="btn btn-primary" onclick="viewPublisherProfile()">👤 查看主页</button>
+            </div>
+        </div>
+        
+        <div class="requirements-card">
+            <div class="card-title">📋 任务要求</div>
+            <ul class="requirements-list" id="taskRequirements">
+                <li>有相关设计经验</li>
+                <li>能提供至少3个初稿方案</li>
+                <li>包含源文件交付</li>
+                <li>支持2次修改</li>
+            </ul>
+        </div>
+        
+        <div class="similar-tasks">
+            <div class="card-title">📚 相似任务</div>
+            <div class="similar-task-item" onclick="viewTask(4)">
+                <div class="similar-task-title">PPT美化设计</div>
+                <div class="similar-task-budget">¥300</div>
+            </div>
+            <div class="similar-task-item" onclick="viewTask(1)">
+                <div class="similar-task-title">设计公司Logo</div>
+                <div class="similar-task-budget">¥800</div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="bottom-bar">
+        <button class="accept-btn" onclick="acceptTask()">🚀 立即接单</button>
+    </div>
+    
+    <div class="overlay" id="overlay" onclick="closeShareSheet()"></div>
+    <div class="share-sheet" id="shareSheet">
+        <div class="share-title">分享任务</div>
+        <div class="share-options">
+            <div class="share-option" onclick="shareTo('wechat')">
+                <div class="share-icon" style="background: #07c160;">💬</div>
+                <div class="share-name">微信</div>
+            </div>
+            <div class="share-option" onclick="shareTo('moments')">
+                <div class="share-icon" style="background: #07c160;">📯</div>
+                <div class="share-name">朋友圈</div>
+            </div>
+            <div class="share-option" onclick="shareTo('qq')">
+                <div class="share-icon" style="background: #12b7f5;">🐧</div>
+                <div class="share-name">QQ</div>
+            </div>
+            <div class="share-option" onclick="shareTo('weibo')">
+                <div class="share-icon" style="background: #e6162d;">📱</div>
+                <div class="share-name">微博</div>
+            </div>
+        </div>
+        <button class="share-cancel" onclick="closeShareSheet()">取消</button>
+    </div>
+    
+    <script>
+        const tasks = [
+            { 
+                id: 1, 
+                title: '设计公司Logo', 
+                desc: '需要为一个科技公司设计现代风格的Logo，要求简洁、易识别，适用于各种场景（网站、名片、宣传册等）。希望设计师有相关经验，能提供多个方案供选择。', 
+                budget: 800, 
+                time: '3天', 
+                category: '设计',
+                location: '远程',
+                views: 128,
+                applicants: 5,
+                deadline: '2026-05-20',
+                publisher: '张三',
+                avatar: '👨‍💼',
+                rating: 4.8,
+                completedTasks: 23,
+                requirements: ['有相关设计经验', '能提供至少3个初稿方案', '包含源文件交付', '支持2次修改'],
+                tags: ['热门']
+            },
+            { 
+                id: 2, 
+                title: '开发微信小程序', 
+                desc: '开发一个任务管理小程序，包含发布、接单、聊天功能。要求使用uni-app框架，界面简洁现代，参考微信设计风格。', 
+                budget: 3000, 
+                time: '7天', 
+                category: '开发',
+                location: '远程',
+                views: 256,
+                applicants: 8,
+                deadline: '2026-05-25',
+                publisher: '李四',
+                avatar: '👨‍💻',
+                rating: 4.9,
+                completedTasks: 45,
+                requirements: ['精通uni-app框架', '有小程序开发经验', '熟悉微信API', '能提供源码'],
+                tags: ['高预算']
+            },
+            { 
+                id: 3, 
+                title: '撰写产品文案', 
+                desc: '为一款智能手表撰写营销文案，用于京东详情页。要求突出产品卖点，语言生动有感染力，字数1500字左右。', 
+                budget: 500, 
+                time: '2天', 
+                category: '写作',
+                location: '远程',
+                views: 89,
+                applicants: 3,
+                deadline: '2026-05-15',
+                publisher: '王五',
+                avatar: '👨‍💼',
+                rating: 4.7,
+                completedTasks: 18,
+                requirements: ['有电商文案写作经验', '文字风格生动', '按时交付', '支持修改'],
+                tags: []
+            },
+            { 
+                id: 4, 
+                title: 'PPT美化设计', 
+                desc: '现有20页PPT需要美化，要求商务风格，配色专业，适合投资路演使用。提供原文件，需要在周五前完成。', 
+                budget: 300, 
+                time: '2天', 
+                category: '设计',
+                location: '远程',
+                views: 67,
+                applicants: 2,
+                deadline: '2026-05-14',
+                publisher: '赵六',
+                avatar: '👩‍💼',
+                rating: 4.6,
+                completedTasks: 12,
+                requirements: ['精通PPT设计', '商务风格把握准确', '能快速交付', '提供源文件'],
+                tags: ['紧急']
+            }
+        ];
+        
+        let currentTaskId = 1;
+        let isFavorite = false;
+        
+        function getQueryParam(param) {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get(param);
+        }
+        
+        function loadTask() {
+            currentTaskId = parseInt(getQueryParam('id')) || 1;
+            const task = tasks.find(t => t.id === currentTaskId) || tasks[0];
+            
+            // 更新页面内容
+            document.getElementById('taskTitle').textContent = task.title;
+            document.getElementById('taskDesc').textContent = task.desc;
+            document.getElementById('taskBudget').textContent = `¥${task.budget}`;
+            document.getElementById('taskTime').textContent = task.time;
+            document.getElementById('taskCategory').textContent = `🏷️ ${task.category}`;
+            document.getElementById('taskViews').textContent = task.views;
+            document.getElementById('taskApplicants').textContent = task.applicants;
+            document.getElementById('taskDeadline').textContent = task.deadline;
+            document.getElementById('publisherAvatar').textContent = task.avatar;
+            document.getElementById('publisherName').textContent = `${task.publisher} · 发布者`;
+            document.getElementById('publisherRating').textContent = `⭐ ${task.rating} | 已完成 ${task.completedTasks} 个任务`;
+            
+            // 更新任务标签
+            const tagsHtml = task.tags.map(tag => {
+                let className = 'task-tag';
+                if (tag === '热门' || tag === '高预算') className += ' hot';
+                if (tag === '紧急') className += ' urgent';
+                return `<span class="${className}">${tag === '热门' ? '🔥' : tag === '高预算' ? '💰' : '⚡'} ${tag}</span>`;
+            }).join('');
+            document.getElementById('taskTags').innerHTML = `<span class="task-tag">📍 ${task.location}</span><span class="task-tag">🏷️ ${task.category}</span>${tagsHtml}`;
+            
+            // 更新任务要求
+            const requirementsList = document.getElementById('taskRequirements');
+            requirementsList.innerHTML = task.requirements.map(req => `<li>${req}</li>`).join('');
+            
+            // 检查是否已收藏
+            checkFavoriteStatus();
+        }
+        
+        function toggleFavorite() {
+            if (localStorage.getItem('isLoggedIn') !== 'true') {
+                showNotification('📱 请先登录再收藏任务');
+                setTimeout(() => {
+                    window.location.href = `login.html?redirect=task-detail.html?id=${currentTaskId}`;
+                }, 1500);
+                return;
+            }
+            
+            isFavorite = !isFavorite;
+            const btn = document.getElementById('favoriteBtn');
+            btn.textContent = isFavorite ? '❤️' : '🤍';
+            
+            // 保存到localStorage
+            let favorites = JSON.parse(localStorage.getItem('favoriteTasks') || '[]');
+            if (isFavorite) {
+                if (!favorites.includes(currentTaskId)) {
+                    favorites.push(currentTaskId);
+                }
+                showNotification('❤️ 已收藏任务');
+            } else {
+                favorites = favorites.filter(id => id !== currentTaskId);
+                showNotification('💔 已取消收藏');
+            }
+            localStorage.setItem('favoriteTasks', JSON.stringify(favorites));
+        }
+        
+        function checkFavoriteStatus() {
+            const favorites = JSON.parse(localStorage.getItem('favoriteTasks') || '[]');
+            isFavorite = favorites.includes(currentTaskId);
+            document.getElementById('favoriteBtn').textContent = isFavorite ? '❤️' : '🤍';
+        }
+        
+        function shareTask() {
+            const sheet = document.getElementById('shareSheet');
+            const overlay = document.getElementById('overlay');
+            sheet.classList.add('show');
+            overlay.classList.add('show');
+        }
+        
+        function closeShareSheet() {
+            const sheet = document.getElementById('shareSheet');
+            const overlay = document.getElementById('overlay');
+            sheet.classList.remove('show');
+            overlay.classList.remove('show');
+        }
+        
+        function shareTo(platform) {
+            closeShareSheet();
+            showNotification(`📤 即将通过${platform}分享`);
+        }
+        
+        function contactPublisher() {
+            if (localStorage.getItem('isLoggedIn') !== 'true') {
+                showNotification('📱 请先登录再联系发布者');
+                setTimeout(() => {
+                    window.location.href = `login.html?redirect=task-detail.html?id=${currentTaskId}`;
+                }, 1500);
+                return;
+            }
+            window.location.href = `chat-detail.html?id=${currentTaskId}`;
+        }
+        
+        function viewPublisherProfile() {
+            showNotification('📱 即将开放：查看发布者主页');
+        }
+        
+        function viewTask(id) {
+            window.location.href = `task-detail.html?id=${id}`;
+        }
+        
+        function acceptTask() {
+            if (localStorage.getItem('isLoggedIn') !== 'true') {
+                showNotification('📱 请先登录再接单');
+                setTimeout(() => {
+                    window.location.href = `login.html?redirect=task-detail.html?id=${currentTaskId}`;
+                }, 1500);
+                return;
+            }
+            
+            if (confirm('确认接下这个任务吗？\n\n接单后，发布者会收到通知，你们可以开始沟通任务细节。')) {
+                showNotification('✅ 接单成功！已通知发布者');
+                
+                // 更新报名人数
+                const task = tasks.find(t => t.id === currentTaskId);
+                if (task) {
+                    task.applicants += 1;
+                    document.getElementById('taskApplicants').textContent = task.applicants;
+                }
+                
+                setTimeout(() => {
+                    window.location.href = `chat-detail.html?id=${currentTaskId}`;
+                }, 1500);
+            }
+        }
+        
+        function goBack() {
+            window.location.href = 'index.html';
+        }
+        
+        function showNotification(msg) {
+            const existingNotification = document.querySelector('.notification');
+            if (existingNotification) {
+                existingNotification.remove();
+            }
+            
+            const notification = document.createElement('div');
+            notification.className = 'notification';
+            notification.style.cssText = `
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                background: rgba(0,0,0,0.8);
+                color: #fff;
+                padding: 15px 30px;
+                border-radius: 8px;
+                font-size: 14px;
+                z-index: 1000;
+                animation: fadeIn 0.3s ease;
+            `;
+            
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes fadeIn {
+                    from { opacity: 0; transform: translate(-50%, -50%) scale(0.9); }
+                    to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+                }
+            `;
+            document.head.appendChild(style);
+            
+            notification.textContent = msg;
+            document.body.appendChild(notification);
+            setTimeout(() => notification.remove(), 2000);
+        }
+        
+        loadTask();
+    </script>
+</body>
+</html>

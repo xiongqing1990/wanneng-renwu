@@ -1,0 +1,868 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>计划 - 万能任务</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background: #f5f5f5;
+            max-width: 375px;
+            margin: 0 auto;
+            min-height: 100vh;
+            padding-bottom: 80px;
+        }
+        
+        .status-bar {
+            background: #000;
+            color: #fff;
+            padding: 10px 15px;
+            display: flex;
+            justify-content: space-between;
+            font-size: 14px;
+            font-weight: 600;
+        }
+        
+        .header {
+            background: #fff;
+            padding: 15px;
+            font-size: 22px;
+            font-weight: 700;
+            color: #000;
+            border-bottom: 1px solid #E5E5E5;
+        }
+        
+        .calendar {
+            background: #fff;
+            padding: 15px;
+            margin: 15px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .calendar-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .calendar-nav {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            padding: 5px 10px;
+            color: #007AFF;
+            border-radius: 6px;
+            transition: background 0.2s;
+        }
+        
+        .calendar-nav:active {
+            background: #f5f5f5;
+        }
+        
+        .week-days {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 5px;
+            margin-bottom: 10px;
+        }
+        
+        .week-day {
+            text-align: center;
+            font-size: 12px;
+            color: #999;
+            padding: 5px;
+            font-weight: 500;
+        }
+        
+        .calendar-days {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 5px;
+        }
+        
+        .day {
+            aspect-ratio: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.2s;
+            position: relative;
+            color: #333;
+        }
+        
+        .day:active {
+            background: #f5f5f5;
+        }
+        
+        .day.today {
+            background: #007AFF;
+            color: #fff;
+            font-weight: 600;
+        }
+        
+        .day.selected {
+            background: #E3F2FD;
+            color: #007AFF;
+            font-weight: 600;
+        }
+        
+        .day.other-month {
+            color: #ccc;
+        }
+        
+        .day.has-task::after {
+            content: '';
+            position: absolute;
+            bottom: 4px;
+            width: 5px;
+            height: 5px;
+            background: #FF9500;
+            border-radius: 50%;
+        }
+        
+        .day.today.has-task::after {
+            background: #fff;
+        }
+        
+        .plan-list {
+            padding: 0 15px;
+        }
+        
+        .section-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            margin: 20px 0 12px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .add-btn {
+            background: none;
+            border: none;
+            font-size: 24px;
+            color: #007AFF;
+            cursor: pointer;
+            padding: 0 5px;
+        }
+        
+        .plan-item {
+            background: #fff;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+        
+        .plan-item:active {
+            transform: scale(0.98);
+            box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+        }
+        
+        .plan-checkbox {
+            width: 24px;
+            height: 24px;
+            border: 2px solid #ddd;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            transition: all 0.2s;
+        }
+        
+        .plan-checkbox.checked {
+            background: #34C759;
+            border-color: #34C759;
+            color: #fff;
+        }
+        
+        .plan-info {
+            flex: 1;
+            min-width: 0;
+        }
+        
+        .plan-title {
+            font-size: 15px;
+            margin-bottom: 4px;
+            color: #333;
+        }
+        
+        .plan-title.completed {
+            text-decoration: line-through;
+            color: #999;
+        }
+        
+        .plan-time {
+            font-size: 12px;
+            color: #999;
+        }
+        
+        .plan-priority {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+        
+        .plan-priority.high {
+            background: #FF3B30;
+            color: #fff;
+        }
+        
+        .plan-priority.medium {
+            background: #FF9500;
+            color: #fff;
+        }
+        
+        .plan-priority.low {
+            background: #34C759;
+            color: #fff;
+        }
+        
+        .plan-actions {
+            display: flex;
+            gap: 8px;
+            flex-shrink: 0;
+        }
+        
+        .action-btn {
+            background: none;
+            border: none;
+            font-size: 16px;
+            cursor: pointer;
+            padding: 4px;
+            opacity: 0.6;
+            transition: opacity 0.2s;
+        }
+        
+        .action-btn:active {
+            opacity: 1;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #999;
+        }
+        
+        .empty-state .icon {
+            font-size: 50px;
+            margin-bottom: 15px;
+            opacity: 0.3;
+        }
+        
+        .fab-button {
+            position: fixed;
+            bottom: 90px;
+            right: 20px;
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: #007AFF;
+            color: #fff;
+            border: none;
+            font-size: 28px;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0,122,255,0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+            z-index: 99;
+        }
+        
+        .fab-button:active {
+            transform: scale(0.9);
+        }
+        
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            max-width: 375px;
+            width: 100%;
+            background: #fff;
+            border-top: 1px solid #E5E5E5;
+            display: flex;
+            justify-content: space-around;
+            padding: 8px 0;
+            padding-bottom: calc(8px + env(safe-area-inset-bottom));
+            box-shadow: 0 -1px 5px rgba(0,0,0,0.05);
+        }
+        
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2px;
+            text-decoration: none;
+            color: #999;
+            font-size: 11px;
+            transition: color 0.2s;
+        }
+        
+        .nav-item.active {
+            color: #007AFF;
+        }
+        
+        .nav-icon {
+            font-size: 24px;
+            margin-bottom: 1px;
+        }
+        
+        /* 添加/编辑计划弹窗 */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            display: none;
+            align-items: flex-end;
+        }
+        
+        .modal-overlay.show {
+            display: flex;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        .modal {
+            background: #fff;
+            width: 100%;
+            max-width: 375px;
+            margin: 0 auto;
+            border-radius: 16px 16px 0 0;
+            padding: 20px;
+            padding-bottom: calc(20px + env(safe-area-inset-bottom));
+            animation: slideUp 0.3s ease;
+        }
+        
+        @keyframes slideUp {
+            from { transform: translateY(100%); }
+            to { transform: translateY(0); }
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .modal-title {
+            font-size: 18px;
+            font-weight: 600;
+        }
+        
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #999;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-label {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 8px;
+            display: block;
+        }
+        
+        .form-input {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 15px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        
+        .form-input:focus {
+            border-color: #007AFF;
+        }
+        
+        .priority-options {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .priority-option {
+            flex: 1;
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            text-align: center;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+        
+        .priority-option.selected {
+            border-color: #007AFF;
+            background: #E3F2FD;
+            color: #007AFF;
+        }
+        
+        .modal-submit {
+            width: 100%;
+            padding: 12px;
+            background: #007AFF;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: background 0.2s;
+        }
+        
+        .modal-submit:active {
+            background: #0056CC;
+        }
+        
+        .delete-btn {
+            width: 100%;
+            padding: 12px;
+            background: #FF3B30;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: background 0.2s;
+        }
+        
+        .delete-btn:active {
+            background: #D63029;
+        }
+    </style>
+</head>
+<body>
+    <div class="status-bar">
+        <span>9:41</span>
+        <span>🔋 100% 📶</span>
+    </div>
+    
+    <div class="header">计划</div>
+    
+    <div class="calendar">
+        <div class="calendar-header">
+            <button class="calendar-nav" onclick="changeMonth(-1)">‹</button>
+            <div class="calendar-title" id="calendarTitle">2026年5月</div>
+            <button class="calendar-nav" onclick="changeMonth(1)">›</button>
+        </div>
+        <div class="week-days">
+            <div class="week-day">日</div>
+            <div class="week-day">一</div>
+            <div class="week-day">二</div>
+            <div class="week-day">三</div>
+            <div class="week-day">四</div>
+            <div class="week-day">五</div>
+            <div class="week-day">六</div>
+        </div>
+        <div class="calendar-days" id="calendarDays"></div>
+    </div>
+    
+    <div class="plan-list" id="planList">
+        <div class="section-title">
+            <span id="sectionTitle">今日计划</span>
+            <button class="add-btn" onclick="showAddModal()">+</button>
+        </div>
+        <div id="plansContainer"></div>
+    </div>
+    
+    <button class="fab-button" onclick="showAddModal()">+</button>
+    
+    <div class="bottom-nav">
+        <a href="index.html" class="nav-item">
+            <span class="nav-icon">📋</span>
+            <span>任务</span>
+        </a>
+        <a href="chat.html" class="nav-item">
+            <span class="nav-icon">💬</span>
+            <span>聊天</span>
+        </a>
+        <a href="plan.html" class="nav-item active">
+            <span class="nav-icon">📅</span>
+            <span>计划</span>
+        </a>
+        <a href="profile.html" class="nav-item">
+            <span class="nav-icon">👤</span>
+            <span>我的</span>
+        </a>
+    </div>
+    
+    <!-- 添加/编辑计划弹窗 -->
+    <div class="modal-overlay" id="addModal">
+        <div class="modal">
+            <div class="modal-header">
+                <div class="modal-title" id="modalTitle">新建计划</div>
+                <button class="modal-close" onclick="closeAddModal()">×</button>
+            </div>
+            <div class="form-group">
+                <label class="form-label">计划标题</label>
+                <input type="text" class="form-input" id="planTitleInput" placeholder="输入计划内容">
+            </div>
+            <div class="form-group">
+                <label class="form-label">时间</label>
+                <input type="time" class="form-input" id="planTimeInput" value="14:00">
+            </div>
+            <div class="form-group">
+                <label class="form-label">优先级</label>
+                <div class="priority-options">
+                    <div class="priority-option" data-priority="low" onclick="selectPriority(this)">低</div>
+                    <div class="priority-option selected" data-priority="medium" onclick="selectPriority(this)">中</div>
+                    <div class="priority-option" data-priority="high" onclick="selectPriority(this)">高</div>
+                </div>
+            </div>
+            <button class="modal-submit" id="submitBtn" onclick="savePlan()">添加计划</button>
+            <button class="delete-btn" id="deleteBtn" style="display:none;" onclick="deletePlan()">删除计划</button>
+        </div>
+    </div>
+    
+    <script>
+        let currentDate = new Date();
+        let selectedDate = new Date();
+        let plans = [];
+        let selectedPriority = 'medium';
+        let editingPlanId = null;
+        
+        // 从localStorage加载计划
+        function loadPlans() {
+            const saved = localStorage.getItem('plans');
+            if (saved) {
+                plans = JSON.parse(saved);
+            } else {
+                // 默认数据
+                const today = new Date();
+                const tomorrow = new Date(today);
+                tomorrow.setDate(tomorrow.getDate() + 1);
+                
+                plans = [
+                    { id: 1, title: '完成Logo初稿设计', date: formatDate(today), time: '14:00', priority: 'high', completed: false },
+                    { id: 2, title: '与客户沟通需求细节', date: formatDate(today), time: '16:00', priority: 'medium', completed: false },
+                    { id: 3, title: '提交项目进度报告', date: formatDate(tomorrow), time: '10:00', priority: 'low', completed: true },
+                    { id: 4, title: '学习新的设计工具', date: formatDate(tomorrow), time: '15:00', priority: 'medium', completed: false }
+                ];
+                savePlans();
+            }
+        }
+        
+        function savePlans() {
+            localStorage.setItem('plans', JSON.stringify(plans));
+        }
+        
+        function formatDate(date) {
+            const y = date.getFullYear();
+            const m = String(date.getMonth() + 1).padStart(2, '0');
+            const d = String(date.getDate()).padStart(2, '0');
+            return `${y}-${m}-${d}`;
+        }
+        
+        function parseDate(dateStr) {
+            const [y, m, d] = dateStr.split('-').map(Number);
+            return new Date(y, m - 1, d);
+        }
+        
+        function renderCalendar() {
+            const year = currentDate.getFullYear();
+            const month = currentDate.getMonth();
+            const today = new Date();
+            
+            document.getElementById('calendarTitle').textContent = `${year}年${month + 1}月`;
+            
+            const firstDay = new Date(year, month, 1).getDay();
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+            const daysInPrevMonth = new Date(year, month, 0).getDate();
+            
+            let daysHTML = '';
+            
+            // 上月填充
+            for (let i = firstDay - 1; i >= 0; i--) {
+                const day = daysInPrevMonth - i;
+                daysHTML += `<div class="day other-month">${day}</div>`;
+            }
+            
+            // 本月日期
+            for (let day = 1; day <= daysInMonth; day++) {
+                const date = new Date(year, month, day);
+                const dateStr = formatDate(date);
+                const hasTask = plans.some(p => p.date === dateStr && !p.completed);
+                const isToday = formatDate(date) === formatDate(today);
+                const isSelected = formatDate(date) === formatDate(selectedDate);
+                
+                let classes = ['day'];
+                if (isToday) classes.push('today');
+                if (isSelected) classes.push('selected');
+                if (hasTask) classes.push('has-task');
+                
+                daysHTML += `<div class="${classes.join(' ')}" onclick="selectDate(${year}, ${month}, ${day})">${day}</div>`;
+            }
+            
+            // 下月填充
+            const totalCells = firstDay + daysInMonth;
+            const remaining = totalCells % 7 === 0 ? 0 : 7 - (totalCells % 7);
+            for (let i = 1; i <= remaining; i++) {
+                daysHTML += `<div class="day other-month">${i}</div>`;
+            }
+            
+            document.getElementById('calendarDays').innerHTML = daysHTML;
+        }
+        
+        function changeMonth(delta) {
+            currentDate.setMonth(currentDate.getMonth() + delta);
+            renderCalendar();
+        }
+        
+        function selectDate(year, month, day) {
+            selectedDate = new Date(year, month, day);
+            renderCalendar();
+            renderPlans();
+        }
+        
+        function renderPlans() {
+            const container = document.getElementById('plansContainer');
+            const selectedDateStr = formatDate(selectedDate);
+            const dayPlans = plans.filter(p => p.date === selectedDateStr);
+            
+            // 更新标题
+            const today = new Date();
+            const tomorrow = new Date(today);
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            
+            let title = '';
+            if (formatDate(selectedDate) === formatDate(today)) {
+                title = '今日计划';
+            } else if (formatDate(selectedDate) === formatDate(tomorrow)) {
+                title = '明日计划';
+            } else {
+                title = `${selectedDate.getMonth() + 1}月${selectedDate.getDate()}日计划`;
+            }
+            document.getElementById('sectionTitle').textContent = title;
+            
+            if (dayPlans.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="icon">📅</div>
+                        <div>暂无计划，点击 + 添加</div>
+                    </div>
+                `;
+                return;
+            }
+            
+            container.innerHTML = dayPlans.map(plan => `
+                <div class="plan-item">
+                    <div class="plan-checkbox ${plan.completed ? 'checked' : ''}" onclick="togglePlan(${plan.id})">
+                        ${plan.completed ? '✓' : ''}
+                    </div>
+                    <div class="plan-info" onclick="editPlan(${plan.id})">
+                        <div class="plan-title ${plan.completed ? 'completed' : ''}">${plan.title}</div>
+                        <div class="plan-time">${plan.time}</div>
+                    </div>
+                    <div class="plan-priority ${plan.priority}">${
+                        plan.priority === 'high' ? '高' : 
+                        plan.priority === 'medium' ? '中' : '低'
+                    }</div>
+                    <div class="plan-actions">
+                        <button class="action-btn" onclick="editPlan(${plan.id})" title="编辑">✏️</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        function togglePlan(id) {
+            const plan = plans.find(p => p.id === id);
+            if (plan) {
+                plan.completed = !plan.completed;
+                savePlans();
+                renderPlans();
+                renderCalendar();
+                showNotification(plan.completed ? '✅ 已完成' : '📝 已标记未完成');
+            }
+        }
+        
+        function editPlan(id) {
+            const plan = plans.find(p => p.id === id);
+            if (!plan) return;
+            
+            editingPlanId = id;
+            document.getElementById('modalTitle').textContent = '编辑计划';
+            document.getElementById('planTitleInput').value = plan.title;
+            document.getElementById('planTimeInput').value = plan.time;
+            document.getElementById('submitBtn').textContent = '保存修改';
+            document.getElementById('deleteBtn').style.display = 'block';
+            
+            selectPriority(document.querySelector(`.priority-option[data-priority="${plan.priority}"]`));
+            
+            document.getElementById('addModal').classList.add('show');
+        }
+        
+        function showAddModal() {
+            editingPlanId = null;
+            document.getElementById('modalTitle').textContent = '新建计划';
+            document.getElementById('planTitleInput').value = '';
+            document.getElementById('planTimeInput').value = '14:00';
+            document.getElementById('submitBtn').textContent = '添加计划';
+            document.getElementById('deleteBtn').style.display = 'none';
+            
+            selectPriority(document.querySelector('.priority-option[data-priority="medium"]'));
+            
+            document.getElementById('addModal').classList.add('show');
+            document.getElementById('planTitleInput').focus();
+        }
+        
+        function closeAddModal() {
+            document.getElementById('addModal').classList.remove('show');
+            editingPlanId = null;
+        }
+        
+        function selectPriority(el) {
+            if (!el) return;
+            document.querySelectorAll('.priority-option').forEach(e => e.classList.remove('selected'));
+            el.classList.add('selected');
+            selectedPriority = el.dataset.priority;
+        }
+        
+        function savePlan() {
+            const title = document.getElementById('planTitleInput').value.trim();
+            const time = document.getElementById('planTimeInput').value;
+            
+            if (!title) {
+                showNotification('请输入计划内容');
+                return;
+            }
+            
+            if (editingPlanId) {
+                // 编辑模式
+                const plan = plans.find(p => p.id === editingPlanId);
+                if (plan) {
+                    plan.title = title;
+                    plan.time = time;
+                    plan.priority = selectedPriority;
+                    showNotification('✅ 计划已更新');
+                }
+            } else {
+                // 添加模式
+                const newPlan = {
+                    id: Date.now(),
+                    title: title,
+                    date: formatDate(selectedDate),
+                    time: time,
+                    priority: selectedPriority,
+                    completed: false
+                };
+                plans.push(newPlan);
+                showNotification('✅ 计划已添加');
+            }
+            
+            savePlans();
+            closeAddModal();
+            renderCalendar();
+            renderPlans();
+        }
+        
+        function deletePlan() {
+            if (!editingPlanId) return;
+            
+            if (confirm('确定要删除这个计划吗？')) {
+                plans = plans.filter(p => p.id !== editingPlanId);
+                savePlans();
+                closeAddModal();
+                renderCalendar();
+                renderPlans();
+                showNotification('🗑️ 计划已删除');
+            }
+        }
+        
+        function showNotification(message) {
+            const existingNotification = document.querySelector('.notification');
+            if (existingNotification) {
+                existingNotification.remove();
+            }
+            
+            const notification = document.createElement('div');
+            notification.className = 'notification';
+            notification.style.cssText = `
+                position: fixed;
+                top: 60px;
+                left: 50%;
+                transform: translateX(-50%);
+                background: rgba(0,0,0,0.8);
+                color: #fff;
+                padding: 10px 20px;
+                border-radius: 8px;
+                font-size: 14px;
+                z-index: 10000;
+                animation: fadeIn 0.3s ease;
+            `;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.style.opacity = '0';
+                notification.style.transition = 'opacity 0.3s';
+                setTimeout(() => notification.remove(), 300);
+            }, 2000);
+        }
+        
+        // 点击弹窗外部关闭
+        document.getElementById('addModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeAddModal();
+            }
+        });
+        
+        // 初始化
+        loadPlans();
+        renderCalendar();
+        renderPlans();
+    </script>
+</body>
+</html>

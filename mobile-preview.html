@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#007AFF">
+    <title>万能任务APP - 手机测试版</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .phone-frame {
+            width: 375px;
+            height: 812px;
+            background: white;
+            border-radius: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+            position: relative;
+            border: 12px solid #1a1a1a;
+        }
+
+        .status-bar {
+            height: 44px;
+            background: #007AFF;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+            color: white;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .content {
+            height: calc(100% - 44px - 83px);
+            overflow-y: auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            color: #007AFF;
+            margin-bottom: 8px;
+        }
+
+        .header p {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .task-input {
+            background: #f5f5f7;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+
+        .task-input input {
+            width: 100%;
+            border: none;
+            background: transparent;
+            font-size: 16px;
+            outline: none;
+            margin-bottom: 10px;
+        }
+
+        .task-input button {
+            width: 100%;
+            padding: 12px;
+            background: #007AFF;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .task-list {
+            margin-top: 20px;
+        }
+
+        .task-item {
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            transition: all 0.3s;
+        }
+
+        .task-item:active {
+            transform: scale(0.98);
+        }
+
+        .task-checkbox {
+            width: 24px;
+            height: 24px;
+            border: 2px solid #007AFF;
+            border-radius: 50%;
+            margin-right: 12px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .task-checkbox.checked {
+            background: #007AFF;
+        }
+
+        .task-checkbox.checked::after {
+            content: "✓";
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        .task-text {
+            flex: 1;
+            font-size: 16px;
+            color: #333;
+        }
+
+        .task-text.completed {
+            text-decoration: line-through;
+            color: #999;
+        }
+
+        .task-delete {
+            width: 32px;
+            height: 32px;
+            background: #ff3b30;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .stats {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+        }
+
+        .stats h3 {
+            font-size: 14px;
+            opacity: 0.9;
+            margin-bottom: 8px;
+        }
+
+        .stats .number {
+            font-size: 36px;
+            font-weight: bold;
+        }
+
+        .tab-bar {
+            height: 83px;
+            background: white;
+            border-top: 1px solid #e0e0e0;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding-bottom: 20px;
+        }
+
+        .tab-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+            color: #999;
+            font-size: 12px;
+        }
+
+        .tab-item.active {
+            color: #007AFF;
+        }
+
+        .tab-icon {
+            font-size: 24px;
+            margin-bottom: 4px;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #999;
+        }
+
+        .empty-state .icon {
+            font-size: 64px;
+            margin-bottom: 16px;
+        }
+
+        .empty-state p {
+            font-size: 16px;
+        }
+
+        .notification {
+            position: absolute;
+            top: 60px;
+            left: 20px;
+            right: 20px;
+            background: #34c759;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-size: 14px;
+            animation: slideDown 0.3s ease-out;
+            z-index: 100;
+        }
+
+        @keyframes slideDown {
+            from {
+                transform: translateY(-100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .performance-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(52, 199, 89, 0.9);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 10px;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <div class="phone-frame">
+        <div class="performance-badge">⚡ 工业级优化</div>
+        <div class="status-bar">
+            <span>9:41</span>
+            <span>📶 100% 🔋</span>
+        </div>
+
+        <div class="content" id="content">
+            <div class="header">
+                <h1>✅ 万能任务</h1>
+                <p>企业级任务管理平台</p>
+            </div>
+
+            <div class="stats">
+                <h3>今日完成任务</h3>
+                <div class="number" id="completedCount">0</div>
+            </div>
+
+            <div class="task-input">
+                <input type="text" id="taskInput" placeholder="添加新任务..." />
+                <button onclick="addTask()">+ 添加任务</button>
+            </div>
+
+            <div class="task-list" id="taskList">
+                <div class="empty-state" id="emptyState">
+                    <div class="icon">📝</div>
+                    <p>暂无任务<br/>添加你的第一个任务吧！</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="tab-bar">
+            <div class="tab-item active">
+                <div class="tab-icon">🏠</div>
+                <span>首页</span>
+            </div>
+            <div class="tab-item">
+                <div class="tab-icon">📊</div>
+                <span>统计</span>
+            </div>
+            <div class="tab-item">
+                <div class="tab-icon">⚙️</div>
+                <span>设置</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 任务数据
+        let tasks = JSON.parse(localStorage.getItem('tasks')) || [];
+        let notificationTimeout = null;
+
+        // 初始化
+        function init() {
+            renderTasks();
+            updateStats();
+        }
+
+        // 添加任务
+        function addTask() {
+            const input = document.getElementById('taskInput');
+            const text = input.value.trim();
+
+            if (!text) {
+                showNotification('请输入任务内容', 'warning');
+                return;
+            }
+
+            const task = {
+                id: Date.now(),
+                text: text,
+                completed: false,
+                createdAt: new Date().toISOString()
+            };
+
+            tasks.push(task);
+            saveTasks();
+            renderTasks();
+            updateStats();
+            input.value = '';
+            showNotification('✅ 任务添加成功！');
+        }
+
+        // 切换任务状态
+        function toggleTask(id) {
+            const task = tasks.find(t => t.id === id);
+            if (task) {
+                task.completed = !task.completed;
+                saveTasks();
+                renderTasks();
+                updateStats();
+                showNotification(task.completed ? '✅ 任务完成！' : '↩️ 任务重新开始');
+            }
+        }
+
+        // 删除任务
+        function deleteTask(id) {
+            tasks = tasks.filter(t => t.id !== id);
+            saveTasks();
+            renderTasks();
+            updateStats();
+            showNotification('🗑️ 任务已删除');
+        }
+
+        // 渲染任务列表
+        function renderTasks() {
+            const taskList = document.getElementById('taskList');
+            const emptyState = document.getElementById('emptyState');
+
+            if (tasks.length === 0) {
+                taskList.innerHTML = '';
+                taskList.appendChild(createEmptyState());
+                return;
+            }
+
+            taskList.innerHTML = '';
+            tasks.forEach(task => {
+                const taskElement = createTaskElement(task);
+                taskList.appendChild(taskElement);
+            });
+        }
+
+        // 创建任务元素
+        function createTaskElement(task) {
+            const div = document.createElement('div');
+            div.className = 'task-item';
+            div.innerHTML = `
+                <div class="task-checkbox ${task.completed ? 'checked' : ''}"
+                     onclick="toggleTask(${task.id})"></div>
+                <div class="task-text ${task.completed ? 'completed' : ''}">${task.text}</div>
+                <button class="task-delete" onclick="deleteTask(${task.id})">×</button>
+            `;
+            return div;
+        }
+
+        // 创建空状态
+        function createEmptyState() {
+            const div = document.createElement('div');
+            div.className = 'empty-state';
+            div.id = 'emptyState';
+            div.innerHTML = `
+                <div class="icon">📝</div>
+                <p>暂无任务<br/>添加你的第一个任务吧！</p>
+            `;
+            return div;
+        }
+
+        // 更新统计
+        function updateStats() {
+            const completed = tasks.filter(t => t.completed).length;
+            document.getElementById('completedCount').textContent = completed;
+        }
+
+        // 保存任务
+        function saveTasks() {
+            localStorage.setItem('tasks', JSON.stringify(tasks));
+        }
+
+        // 显示通知
+        function showNotification(message, type = 'success') {
+            const notification = document.createElement('div');
+            notification.className = 'notification';
+            notification.textContent = message;
+            notification.style.background = type === 'warning' ? '#ff9500' : '#34c759';
+
+            const content = document.getElementById('content');
+            content.appendChild(notification);
+
+            if (notificationTimeout) {
+                clearTimeout(notificationTimeout);
+            }
+
+            notificationTimeout = setTimeout(() => {
+                notification.remove();
+            }, 2000);
+        }
+
+        // 回车添加任务
+        document.getElementById('taskInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                addTask();
+            }
+        });
+
+        // 初始化应用
+        init();
+
+        // 添加一些示例任务（仅首次访问）
+        if (tasks.length === 0) {
+            tasks = [
+                { id: 1, text: '完成工业级优化项目', completed: true, createdAt: new Date().toISOString() },
+                { id: 2, text: '测试手机端功能', completed: false, createdAt: new Date().toISOString() },
+                { id: 3, text: '编写项目文档', completed: false, createdAt: new Date().toISOString() }
+            ];
+            saveTasks();
+            renderTasks();
+            updateStats();
+        }
+    </script>
+</body>
+</html>

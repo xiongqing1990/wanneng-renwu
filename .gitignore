@@ -1,0 +1,13 @@
+# 忽略临时文件和配置
+.workbuddy/
+node_modules/
+*.log
+.DS_Store
+Thumbs.db
+
+# 保留项目文件
+!*.html
+!*.css
+!*.js
+!*.md
+!.gitignore
