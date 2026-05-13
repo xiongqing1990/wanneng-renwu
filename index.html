@@ -12,6 +12,7 @@
             box-sizing: border-box;
         }
         
+        /* 页面切换动画 */
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
             background: #f5f5f5;
@@ -19,6 +20,12 @@
             margin:0 auto;
             min-height: 100vh;
             padding-bottom: 80px;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
         }
         
         /* 头部优化：更简洁 */
@@ -272,6 +279,16 @@
             color: #ff9500;
         }
         
+        .task-tag.long-term {
+            background: #e8f5e9;
+            color: #4caf50;
+        }
+        
+        .task-tag.one-time {
+            background: #fff3e0;
+            color: #ff9800;
+        }
+        
         .task-footer {
             display: flex;
             justify-content: space-between;
@@ -414,6 +431,30 @@
             font-size: 22px;
         }
         
+        .nav-item.publish-nav {
+            position: relative;
+        }
+        
+        .nav-item.publish-nav .nav-icon {
+            background: linear-gradient(135deg, #007AFF, #0051D5);
+            color: #fff;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            margin-top: -20px;
+            box-shadow: 0 4px 12px rgba(0,122,255,0.4);
+        }
+        
+        .nav-item.publish-nav span:last-child {
+            color: #007AFF;
+            font-weight: 600;
+            margin-top: 5px;
+        }
+        
         /* 骨架屏加载 */
         .skeleton {
             background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
@@ -489,6 +530,10 @@
             <span class="nav-icon">💬</span>
             <span>聊天</span>
         </a>
+        <a href="publish.html" class="nav-item publish-nav" onclick="checkLoginBeforePublish(); return false;">
+            <span class="nav-icon">📝</span>
+            <span>发布</span>
+        </a>
         <a href="plan.html" class="nav-item">
             <span class="nav-icon">📅</span>
             <span>计划</span>
@@ -501,14 +546,25 @@
     
     <script>
         // 任务数据（更丰富）
-        const tasks = [
-            { id: 1, title: '设计公司Logo', desc: '需要为一个科技公司设计现代风格的Logo，要求简洁、易识别，适用于各种场景', category: '设计', budget: 800, time: '2天前', publisher: '张三', avatar: '👨‍💼', views: 128, applicants: 5, tags: ['热门', '紧急'], deadline: '3天后' },
-            { id: 2, title: '开发微信小程序', desc: '开发一个任务管理小程序，包含发布、接单、聊天功能，要求使用uni-app框架', category: '开发', budget: 3000, time: '1天前', publisher: '李四', avatar: '👨‍💻', views: 256, applicants: 8, tags: ['高预算'], deadline: '7天后' },
-            { id: 3, title: '撰写产品文案', desc: '为一款智能手表撰写营销文案，用于京东详情页，要求突出产品卖点', category: '写作', budget: 500, time: '3小时前', publisher: '王五', avatar: '👨‍💼', views: 89, applicants: 3, tags: [], deadline: '2天后' },
-            { id: 4, title: 'PPT美化设计', desc: '现有20页PPT需要美化，要求商务风格，配色专业，适合投资路演使用', category: '设计', budget: 300, time: '5小时前', publisher: '赵六', avatar: '👩‍💼', views: 67, applicants: 2, tags: ['紧急'], deadline: '1天后' },
-            { id: 5, title: '翻译英文文档', desc: '将产品说明书翻译成英文，约5000字，要求专业准确', category: '写作', budget: 800, time: '1天前', publisher: '孙七', avatar: '👨‍💼', views: 112, applicants: 4, tags: [], deadline: '5天后' },
-            { id: 6, title: '网站前端开发', desc: '使用Vue.js开发企业官网前端页面，要求响应式设计', category: '开发', budget: 5000, time: '3天前', publisher: '周八', avatar: '👩‍💻', views: 189, applicants: 6, tags: ['高预算'], deadline: '10天后' }
+        const sampleTasks = [
+            { id: 1, title: '设计公司Logo', desc: '需要为一个科技公司设计现代风格的Logo，要求简洁、易识别，适用于各种场景', category: '设计', budget: 800, time: '2天前', publisher: '张三', avatar: '👨‍💼', views: 128, applicants: 5, tags: ['热门', '紧急'], deadline: '3天后', isLongTerm: false, autoRemoveAfterAccept: false, status: 'open' },
+            { id: 2, title: '开发微信小程序', desc: '开发一个任务管理小程序，包含发布、接单、聊天功能，要求使用uni-app框架', category: '开发', budget: 3000, time: '1天前', publisher: '李四', avatar: '👨‍💻', views: 256, applicants: 8, tags: ['高预算'], deadline: '7天后', isLongTerm: true, autoRemoveAfterAccept: false, status: 'open' },
+            { id: 3, title: '撰写产品文案', desc: '为一款智能手表撰写营销文案，用于京东详情页，要求突出产品卖点', category: '写作', budget: 500, time: '3小时前', publisher: '王五', avatar: '👨‍💼', views: 89, applicants: 3, tags: [], deadline: '2天后', isLongTerm: false, autoRemoveAfterAccept: false, status: 'open' },
+            { id: 4, title: 'PPT美化设计', desc: '现有20页PPT需要美化，要求商务风格，配色专业，适合投资路演使用', category: '设计', budget: 300, time: '5小时前', publisher: '赵六', avatar: '👩‍💼', views: 67, applicants: 2, tags: ['紧急'], deadline: '1天后', isLongTerm: false, autoRemoveAfterAccept: true, status: 'open' },
+            { id: 5, title: '翻译英文文档', desc: '将产品说明书翻译成英文，约5000字，要求专业准确', category: '写作', budget: 800, time: '1天前', publisher: '孙七', avatar: '👨‍💼', views: 112, applicants: 4, tags: [], deadline: '5天后', isLongTerm: false, autoRemoveAfterAccept: false, status: 'open' },
+            { id: 6, title: '网站前端开发', desc: '使用Vue.js开发企业官网前端页面，要求响应式设计', category: '开发', budget: 5000, time: '3天前', publisher: '周八', avatar: '👩‍💻', views: 189, applicants: 6, tags: ['高预算'], deadline: '10天后', isLongTerm: true, autoRemoveAfterAccept: false, status: 'open' }
         ];
+        
+        // 从localStorage加载用户发布的任务
+        let userTasks = [];
+        try {
+            userTasks = JSON.parse(localStorage.getItem('tasks') || '[]');
+        } catch (e) {
+            userTasks = [];
+        }
+        
+        // 合并示例任务和用户任务
+        const tasks = [...userTasks, ...sampleTasks];
         
         let currentCategory = 'all';
         let currentBudgetRange = 'all';
@@ -516,6 +572,28 @@
         let currentSort = 'newest';
         let currentViewMode = 'list';
         let displayedTasks = 6; // 初始显示任务数
+        
+        // 格式化deadline显示
+        function formatDeadline(deadline) {
+            if (!deadline) return '7天后';
+            
+            // 如果是日期格式（如 2026-05-20）
+            if (deadline.includes('-')) {
+                const today = new Date();
+                const deadlineDate = new Date(deadline);
+                const diffTime = deadlineDate - today;
+                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                
+                if (diffDays < 0) return '已过期';
+                if (diffDays === 0) return '今天';
+                if (diffDays === 1) return '明天';
+                if (diffDays <= 7) return `${diffDays}天后`;
+                return deadline;
+            }
+            
+            // 如果是文字格式（如 "3天后"）
+            return deadline;
+        }
         
         // 检查登录状态
         function checkLoginStatus() {
@@ -533,9 +611,33 @@
             }
         }
         
+        // 从localStorage重新加载任务
+        function reloadTasks() {
+            let userTasks = [];
+            try {
+                userTasks = JSON.parse(localStorage.getItem('tasks') || '[]');
+            } catch (e) {
+                userTasks = [];
+            }
+            // 重新合并任务
+            tasks.length = 0;
+            tasks.push(...userTasks, ...sampleTasks);
+            renderTasks();
+        }
+        
+        // 页面显示时重新加载任务（处理从发布页返回的情况）
+        window.addEventListener('pageshow', function(event) {
+            reloadTasks();
+        });
+        
         // 筛选任务
         function filterTasks() {
             let filtered = tasks.filter(task => {
+                // 过滤掉已接单且设置了"接单后自动下架"的任务
+                if (task.status === 'accepted' && task.autoRemoveAfterAccept) {
+                    return false;
+                }
+                
                 // 分类筛选
                 if (currentCategory !== 'all' && task.category !== currentCategory) return false;
                 // 预算筛选
@@ -589,10 +691,17 @@
             let html = '';
             
             tasksToShow.forEach(task => {
-                const tagsHtml = task.tags.map(tag => {
+                // 合并标签（包括新功能标签）
+                let allTags = [...task.tags];
+                if (task.isLongTerm) allTags.push('长期');
+                if (task.autoRemoveAfterAccept) allTags.push('一次性');
+                
+                const tagsHtml = allTags.map(tag => {
                     let className = 'task-tag';
                     if (tag === '热门' || tag === '高预算') className += ' hot';
                     if (tag === '紧急') className += ' urgent';
+                    if (tag === '长期') className += ' long-term';
+                    if (tag === '一次性') className += ' one-time';
                     return `<span class="${className}">${tag}</span>`;
                 }).join('');
                 
@@ -602,17 +711,17 @@
                             <div class="task-title">${task.title}</div>
                             <div class="task-budget">¥${task.budget}</div>
                         </div>
-                        <div class="task-desc">${task.desc}</div>
+                        <div class="task-desc">${task.desc || task.description || ''}</div>
                         ${tagsHtml ? `<div class="task-tags">${tagsHtml}</div>` : ''}
                         <div class="task-footer">
                             <div class="task-publisher">
-                                <div class="publisher-avatar">${task.avatar}</div>
+                                <div class="publisher-avatar">${task.avatar || '👤'}</div>
                                 <span>${task.publisher}</span>
                             </div>
                             <div class="task-meta">
-                                <span>👁️ ${task.views}</span>
-                                <span>📝 ${task.applicants}</span>
-                                <span>⏰ ${task.deadline}</span>
+                                <span>👁️ ${task.views || 0}</span>
+                                <span>📝 ${task.applicants || 0}</span>
+                                <span>⏰ ${formatDeadline(task.deadline)}</span>
                             </div>
                         </div>
                     </div>

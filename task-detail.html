@@ -131,6 +131,16 @@
             color: #ff9500;
         }
         
+        .task-tag.long-term {
+            background: #e8f5e9;
+            color: #4caf50;
+        }
+        
+        .task-tag.one-time {
+            background: #fff3e0;
+            color: #ff9800;
+        }
+        
         .task-desc {
             font-size: 14px;
             color: #333;
@@ -326,6 +336,24 @@
             box-shadow: 0 2px 6px rgba(0,122,255,0.3);
         }
         
+        .accept-btn.accepted {
+            background: #4caf50;
+        }
+        
+        .accept-btn.disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        
+        .status-banner {
+            background: linear-gradient(135deg, #ff9800, #ff5722);
+            color: #fff;
+            text-align: center;
+            padding: 10px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        
         .share-sheet {
             position: fixed;
             bottom: 0;
@@ -479,6 +507,8 @@
         </div>
     </div>
     
+    <div class="status-banner" id="statusBanner" style="display: none;"></div>
+    
     <div class="bottom-bar">
         <button class="accept-btn" onclick="acceptTask()">🚀 立即接单</button>
     </div>
@@ -508,7 +538,19 @@
     </div>
     
     <script>
-        const tasks = [
+        // 从localStorage加载用户发布的任务
+        let userTasks = [];
+        try {
+            userTasks = JSON.parse(localStorage.getItem('tasks') || '[]');
+        } catch (e) {
+            userTasks = [];
+        }
+        
+        // 合并示例任务和用户任务
+        const tasks = [...userTasks, ...sampleTasks];
+        
+        // 示例任务数据
+        const sampleTasks = [
             { 
                 id: 1, 
                 title: '设计公司Logo', 
@@ -525,7 +567,10 @@
                 rating: 4.8,
                 completedTasks: 23,
                 requirements: ['有相关设计经验', '能提供至少3个初稿方案', '包含源文件交付', '支持2次修改'],
-                tags: ['热门']
+                tags: ['热门'],
+                isLongTerm: false,
+                autoRemoveAfterAccept: false,
+                status: 'open'
             },
             { 
                 id: 2, 
@@ -543,7 +588,10 @@
                 rating: 4.9,
                 completedTasks: 45,
                 requirements: ['精通uni-app框架', '有小程序开发经验', '熟悉微信API', '能提供源码'],
-                tags: ['高预算']
+                tags: ['高预算'],
+                isLongTerm: true,
+                autoRemoveAfterAccept: false,
+                status: 'open'
             },
             { 
                 id: 3, 
@@ -561,7 +609,10 @@
                 rating: 4.7,
                 completedTasks: 18,
                 requirements: ['有电商文案写作经验', '文字风格生动', '按时交付', '支持修改'],
-                tags: []
+                tags: [],
+                isLongTerm: false,
+                autoRemoveAfterAccept: false,
+                status: 'open'
             },
             { 
                 id: 4, 
@@ -579,7 +630,10 @@
                 rating: 4.6,
                 completedTasks: 12,
                 requirements: ['精通PPT设计', '商务风格把握准确', '能快速交付', '提供源文件'],
-                tags: ['紧急']
+                tags: ['紧急'],
+                isLongTerm: false,
+                autoRemoveAfterAccept: true,
+                status: 'open'
             }
         ];
         
@@ -608,13 +662,26 @@
             document.getElementById('publisherName').textContent = `${task.publisher} · 发布者`;
             document.getElementById('publisherRating').textContent = `⭐ ${task.rating} | 已完成 ${task.completedTasks} 个任务`;
             
-            // 更新任务标签
-            const tagsHtml = task.tags.map(tag => {
+            // 更新任务标签（包括新功能标签）
+            let allTags = [...task.tags];
+            if (task.isLongTerm) allTags.push('长期');
+            if (task.autoRemoveAfterAccept) allTags.push('一次性');
+            
+            const tagsHtml = allTags.map(tag => {
                 let className = 'task-tag';
                 if (tag === '热门' || tag === '高预算') className += ' hot';
                 if (tag === '紧急') className += ' urgent';
-                return `<span class="${className}">${tag === '热门' ? '🔥' : tag === '高预算' ? '💰' : '⚡'} ${tag}</span>`;
+                if (tag === '长期') className += ' long-term';
+                if (tag === '一次性') className += ' one-time';
+                let icon = '';
+                if (tag === '热门') icon = '🔥';
+                else if (tag === '高预算') icon = '💰';
+                else if (tag === '紧急') icon = '⚡';
+                else if (tag === '长期') icon = '🔄';
+                else if (tag === '一次性') icon = '📴';
+                return `<span class="${className}">${icon} ${tag}</span>`;
             }).join('');
+            
             document.getElementById('taskTags').innerHTML = `<span class="task-tag">📍 ${task.location}</span><span class="task-tag">🏷️ ${task.category}</span>${tagsHtml}`;
             
             // 更新任务要求
@@ -623,6 +690,25 @@
             
             // 检查是否已收藏
             checkFavoriteStatus();
+            
+            // 更新任务状态显示
+            const statusBanner = document.getElementById('statusBanner');
+            const acceptBtn = document.querySelector('.accept-btn');
+            const currentUser = localStorage.getItem('currentUser') || '';
+            
+            if (task.status === 'accepted') {
+                statusBanner.style.display = 'block';
+                statusBanner.textContent = `📌 已有人接单 | 接单者：${task.acceptedBy}`;
+                acceptBtn.textContent = '⚠️ 已被接单';
+                acceptBtn.classList.add('disabled');
+                acceptBtn.onclick = null;
+            } else if (task.status === 'completed') {
+                statusBanner.style.display = 'block';
+                statusBanner.textContent = '✅ 任务已完成';
+                acceptBtn.textContent = '✅ 已完成';
+                acceptBtn.classList.add('disabled');
+                acceptBtn.onclick = null;
+            }
         }
         
         function toggleFavorite() {
@@ -705,19 +791,57 @@
                 return;
             }
             
+            const currentUser = localStorage.getItem('currentUser') || '用户';
+            const task = tasks.find(t => t.id === currentTaskId);
+            
+            if (!task) {
+                showNotification('❌ 任务不存在');
+                return;
+            }
+            
+            if (task.status === 'accepted') {
+                showNotification('⚠️ 该任务已被接单');
+                return;
+            }
+            
             if (confirm('确认接下这个任务吗？\n\n接单后，发布者会收到通知，你们可以开始沟通任务细节。')) {
-                showNotification('✅ 接单成功！已通知发布者');
+                // 更新任务状态
+                task.status = 'accepted';
+                task.acceptedBy = currentUser;
+                task.applicants += 1;
                 
-                // 更新报名人数
-                const task = tasks.find(t => t.id === currentTaskId);
-                if (task) {
-                    task.applicants += 1;
-                    document.getElementById('taskApplicants').textContent = task.applicants;
+                // 保存到localStorage
+                let userTasks = [];
+                try {
+                    userTasks = JSON.parse(localStorage.getItem('tasks') || '[]');
+                } catch (e) {
+                    userTasks = [];
                 }
                 
-                setTimeout(() => {
-                    window.location.href = `chat-detail.html?id=${currentTaskId}`;
-                }, 1500);
+                const userTaskIndex = userTasks.findIndex(t => t.id === currentTaskId);
+                if (userTaskIndex !== -1) {
+                    userTasks[userTaskIndex].status = 'accepted';
+                    userTasks[userTaskIndex].acceptedBy = currentUser;
+                    localStorage.setItem('tasks', JSON.stringify(userTasks));
+                }
+                
+                document.getElementById('taskApplicants').textContent = task.applicants;
+                
+                // 如果设置了接单后自动下架，显示提示
+                if (task.autoRemoveAfterAccept) {
+                    showNotification('✅ 接单成功！任务已自动下架');
+                    setTimeout(() => {
+                        showNotification('📱 返回首页查看其他任务');
+                        setTimeout(() => {
+                            window.location.href = 'index.html';
+                        }, 1500);
+                    }, 1500);
+                } else {
+                    showNotification('✅ 接单成功！已通知发布者');
+                    setTimeout(() => {
+                        window.location.href = `chat-detail.html?id=${currentTaskId}`;
+                    }, 1500);
+                }
             }
         }
         
