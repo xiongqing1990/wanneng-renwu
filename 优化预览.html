@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>万能任务APP - 优化版预览</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', 'PingFang SC', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .phone-mockup {
+            width: 375px;
+            height: 812px;
+            background: #f5f5f5;
+            border-radius: 40px;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            position: relative;
+        }
+        
+        .phone-notch {
+            width: 150px;
+            height: 25px;
+            background: #000;
+            border-radius: 0 0 15px 15px;
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 100;
+        }
+        
+        .screen {
+            height: 100%;
+            overflow-y: auto;
+            padding-top: 40px;
+        }
+        
+        /* 首页样式 */
+        .header {
+            background: linear-gradient(135deg, #07C160, #06AD56);
+            padding: 15px 20px;
+            padding-top: 50px;
+        }
+        
+        .search-box {
+            background: #fff;
+            border-radius: 25px;
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .search-box span {
+            font-size: 16px;
+            margin-right: 10px;
+        }
+        
+        .search-box input {
+            flex: 1;
+            border: none;
+            outline: none;
+            font-size: 14px;
+        }
+        
+        .category-bar {
+            background: #fff;
+            padding: 12px 20px;
+            white-space: nowrap;
+            box-shadow: 0 1px 5px rgba(0,0,0,0.05);
+        }
+        
+        .cat-tag {
+            display: inline-block;
+            padding: 8px 20px;
+            margin-right: 10px;
+            border-radius: 20px;
+            font-size: 13px;
+            color: #666;
+            background: #f5f5f5;
+        }
+        
+        .cat-tag.active {
+            background: #07C160;
+            color: #fff;
+            box-shadow: 0 2px 8px rgba(7,193,96,0.3);
+        }
+        
+        .task-list {
+            padding: 15px;
+        }
+        
+        .task-card {
+            background: #fff;
+            border-radius: 15px;
+            margin-bottom: 15px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+        }
+        
+        .task-card .info {
+            padding: 15px;
+        }
+        
+        .task-card .title {
+            font-size: 16px;
+            font-weight: bold;
+            display: block;
+            margin-bottom: 8px;
+            color: #1d1d1f;
+        }
+        
+        .task-card .desc {
+            font-size: 13px;
+            color: #666;
+            display: block;
+            margin-bottom: 12px;
+        }
+        
+        .task-card .bottom {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .task-card .budget {
+            font-size: 18px;
+            font-weight: bold;
+            color: #07C160;
+        }
+        
+        .task-card .user {
+            display: flex;
+            align-items: center;
+        }
+        
+        .task-card .avatar {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: #07C160;
+            margin-right: 5px;
+        }
+        
+        .task-card .name {
+            font-size: 12px;
+            color: #999;
+        }
+        
+        /* 底部导航 */
+        .tab-bar {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: #fff;
+            padding: 10px 0;
+            display: flex;
+            justify-content: space-around;
+            border-top: 1px solid #eee;
+            padding-bottom: 20px;
+        }
+        
+        .tab-item {
+            text-align: center;
+            font-size: 12px;
+            color: #999;
+        }
+        
+        .tab-item.active {
+            color: #07C160;
+        }
+        
+        .tab-icon {
+            font-size: 24px;
+            display: block;
+            margin-bottom: 4px;
+        }
+        
+        /* 优化说明 */
+        .improvements {
+            max-width: 600px;
+            margin-left: 40px;
+            background: #fff;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+        
+        .improvements h2 {
+            color: #07C160;
+            margin-bottom: 20px;
+            font-size: 24px;
+        }
+        
+        .improvement-item {
+            margin-bottom: 20px;
+            padding: 15px;
+            background: #f9f9f9;
+            border-radius: 10px;
+            border-left: 4px solid #07C160;
+        }
+        
+        .improvement-item h3 {
+            font-size: 16px;
+            color: #333;
+            margin-bottom: 8px;
+        }
+        
+        .improvement-item p {
+            font-size: 14px;
+            color: #666;
+            line-height: 1.6;
+        }
+        
+        .check-mark {
+            color: #07C160;
+            font-weight: bold;
+            margin-right: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="phone-mockup">
+        <div class="phone-notch"></div>
+        <div class="screen">
+            <div class="header">
+                <div class="search-box">
+                    <span>🔍</span>
+                    <input type="text" placeholder="搜索任务、服务...">
+                </div>
+            </div>
+            
+            <div class="category-bar">
+                <span class="cat-tag active">全部</span>
+                <span class="cat-tag">票券</span>
+                <span class="cat-tag">餐饮优惠</span>
+                <span class="cat-tag">二手</span>
+                <span class="cat-tag">生活服务</span>
+            </div>
+            
+            <div class="task-list">
+                <div class="task-card">
+                    <div class="info">
+                        <span class="title">求5月15日电影票2张</span>
+                        <span class="desc">3排5座，预算15元/张</span>
+                        <div class="bottom">
+                            <span class="budget">¥30</span>
+                            <div class="user">
+                                <div class="avatar"></div>
+                                <span class="name">小明</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="task-card">
+                    <div class="info">
+                        <span class="title">帮忙取快递</span>
+                        <span class="desc">菜鸟驿站，送上门</span>
+                        <div class="bottom">
+                            <span class="budget">¥5</span>
+                            <div class="user">
+                                <div class="avatar"></div>
+                                <span class="name">阿强</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="task-card">
+                    <div class="info">
+                        <span class="title">求购二手自行车</span>
+                        <span class="desc">学生党预算有限</span>
+                        <div class="bottom">
+                            <span class="budget">¥200</span>
+                            <div class="user">
+                                <div class="avatar"></div>
+                                <span class="name">小王</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="tab-bar">
+                <div class="tab-item active">
+                    <span class="tab-icon">🏠</span>
+                    首页
+                </div>
+                <div class="tab-item">
+                    <span class="tab-icon">📑</span>
+                    订单
+                </div>
+                <div class="tab-item">
+                    <span class="tab-icon">💬</span>
+                    消息
+                </div>
+                <div class="tab-item">
+                    <span class="tab-icon">👤</span>
+                    我的
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="improvements">
+        <h2>✅ 优化完成</h2>
+        
+        <div class="improvement-item">
+            <h3><span class="check-mark">✓</span>任务分类已调整</h3>
+            <p>✓ 游戏已排到最后<br>✓ 已添加"餐饮优惠"分类<br>✓ 已添加"二手"分类<br>✓ 分类顺序更合理</p>
+        </div>
+        
+        <div class="improvement-item">
+            <h3><span class="check-mark">✓</span>预算输入已优化</h3>
+            <p>✓ 添加更多预算选项（5-500元）<br>✓ 按钮样式更美观<br>✓ 提示用户合理设置预算</p>
+        </div>
+        
+        <div class="improvement-item">
+            <h3><span class="check-mark">✓</span>首页已简化完善</h3>
+            <p>✓ 设计更简洁现代<br>✓ 卡片阴影更精致<br>✓ 添加空状态提示<br>✓ 分类标签更清晰</p>
+        </div>
+        
+        <div class="improvement-item">
+            <h3><span class="check-mark">✓</span>聊天功能已完善（微信风格）</h3>
+            <p>✓ 微信风格聊天界面<br>✓ 消息从底部开始显示（最新在下面）<br>✓ 消息气泡样式优化<br>✓ 聊天列表更易用</p>
+        </div>
+        
+        <div class="improvement-item">
+            <h3><span class="check-mark">✓</span>联系发布者更方便</h3>
+            <p>✓ 任务详情页有醒目的"联系Ta"按钮<br>✓ 点击直接跳转到聊天页面<br>✓ 接单成功后自动打开聊天</p>
+        </div>
+        
+        <div style="margin-top: 20px; padding: 15px; background: #e8f5e9; border-radius: 10px;">
+            <p style="font-size: 14px; color: #07C160; line-height: 1.6;">
+                <strong>所有优化已完成！</strong><br>
+                1. 发布页面：分类已调整，预算更合理<br>
+                2. 首页：更简洁，分类更完善<br>
+                3. 聊天：微信风格，消息在底部<br>
+                4. 联系方式：详情页可直接聊天
+            </p>
+        </div>
+    </div>
+</body>
+</html>

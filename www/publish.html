@@ -1,0 +1,820 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#10b981">
+    <title>发布任务 - 万能任务</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", sans-serif;
+            background: #f0f2f5;
+            color: #1d1d1f;
+            max-width: 430px;
+            margin: 0 auto;
+            min-height: 100vh;
+        }
+
+        .status-bar {
+            height: 44px;
+            background: linear-gradient(135deg, #10b981, #059669);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+            color: white;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            padding: 50px 16px 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .back-btn {
+            font-size: 24px;
+            cursor: pointer;
+            background: none;
+            border: none;
+            color: white;
+            padding: 0;
+        }
+
+        .header-title {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .content {
+            padding: 16px;
+            padding-bottom: 100px;
+        }
+
+        /* 智能建议卡片 */
+        .ai-suggest-card {
+            background: linear-gradient(135deg, #10b981, #059669);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 20px;
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .ai-suggest-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -30%;
+            width: 200px;
+            height: 200px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 50%;
+        }
+
+        .ai-suggest-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+
+        .ai-icon {
+            width: 36px;
+            height: 36px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+
+        .ai-title {
+            font-size: 15px;
+            font-weight: 600;
+        }
+
+        .ai-desc {
+            font-size: 13px;
+            opacity: 0.9;
+            line-height: 1.5;
+        }
+
+        /* 表单卡片 */
+        .form-card {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 16px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+        }
+
+        .form-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1d1d1f;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .form-title::before {
+            content: '';
+            width: 4px;
+            height: 16px;
+            background: #10b981;
+            border-radius: 2px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group:last-child {
+            margin-bottom: 0;
+        }
+
+        .form-label {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-weight: 500;
+        }
+
+        .required {
+            color: #ff3b30;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 14px;
+            border: 2px solid #e8e8e8;
+            border-radius: 12px;
+            font-size: 16px;
+            outline: none;
+            font-family: inherit;
+            transition: all 0.2s;
+            background: #fafafa;
+        }
+
+        .form-input:focus {
+            border-color: #10b981;
+            background: white;
+        }
+
+        .form-input.error {
+            border-color: #ff3b30;
+        }
+
+        .form-input::placeholder {
+            color: #bbb;
+        }
+
+        .form-textarea {
+            min-height: 140px;
+            resize: vertical;
+            line-height: 1.6;
+        }
+
+        .form-hint {
+            font-size: 12px;
+            color: #999;
+            margin-top: 6px;
+        }
+
+        .form-error {
+            font-size: 12px;
+            color: #ff3b30;
+            margin-top: 6px;
+            display: none;
+        }
+
+        .form-error.show {
+            display: block;
+        }
+
+        /* 分类选择器 */
+        .category-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+        }
+
+        .category-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            padding: 14px 8px;
+            background: #f5f5f5;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 2px solid transparent;
+        }
+
+        .category-item:active {
+            transform: scale(0.96);
+        }
+
+        .category-item.selected {
+            background: #e8f5e9;
+            border-color: #10b981;
+        }
+
+        .category-icon {
+            font-size: 28px;
+        }
+
+        .category-name {
+            font-size: 13px;
+            color: #333;
+            font-weight: 500;
+        }
+
+        /* 预算滑块 */
+        .budget-display {
+            text-align: center;
+            margin-bottom: 16px;
+        }
+
+        .budget-value {
+            font-size: 36px;
+            font-weight: 700;
+            color: #10b981;
+        }
+
+        .budget-unit {
+            font-size: 16px;
+            color: #666;
+        }
+
+        .budget-suggest {
+            font-size: 13px;
+            color: #999;
+            margin-top: 4px;
+        }
+
+        .budget-slider {
+            width: 100%;
+            height: 8px;
+            border-radius: 4px;
+            background: #e8e8e8;
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        .budget-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: #10b981;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(16,185,129,0.3);
+        }
+
+        .budget-presets {
+            display: flex;
+            gap: 8px;
+            margin-top: 12px;
+        }
+
+        .preset-btn {
+            flex: 1;
+            padding: 10px;
+            background: #f5f5f5;
+            border: none;
+            border-radius: 8px;
+            font-size: 13px;
+            color: #666;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .preset-btn:active {
+            background: #e8e8e8;
+        }
+
+        .preset-btn.selected {
+            background: #10b981;
+            color: white;
+        }
+
+        /* 标签选择 */
+        .tag-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .tag-item {
+            padding: 8px 14px;
+            background: #f5f5f5;
+            border-radius: 20px;
+            font-size: 13px;
+            color: #666;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 1px solid transparent;
+        }
+
+        .tag-item:active {
+            transform: scale(0.96);
+        }
+
+        .tag-item.selected {
+            background: #e8f5e9;
+            color: #10b981;
+            border-color: #10b981;
+        }
+
+        /* 截止日期 */
+        .date-input {
+            position: relative;
+        }
+
+        .date-input input {
+            padding-right: 40px;
+        }
+
+        .date-icon {
+            position: absolute;
+            right: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 18px;
+            color: #999;
+        }
+
+        /* 发布按钮 */
+        .bottom-bar {
+            position: fixed;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            max-width: 430px;
+            background: white;
+            border-top: 1px solid #e8e8e8;
+            padding: 12px 16px;
+            padding-bottom: max(12px, env(safe-area-inset-bottom));
+            z-index: 100;
+            box-shadow: 0 -4px 20px rgba(0,0,0,0.05);
+        }
+
+        .btn-publish {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            border: none;
+            border-radius: 14px;
+            font-size: 17px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-publish:active {
+            transform: scale(0.98);
+            opacity: 0.9;
+        }
+
+        .btn-publish:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        .btn-auto {
+            width: 100%;
+            padding: 14px;
+            background: #f5f5f5;
+            color: #666;
+            border: none;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 500;
+            cursor: pointer;
+            margin-top: 12px;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-auto:active {
+            background: #e8e8e8;
+        }
+
+        /* 通知 */
+        .notification {
+            position: fixed;
+            top: 60px;
+            left: 50%;
+            transform: translateX(-50%) translateY(-20px);
+            background: #10b981;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            z-index: 3000;
+            opacity: 0;
+            transition: all 0.3s ease;
+            pointer-events: none;
+        }
+
+        .notification.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        .notification.error {
+            background: #ff3b30;
+        }
+
+        /* 步骤指示器 */
+        .step-indicator {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+
+        .step {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #e0e0e0;
+            transition: all 0.3s;
+        }
+
+        .step.active {
+            width: 24px;
+            border-radius: 4px;
+            background: #10b981;
+        }
+
+        .step.completed {
+            background: #10b981;
+        }
+    </style>
+</head>
+<body>
+    <div class="status-bar">
+        <span>9:41</span>
+        <span>📶 100% 🔋</span>
+    </div>
+
+    <div class="header">
+        <button class="back-btn" onclick="goBack()">←</button>
+        <div class="header-title">📝 发布任务</div>
+    </div>
+
+    <div class="content">
+        <!-- 步骤指示器 -->
+        <div class="step-indicator">
+            <div class="step active" id="step1"></div>
+            <div class="step" id="step2"></div>
+            <div class="step" id="step3"></div>
+        </div>
+
+        <!-- 智能建议 -->
+        <div class="ai-suggest-card" id="aiSuggestCard">
+            <div class="ai-suggest-header">
+                <div class="ai-icon">🤖</div>
+                <div class="ai-title">智能发布建议</div>
+            </div>
+            <div class="ai-desc" id="aiSuggestText">
+                根据历史数据，建议预算设为 ¥1500-2500，更容易被接单
+            </div>
+        </div>
+
+        <!-- 基本信息 -->
+        <div class="form-card">
+            <div class="form-title">基本信息</div>
+
+            <div class="form-group">
+                <label class="form-label">
+                    任务标题 <span class="required">*</span>
+                </label>
+                <input type="text" class="form-input" id="taskTitle" placeholder="简要描述任务，控制在20字内" maxlength="20">
+                <div class="form-hint">简洁明了的标题能吸引更多人关注</div>
+                <div class="form-error" id="titleError">请输入任务标题</div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">
+                    任务分类 <span class="required">*</span>
+                </label>
+                <div class="category-grid" id="categoryGrid"></div>
+                <div class="form-error" id="categoryError">请选择任务分类</div>
+            </div>
+        </div>
+
+        <!-- 任务详情 -->
+        <div class="form-card">
+            <div class="form-title">任务详情</div>
+
+            <div class="form-group">
+                <label class="form-label">
+                    详细描述 <span class="required">*</span>
+                </label>
+                <textarea class="form-input form-textarea" id="taskDesc" placeholder="详细描述任务要求，包括：&#10;• 具体需求内容&#10;• 交付物标准&#10;• 时间要求&#10;• 注意事项"></textarea>
+                <div class="form-error" id="descError">请输入任务描述</div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">任务标签</label>
+                <div class="tag-grid" id="tagGrid">
+                    <div class="tag-item" onclick="toggleTag(this, '热门')">🔥 热门</div>
+                    <div class="tag-item" onclick="toggleTag(this, '紧急')">⚡ 紧急</div>
+                    <div class="tag-item" onclick="toggleTag(this, '长期')">📅 长期</div>
+                    <div class="tag-item" onclick="toggleTag(this, '新手')">🌱 新手友好</div>
+                    <div class="tag-item" onclick="toggleTag(this, '远程')">🏠 远程</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 预算与时间 -->
+        <div class="form-card">
+            <div class="form-title">预算与时间</div>
+
+            <div class="form-group">
+                <label class="form-label">
+                    预算金额 <span class="required">*</span>
+                </label>
+                <div class="budget-display">
+                    <span class="budget-value" id="budgetValue">1000</span>
+                    <span class="budget-unit">元</span>
+                    <div class="budget-suggest" id="budgetSuggest">推荐 ¥500-3000</div>
+                </div>
+                <input type="range" class="budget-slider" id="budgetSlider" min="50" max="50000" value="1000" step="50">
+                <div class="budget-presets" id="budgetPresets">
+                    <button class="preset-btn" onclick="setBudget(500)">¥500</button>
+                    <button class="preset-btn selected" onclick="setBudget(1000)">¥1000</button>
+                    <button class="preset-btn" onclick="setBudget(2000)">¥2000</button>
+                    <button class="preset-btn" onclick="setBudget(5000)">¥5000</button>
+                </div>
+                <div class="form-error" id="budgetError">请设置预算金额</div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">截止时间</label>
+                <div class="date-input">
+                    <input type="date" class="form-input" id="taskDeadline">
+                    <span class="date-icon">📅</span>
+                </div>
+            </div>
+        </div>
+
+        <button class="btn-auto" onclick="autoFill()">🤖 智能填充示例数据</button>
+    </div>
+
+    <div class="bottom-bar">
+        <button class="btn-publish" id="publishBtn" onclick="publishTask()">
+            🚀 立即发布
+        </button>
+    </div>
+
+    <div class="notification" id="notification"></div>
+
+    <script>
+        const categories = [
+            { name: '设计', icon: '🎨', color: '#fff0f5' },
+            { name: '开发', icon: '💻', color: '#f0f8ff' },
+            { name: '文案', icon: '✍️', color: '#f0fff0' },
+            { name: '翻译', icon: '🌐', color: '#fffacd' },
+            { name: '视频', icon: '🎬', color: '#fff5f5' },
+            { name: '其他', icon: '📦', color: '#f5f5ff' }
+        ];
+
+        const suggestData = {
+            '设计': { min: 1000, max: 3000, suggest: '设计类任务建议预算 ¥1000-3000，包含源文件交付' },
+            '开发': { min: 5000, max: 15000, suggest: '开发类任务建议预算 ¥5000-15000，根据功能复杂度调整' },
+            '文案': { min: 300, max: 1000, suggest: '文案类任务建议预算 ¥300-1000，根据字数和难度调整' },
+            '翻译': { min: 500, max: 1500, suggest: '翻译类任务建议预算 ¥500-1500，根据字数和语种调整' },
+            '视频': { min: 2000, max: 8000, suggest: '视频类任务建议预算 ¥2000-8000，根据时长和质量要求调整' },
+            '其他': { min: 500, max: 2000, suggest: '建议先发布，根据接单者报价调整预算' }
+        };
+
+        let selectedCategory = '';
+        let selectedTags = [];
+        let budget = 1000;
+
+        // 渲染分类选择器
+        function renderCategories() {
+            const grid = document.getElementById('categoryGrid');
+            grid.innerHTML = categories.map(cat => `
+                <div class="category-item" onclick="selectCategory('${cat.name}')">
+                    <div class="category-icon">${cat.icon}</div>
+                    <div class="category-name">${cat.name}</div>
+                </div>
+            `).join('');
+        }
+
+        function selectCategory(name) {
+            selectedCategory = name;
+            document.querySelectorAll('.category-item').forEach(item => {
+                item.classList.toggle('selected', item.querySelector('.category-name').textContent === name);
+            });
+            updateSuggest();
+        }
+
+        function toggleTag(element, tag) {
+            element.classList.toggle('selected');
+            if (selectedTags.includes(tag)) {
+                selectedTags = selectedTags.filter(t => t !== tag);
+            } else {
+                selectedTags.push(tag);
+            }
+        }
+
+        function setBudget(value) {
+            budget = value;
+            document.getElementById('budgetValue').textContent = value;
+            document.getElementById('budgetSlider').value = value;
+            document.querySelectorAll('.preset-btn').forEach(btn => {
+                btn.classList.toggle('selected', parseInt(btn.textContent.replace(/[^0-9]/g, '')) === value);
+            });
+        }
+
+        function updateSuggest() {
+            const suggest = suggestData[selectedCategory] || suggestData['其他'];
+            document.getElementById('aiSuggestText').textContent = suggest.suggest;
+            document.getElementById('budgetSuggest').textContent = `推荐 ¥${suggest.min}-${suggest.max}`;
+
+            // 更新预算滑块范围
+            const slider = document.getElementById('budgetSlider');
+            slider.min = Math.floor(suggest.min / 2);
+            slider.max = suggest.max * 2;
+        }
+
+        function autoFill() {
+            const cats = ['设计', '开发', '文案', '翻译', '视频'];
+            const randomCat = cats[Math.floor(Math.random() * cats.length)];
+            const suggest = suggestData[randomCat];
+            const randomBudget = Math.floor(Math.random() * (suggest.max - suggest.min)) + suggest.min;
+
+            selectCategory(randomCat);
+            document.getElementById('taskTitle').value = `需要${randomCat}师完成项目`;
+            document.getElementById('taskDesc').value = `【项目概述】\n需要完成一个${randomCat}相关的任务。\n\n【具体要求】\n1. 风格简洁现代\n2. 交付物完整\n3. 沟通及时\n\n【期望交付】\n完整源文件 + 效果预览`;
+            setBudget(randomBudget);
+
+            // 随机选择标签
+            const tagItems = document.querySelectorAll('.tag-item');
+            tagItems.forEach(item => {
+                item.classList.remove('selected');
+                if (Math.random() > 0.6) {
+                    item.classList.add('selected');
+                }
+            });
+            selectedTags = Array.from(document.querySelectorAll('.tag-item.selected')).map(item => item.textContent.replace(/[^\u4e00-\u9fa5a-zA-Z]/g, '').trim());
+
+            showNotification('🤖 已自动填充示例数据');
+        }
+
+        function validate() {
+            let valid = true;
+
+            const title = document.getElementById('taskTitle').value.trim();
+            const desc = document.getElementById('taskDesc').value.trim();
+
+            // 标题验证
+            if (!title) {
+                document.getElementById('taskTitle').classList.add('error');
+                document.getElementById('titleError').classList.add('show');
+                valid = false;
+            } else {
+                document.getElementById('taskTitle').classList.remove('error');
+                document.getElementById('titleError').classList.remove('show');
+            }
+
+            // 分类验证
+            if (!selectedCategory) {
+                document.getElementById('categoryError').classList.add('show');
+                valid = false;
+            } else {
+                document.getElementById('categoryError').classList.remove('show');
+            }
+
+            // 描述验证
+            if (!desc) {
+                document.getElementById('taskDesc').classList.add('error');
+                document.getElementById('descError').classList.add('show');
+                valid = false;
+            } else {
+                document.getElementById('taskDesc').classList.remove('error');
+                document.getElementById('descError').classList.remove('show');
+            }
+
+            return valid;
+        }
+
+        function publishTask() {
+            if (!validate()) {
+                showNotification('请完善任务信息', true);
+                return;
+            }
+
+            const task = {
+                id: Date.now(),
+                title: document.getElementById('taskTitle').value.trim(),
+                desc: document.getElementById('taskDesc').value.trim(),
+                description: document.getElementById('taskDesc').value.trim(),
+                category: selectedCategory,
+                budget: budget,
+                publisher: '当前用户',
+                avatar: '我',
+                time: '刚刚发布',
+                views: 0,
+                applicants: 0,
+                rating: 5.0,
+                tasks: 0,
+                tags: selectedTags,
+                status: 'pending',
+                publishTime: new Date().toISOString(),
+                deadline: document.getElementById('taskDeadline').value
+            };
+
+            const tasks = JSON.parse(localStorage.getItem('tasks') || '[]');
+            tasks.unshift(task);
+            localStorage.setItem('tasks', JSON.stringify(tasks));
+
+            showNotification('✅ 任务发布成功！等待审核...');
+            setTimeout(() => {
+                window.location.href = 'index.html';
+            }, 1500);
+        }
+
+        function goBack() {
+            window.location.href = 'index.html';
+        }
+
+        function showNotification(message, isError = false) {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.classList.toggle('error', isError);
+            notification.classList.add('show');
+            setTimeout(() => notification.classList.remove('show'), 2000);
+        }
+
+        // 预算滑块监听
+        document.getElementById('budgetSlider').addEventListener('input', (e) => {
+            budget = parseInt(e.target.value);
+            document.getElementById('budgetValue').textContent = budget;
+            document.querySelectorAll('.preset-btn').forEach(btn => {
+                btn.classList.remove('selected');
+            });
+        });
+
+        // 实时验证
+        document.getElementById('taskTitle').addEventListener('input', (e) => {
+            if (e.target.value.trim()) {
+                e.target.classList.remove('error');
+                document.getElementById('titleError').classList.remove('show');
+            }
+        });
+
+        document.getElementById('taskDesc').addEventListener('input', (e) => {
+            if (e.target.value.trim()) {
+                e.target.classList.remove('error');
+                document.getElementById('descError').classList.remove('show');
+            }
+        });
+
+        // 设置默认截止日期为7天后
+        const defaultDeadline = new Date();
+        defaultDeadline.setDate(defaultDeadline.getDate() + 7);
+        document.getElementById('taskDeadline').value = defaultDeadline.toISOString().split('T')[0];
+
+        // 初始化
+        renderCategories();
+    </script>
+</body>
+</html>

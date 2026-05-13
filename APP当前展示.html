@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>万能任务APP - 当前展示</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+      background: #f5f5f5;
+      overflow: hidden;
+    }
+    
+    .phone-container {
+      width: 375px;
+      height: 812px;
+      margin: 20px auto;
+      background: white;
+      border-radius: 36px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+      overflow: hidden;
+      position: relative;
+    }
+    
+    .status-bar {
+      height: 44px;
+      background: linear-gradient(135deg, #07C160, #06AD56);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 20px;
+      color: white;
+      font-size: 14px;
+    }
+    
+    .header {
+      background: linear-gradient(135deg, #07C160, #06AD56);
+      padding: 15px 20px;
+      color: white;
+    }
+    
+    .header-title {
+      font-size: 36px;
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+    
+    .search-bar {
+      background: rgba(255,255,255,0.2);
+      border-radius: 8px;
+      padding: 10px 15px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .search-input {
+      flex: 1;
+      background: none;
+      border: none;
+      color: white;
+      font-size: 16px;
+      outline: none;
+    }
+    
+    .search-input::placeholder {
+      color: rgba(255,255,255,0.7);
+    }
+    
+    .category-tabs {
+      display: flex;
+      gap: 10px;
+      padding: 15px 20px;
+      background: white;
+      border-bottom: 1px solid #f0f0f0;
+      overflow-x: auto;
+    }
+    
+    .category-tab {
+      padding: 8px 20px;
+      border-radius: 20px;
+      background: #f5f5f5;
+      font-size: 14px;
+      color: #666;
+      white-space: nowrap;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    
+    .category-tab.active {
+      background: #07C160;
+      color: white;
+    }
+    
+    .task-list {
+      flex: 1;
+      overflow-y: auto;
+      padding: 15px;
+    }
+    
+    .task-card {
+      background: white;
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 15px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+      transition: transform 0.3s;
+      cursor: pointer;
+    }
+    
+    .task-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 20px rgba(0,0,0,0.12);
+    }
+    
+    .task-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 12px;
+    }
+    
+    .task-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: #333;
+      flex: 1;
+    }
+    
+    .task-badge {
+      background: #ff4d4f;
+      color: white;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 12px;
+      margin-left: 10px;
+    }
+    
+    .task-desc {
+      font-size: 14px;
+      color: #666;
+      line-height: 1.6;
+      margin-bottom: 12px;
+    }
+    
+    .task-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .task-price {
+      font-size: 24px;
+      font-weight: bold;
+      color: #ff6b6b;
+    }
+    
+    .task-meta {
+      display: flex;
+      gap: 15px;
+      font-size: 12px;
+      color: #999;
+    }
+    
+    .btn-publish {
+      position: absolute;
+      right: 20px;
+      bottom: 100px;
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #07C160, #06AD56);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 32px;
+      box-shadow: 0 4px 20px rgba(7,193,96,0.4);
+      cursor: pointer;
+      transition: transform 0.3s;
+    }
+    
+    .btn-publish:hover {
+      transform: scale(1.1);
+    }
+    
+    .tab-bar {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 83px;
+      background: white;
+      border-top: 1px solid #f0f0f0;
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      padding-bottom: 20px;
+    }
+    
+    .tab-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      color: #999;
+      font-size: 12px;
+      cursor: pointer;
+    }
+    
+    .tab-item.active {
+      color: #07C160;
+    }
+    
+    .tab-icon {
+      font-size: 24px;
+    }
+    
+    .loading-skeleton {
+      padding: 15px;
+    }
+    
+    .skeleton-card {
+      background: white;
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 15px;
+    }
+    
+    .skeleton-line {
+      height: 20px;
+      background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+      background-size: 200% 100%;
+      animation: shimmer 1.5s infinite;
+      border-radius: 4px;
+      margin-bottom: 12px;
+    }
+    
+    .skeleton-line.short {
+      width: 60%;
+    }
+    
+    @keyframes shimmer {
+      0% {
+        background-position: 200% 0;
+      }
+      100% {
+        background-position: -200% 0;
+      }
+    }
+    
+    .page-indicator {
+      position: absolute;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 8px;
+    }
+    
+    .page-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.5);
+      cursor: pointer;
+    }
+    
+    .page-dot.active {
+      background: white;
+      width: 24px;
+      border-radius: 4px;
+    }
+    
+    .content {
+      height: calc(812px - 44px - 83px);
+      overflow-y: auto;
+    }
+  </style>
+</head>
+<body>
+  <div class="phone-container">
+    <div class="status-bar">
+      <span>9:41</span>
+      <span>🔋 100% 📶</span>
+    </div>
+    
+    <div class="header">
+      <div class="header-title">万能任务</div>
+      <div class="search-bar">
+        <span>🔍</span>
+        <input class="search-input" placeholder="搜索任务...">
+      </div>
+    </div>
+    
+    <div class="category-tabs">
+      <div class="category-tab active">全部</div>
+      <div class="category-tab">跑腿代办</div>
+      <div class="category-tab">设计创意</div>
+      <div class="category-tab">写作文案</div>
+      <div class="category-tab">技术支持</div>
+      <div class="category-tab">餐饮优惠</div>
+      <div class="category-tab">二手</div>
+      <div class="category-tab">游戏</div>
+    </div>
+    
+    <div class="content">
+      <div class="task-list">
+        <div class="task-card">
+          <div class="task-header">
+            <div class="task-title">帮忙取快递</div>
+            <div class="task-badge">新</div>
+          </div>
+          <div class="task-desc">帮忙到菜鸟驿站取快递，地址：xx小区3栋，快递单号：123456789</div>
+          <div class="task-footer">
+            <div class="task-price">¥20</div>
+            <div class="task-meta">
+              <span>👁️ 123</span>
+              <span>💬 5</span>
+            </div>
+          </div>
+        </div>
+        
+        <div class="task-card">
+          <div class="task-header">
+            <div class="task-title">代做PPT</div>
+            <div class="task-badge">新</div>
+          </div>
+          <div class="task-desc">需要一个10页的PPT，主题是公司介绍，要求简洁大气，有设计感</div>
+          <div class="task-footer">
+            <div class="task-price">¥200</div>
+            <div class="task-meta">
+              <span>👁️ 456</span>
+              <span>💬 23</span>
+            </div>
+          </div>
+        </div>
+        
+        <div class="task-card">
+          <div class="task-header">
+            <div class="task-title">帮忙排队买奶茶</div>
+          </div>
+          <div class="task-desc">帮忙在喜茶排队，买2杯多肉葡萄，地址：xx商场1楼</div>
+          <div class="task-footer">
+            <div class="task-price">¥15</div>
+            <div class="task-meta">
+              <span>👁️ 89</span>
+              <span>💬 3</span>
+            </div>
+          </div>
+        </div>
+        
+        <div class="task-card">
+          <div class="task-header">
+            <div class="task-title">翻译英文文档</div>
+          </div>
+          <div class="task-desc">需要翻译一份5页的英文技术文档，要求专业准确</div>
+          <div class="task-footer">
+            <div class="task-price">¥150</div>
+            <div class="task-meta">
+              <span>👁️ 234</span>
+              <span>💬 12</span>
+            </div>
+          </div>
+        </div>
+        
+        <div class="task-card">
+          <div class="task-header">
+            <div class="task-title">校园跑腿</div>
+          </div>
+          <div class="task-desc">帮忙送文件到行政楼，顺路buy瓶水</div>
+          <div class="task-footer">
+            <div class="task-price">¥10</div>
+            <div class="task-meta">
+              <span>👁️ 67</span>
+              <span>💬 2</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="btn-publish">+</div>
+    
+    <div class="tab-bar">
+      <div class="tab-item active">
+        <div class="tab-icon">🏠</div>
+        <div>首页</div>
+      </div>
+      <div class="tab-item">
+        <div class="tab-icon">📋</div>
+        <div>任务</div>
+      </div>
+      <div class="tab-item">
+        <div class="tab-icon">💬</div>
+        <div>消息</div>
+      </div>
+      <div class="tab-item">
+        <div class="tab-icon">👤</div>
+        <div>我的</div>
+      </div>
+    </div>
+  </div>
+  
+  <script>
+    // 分类标签切换
+    document.querySelectorAll('.category-tab').forEach(tab => {
+      tab.addEventListener('click', function() {
+        document.querySelectorAll('.category-tab').forEach(t => t.classList.remove('active'));
+        this.classList.add('active');
+      });
+    });
+    
+    // 任务卡片点击
+    document.querySelectorAll('.task-card').forEach(card => {
+      card.addEventListener('click', function() {
+        alert('跳转到任务详情页');
+      });
+    });
+    
+    // 发布按钮
+    document.querySelector('.btn-publish').addEventListener('click', function() {
+      alert('跳转到发布任务页');
+    });
+    
+    // Tab切换
+    document.querySelectorAll('.tab-item').forEach(tab => {
+      tab.addEventListener('click', function() {
+        document.querySelectorAll('.tab-item').forEach(t => t.classList.remove('active'));
+        this.classList.add('active');
+      });
+    });
+  </script>
+</body>
+</html>

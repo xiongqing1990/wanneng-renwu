@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>生成图标</title>
+</head>
+<body>
+    <h1>图标生成器</h1>
+    <p>打开控制台查看图标数据...</p>
+    <script>
+        function createIcon(size) {
+            const canvas = document.createElement('canvas');
+            canvas.width = size;
+            canvas.height = size;
+            const ctx = canvas.getContext('2d');
+            
+            // 背景渐变
+            const gradient = ctx.createLinearGradient(0, 0, size, size);
+            gradient.addColorStop(0, '#667eea');
+            gradient.addColorStop(1, '#764ba2');
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, size, size);
+            
+            // 绘制圆形
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.2)';
+            ctx.beginPath();
+            ctx.arc(size/2, size/2, size/3, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // 绘制勾选标记
+            ctx.strokeStyle = 'white';
+            ctx.lineWidth = size/10;
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
+            ctx.beginPath();
+            ctx.moveTo(size/3, size/2);
+            ctx.lineTo(size/2.5, size/1.5);
+            ctx.lineTo(size/1.5, size/3);
+            ctx.stroke();
+            
+            return canvas.toDataURL('image/png');
+        }
+        
+        // 生成并下载图标
+        function downloadIcon(size) {
+            const dataUrl = createIcon(size);
+            const link = document.createElement('a');
+            link.download = `icon-${size}.png`;
+            link.href = dataUrl;
+            link.click();
+        }
+        
+        console.log('运行 downloadIcon(192) 和 downloadIcon(512) 来生成图标');
+    </script>
+</body>
+</html>

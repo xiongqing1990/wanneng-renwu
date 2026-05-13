@@ -1,0 +1,1011 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#10b981">
+    <title>任务详情 - 万能任务</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", sans-serif;
+            background: #f0f2f5;
+            color: #1d1d1f;
+            max-width: 430px;
+            margin: 0 auto;
+            min-height: 100vh;
+        }
+
+        .status-bar {
+            height: 44px;
+            background: linear-gradient(135deg, #10b981, #059669);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+            color: white;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            padding: 50px 16px 20px;
+        }
+
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .back-btn {
+            font-size: 24px;
+            cursor: pointer;
+            background: none;
+            border: none;
+            color: white;
+            padding: 8px;
+            margin: -8px;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .header-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.2);
+            border: none;
+            color: white;
+            font-size: 18px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .task-category-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(255,255,255,0.2);
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 13px;
+            margin-bottom: 12px;
+        }
+
+        .task-title {
+            font-size: 22px;
+            font-weight: 700;
+            line-height: 1.4;
+            margin-bottom: 12px;
+        }
+
+        .task-price-row {
+            display: flex;
+            align-items: baseline;
+            gap: 8px;
+        }
+
+        .task-price {
+            font-size: 32px;
+            font-weight: 700;
+            color: #fff;
+        }
+
+        .task-price-unit {
+            font-size: 14px;
+            opacity: 0.85;
+        }
+
+        .task-tags {
+            display: flex;
+            gap: 8px;
+            margin-top: 12px;
+            flex-wrap: wrap;
+        }
+
+        .task-tag {
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .task-tag.hot {
+            background: rgba(255,107,107,0.2);
+            color: #ff6b6b;
+        }
+
+        .task-tag.urgent {
+            background: rgba(255,152,0,0.2);
+            color: #ff9800;
+        }
+
+        .task-tag.new {
+            background: rgba(33,150,243,0.2);
+            color: #2196f3;
+        }
+
+        /* 内容区域 */
+        .content {
+            padding: 16px;
+            padding-bottom: 100px;
+        }
+
+        /* 卡片 */
+        .card {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 12px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+        }
+
+        .card-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1d1d1f;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .card-title::before {
+            content: '';
+            width: 4px;
+            height: 16px;
+            background: #10b981;
+            border-radius: 2px;
+        }
+
+        /* 任务描述 */
+        .task-desc {
+            font-size: 15px;
+            color: #444;
+            line-height: 1.7;
+        }
+
+        /* 任务信息 */
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+        }
+
+        .info-item {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .info-label {
+            font-size: 12px;
+            color: #999;
+        }
+
+        .info-value {
+            font-size: 15px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .info-value.highlight {
+            color: #10b981;
+        }
+
+        /* 用户信息 */
+        .user-card {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            cursor: pointer;
+        }
+
+        .user-avatar {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 22px;
+            font-weight: 700;
+        }
+
+        .user-info {
+            flex: 1;
+        }
+
+        .user-name {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .user-badge {
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 10px;
+            background: linear-gradient(135deg, #ffd700, #ffa500);
+            color: white;
+        }
+
+        .user-stats {
+            display: flex;
+            gap: 16px;
+            font-size: 13px;
+            color: #666;
+        }
+
+        .user-stat {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .user-rating {
+            color: #ff9500;
+        }
+
+        .user-arrow {
+            font-size: 20px;
+            color: #ccc;
+        }
+
+        /* 接单者列表 */
+        .applicant-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 0;
+            border-bottom: 1px solid #f5f5f5;
+        }
+
+        .applicant-item:last-child {
+            border-bottom: none;
+        }
+
+        .applicant-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .applicant-info {
+            flex: 1;
+        }
+
+        .applicant-name {
+            font-size: 14px;
+            font-weight: 500;
+            color: #333;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .applicant-rating {
+            font-size: 12px;
+            color: #ff9500;
+        }
+
+        .applicant-tasks {
+            font-size: 12px;
+            color: #999;
+        }
+
+        .select-btn {
+            padding: 8px 16px;
+            background: #10b981;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .select-btn:active {
+            opacity: 0.8;
+        }
+
+        /* 安全保障 */
+        .security-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .security-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 14px;
+            color: #666;
+        }
+
+        .security-icon {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: #e8f5e9;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+        }
+
+        /* 底部操作栏 */
+        .bottom-bar {
+            position: fixed;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            max-width: 430px;
+            background: white;
+            border-top: 1px solid #e8e8e8;
+            padding: 12px 16px;
+            padding-bottom: max(12px, env(safe-area-inset-bottom));
+            display: flex;
+            gap: 12px;
+            z-index: 100;
+            box-shadow: 0 -4px 20px rgba(0,0,0,0.05);
+        }
+
+        .action-btn {
+            flex: 1;
+            padding: 14px;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.2s;
+        }
+
+        .action-btn:active {
+            transform: scale(0.98);
+        }
+
+        .action-btn.primary {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            flex: 2;
+        }
+
+        .action-btn.secondary {
+            background: #f5f5f5;
+            color: #666;
+        }
+
+        .action-btn.collected {
+            color: #ff6b6b;
+        }
+
+        /* 模态框 */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 200;
+            display: none;
+            align-items: flex-end;
+            justify-content: center;
+        }
+
+        .modal-overlay.show {
+            display: flex;
+        }
+
+        .modal {
+            background: white;
+            border-radius: 20px 20px 0 0;
+            width: 100%;
+            max-width: 430px;
+            padding: 24px;
+            padding-bottom: max(24px, env(safe-area-inset-bottom));
+            animation: slideUp 0.3s ease;
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(100%); }
+            to { transform: translateY(0); }
+        }
+
+        .modal-handle {
+            width: 40px;
+            height: 4px;
+            background: #e0e0e0;
+            border-radius: 2px;
+            margin: 0 auto 20px;
+        }
+
+        .modal-title {
+            font-size: 18px;
+            font-weight: 600;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-option {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 16px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .modal-option:active {
+            background: #f5f5f5;
+        }
+
+        .modal-option-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            background: #f0f5f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+
+        .modal-option-text {
+            flex: 1;
+        }
+
+        .modal-option-title {
+            font-size: 15px;
+            font-weight: 500;
+            color: #333;
+            margin-bottom: 2px;
+        }
+
+        .modal-option-desc {
+            font-size: 12px;
+            color: #999;
+        }
+
+        .modal-option-arrow {
+            font-size: 18px;
+            color: #ccc;
+        }
+
+        /* 通知 */
+        .notification {
+            position: fixed;
+            top: 60px;
+            left: 50%;
+            transform: translateX(-50%) translateY(-20px);
+            background: #10b981;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            z-index: 3000;
+            opacity: 0;
+            transition: all 0.3s ease;
+            pointer-events: none;
+        }
+
+        .notification.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        /* 成功状态 */
+        .success-state {
+            display: none;
+            text-align: center;
+            padding: 40px 20px;
+        }
+
+        .success-state.show {
+            display: block;
+        }
+
+        .success-icon {
+            font-size: 64px;
+            margin-bottom: 16px;
+        }
+
+        .success-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #10b981;
+            margin-bottom: 8px;
+        }
+
+        .success-desc {
+            font-size: 14px;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="status-bar">
+        <span>9:41</span>
+        <span>📶 100% 🔋</span>
+    </div>
+
+    <div class="header">
+        <div class="header-top">
+            <button class="back-btn" onclick="goBack()">←</button>
+            <div class="header-actions">
+                <button class="header-btn" id="collectBtn" onclick="toggleCollect()">🤍</button>
+                <button class="header-btn" onclick="shareTask()">📤</button>
+            </div>
+        </div>
+        <div class="task-category-tag" id="categoryTag">💼 开发</div>
+        <div class="task-title" id="taskTitle">加载中...</div>
+        <div class="task-price-row">
+            <span class="task-price" id="taskPrice">0</span>
+            <span class="task-price-unit">元</span>
+        </div>
+        <div class="task-tags" id="taskTags"></div>
+    </div>
+
+    <div class="content" id="mainContent">
+        <!-- 任务描述 -->
+        <div class="card">
+            <div class="card-title">任务描述</div>
+            <div class="task-desc" id="taskDesc">加载中...</div>
+        </div>
+
+        <!-- 任务信息 -->
+        <div class="card">
+            <div class="card-title">任务信息</div>
+            <div class="info-grid">
+                <div class="info-item">
+                    <span class="info-label">任务分类</span>
+                    <span class="info-value" id="infoCategory">-</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">预算金额</span>
+                    <span class="info-value highlight" id="infoBudget">-</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">发布时间</span>
+                    <span class="info-value" id="infoTime">-</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">截止时间</span>
+                    <span class="info-value" id="infoDeadline">-</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">浏览次数</span>
+                    <span class="info-value" id="infoViews">-</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">申请人数</span>
+                    <span class="info-value" id="infoApplicants">-</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 发布者信息 -->
+        <div class="card">
+            <div class="card-title">发布者</div>
+            <div class="user-card" onclick="viewUserProfile()">
+                <div class="user-avatar" id="publisherAvatar">发</div>
+                <div class="user-info">
+                    <div class="user-name">
+                        <span id="publisherName">-</span>
+                        <span class="user-badge">已认证</span>
+                    </div>
+                    <div class="user-stats">
+                        <span class="user-stat user-rating">⭐ <span id="publisherRating">4.8</span></span>
+                        <span class="user-stat">已完成 <span id="publisherTasks">156</span> 单</span>
+                    </div>
+                </div>
+                <span class="user-arrow">›</span>
+            </div>
+        </div>
+
+        <!-- 接单者 -->
+        <div class="card" id="applicantsCard">
+            <div class="card-title">已有 <span id="applicantCount">0</span> 人申请</div>
+            <div id="applicantsList">
+                <div class="success-state" id="emptyApplicants">
+                    <div class="success-icon">👥</div>
+                    <div class="success-title">暂无人申请</div>
+                    <div class="success-desc">成为第一个接单者吧！</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 安全保障 -->
+        <div class="card">
+            <div class="card-title">平台保障</div>
+            <div class="security-list">
+                <div class="security-item">
+                    <div class="security-icon">🔒</div>
+                    <span>资金托管，满意后付款</span>
+                </div>
+                <div class="security-item">
+                    <div class="security-icon">✅</div>
+                    <span>实名认证，身份验证</span>
+                </div>
+                <div class="security-item">
+                    <div class="security-icon">🛡️</div>
+                    <span>纠纷仲裁，权益保障</span>
+                </div>
+                <div class="security-item">
+                    <div class="security-icon">📞</div>
+                    <span>7x24 小时客服支持</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 底部操作栏 -->
+    <div class="bottom-bar">
+        <button class="action-btn secondary" onclick="contactPublisher()">💬 咨询</button>
+        <button class="action-btn primary" id="applyBtn" onclick="applyTask()">
+            📝 立即申请
+        </button>
+    </div>
+
+    <!-- 更多操作模态框 -->
+    <div class="modal-overlay" id="moreModal">
+        <div class="modal">
+            <div class="modal-handle"></div>
+            <div class="modal-title">更多操作</div>
+            <div class="modal-option" onclick="reportTask()">
+                <div class="modal-option-icon">🚩</div>
+                <div class="modal-option-text">
+                    <div class="modal-option-title">举报任务</div>
+                    <div class="modal-option-desc">发现违规内容？立即举报</div>
+                </div>
+                <span class="modal-option-arrow">›</span>
+            </div>
+            <div class="modal-option" onclick="shareTask()">
+                <div class="modal-option-icon">📤</div>
+                <div class="modal-option-text">
+                    <div class="modal-option-title">分享任务</div>
+                    <div class="modal-option-desc">分享给好友一起做</div>
+                </div>
+                <span class="modal-option-arrow">›</span>
+            </div>
+            <div class="modal-option" onclick="closeModal()">
+                <div class="modal-option-icon">❌</div>
+                <div class="modal-option-text">
+                    <div class="modal-option-title">取消</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 通知 -->
+    <div class="notification" id="notification"></div>
+
+    <script>
+        // 获取URL参数
+        const urlParams = new URLSearchParams(window.location.search);
+        const taskId = urlParams.get('id') || 1;
+
+        // 示例任务数据
+        const tasksData = {
+            1: {
+                id: 1,
+                title: "开发微信小程序商城",
+                desc: `【项目背景】
+需要开发一个完整的微信小程序电商商城，包含以下核心功能：
+
+【功能需求】
+1. 商品展示：支持图片轮播、分类浏览、商品详情
+2. 购物车：添加删除、数量修改、价格计算
+3. 订单系统：下单、支付、发货、收货、评价
+4. 用户中心：个人信息、订单管理、收货地址
+5. 搜索功能：关键词搜索、筛选排序
+
+【技术要求】
+- 使用原生微信小程序开发
+- 支持分包加载，优化加载速度
+- 适配各种屏幕尺寸
+- 数据接口需自行mock
+
+【交付要求】
+- 完整源代码
+- 设计源文件
+- 部署文档`,
+                category: "开发",
+                budget: 8000,
+                publisher: "李明",
+                time: "2小时前",
+                rating: 4.8,
+                tasks: 156,
+                views: 2340,
+                applicants: 12,
+                tags: ['热门', '长期'],
+                deadline: '2026-06-15',
+                applicantsList: [
+                    { name: "张伟", rating: 4.9, tasks: 89, avatar: '张' },
+                    { name: "王芳", rating: 4.7, tasks: 156, avatar: '王' },
+                    { name: "刘洋", rating: 5.0, tasks: 234, avatar: '刘' }
+                ]
+            },
+            2: {
+                id: 2,
+                title: "设计企业官网首页",
+                desc: "现代化企业官网首页设计，风格简洁大气，符合企业级标准。包含轮播图、产品展示、服务介绍、案例展示等模块。",
+                category: "设计",
+                budget: 2000,
+                publisher: "张伟",
+                time: "5小时前",
+                rating: 4.9,
+                tasks: 89,
+                views: 1560,
+                applicants: 8,
+                tags: ['最新'],
+                deadline: '2026-06-01',
+                applicantsList: []
+            },
+            3: {
+                id: 3,
+                title: "撰写产品宣传文案",
+                desc: "为新产品撰写吸引眼球的宣传文案，要求转化率高，符合目标用户群体阅读习惯。",
+                category: "文案",
+                budget: 500,
+                publisher: "王芳",
+                time: "1天前",
+                rating: 4.7,
+                tasks: 234,
+                views: 890,
+                applicants: 5,
+                tags: ['高佣金'],
+                deadline: '2026-05-20',
+                applicantsList: []
+            },
+            4: {
+                id: 4,
+                title: "App UI界面设计",
+                desc: "移动端App UI设计，包含首页、详情、个人中心等核心页面。需要提供Sketch源文件和标注。",
+                category: "设计",
+                budget: 5000,
+                publisher: "刘洋",
+                time: "30分钟前",
+                rating: 4.6,
+                tasks: 67,
+                views: 3200,
+                applicants: 15,
+                tags: ['紧急', '热门'],
+                deadline: '2026-05-25',
+                applicantsList: []
+            },
+            5: {
+                id: 5,
+                title: "网站后端API开发",
+                desc: "Node.js后端API开发，RESTful风格，需要有经验开发者。",
+                category: "开发",
+                budget: 12000,
+                publisher: "陈静",
+                time: "3小时前",
+                rating: 5.0,
+                tasks: 45,
+                views: 1890,
+                applicants: 6,
+                tags: ['最新'],
+                deadline: '2026-06-10',
+                applicantsList: []
+            }
+        };
+
+        let currentTask = null;
+        let collectedTasks = JSON.parse(localStorage.getItem('collectedTasks') || '[]');
+
+        function loadTask() {
+            // 尝试从localStorage获取
+            const userTasks = JSON.parse(localStorage.getItem('tasks') || '[]');
+            const foundTask = userTasks.find(t => t.id == taskId);
+
+            if (foundTask) {
+                currentTask = foundTask;
+            } else if (tasksData[taskId]) {
+                currentTask = tasksData[taskId];
+            } else {
+                currentTask = tasksData[1]; // 默认任务
+            }
+
+            renderTask();
+            updateCollectButton();
+        }
+
+        function renderTask() {
+            if (!currentTask) return;
+
+            document.getElementById('categoryTag').textContent = `💼 ${currentTask.category}`;
+            document.getElementById('taskTitle').textContent = currentTask.title;
+            document.getElementById('taskPrice').textContent = currentTask.budget;
+            document.getElementById('taskDesc').textContent = currentTask.desc;
+            document.getElementById('infoCategory').textContent = currentTask.category;
+            document.getElementById('infoBudget').textContent = `¥${currentTask.budget}`;
+            document.getElementById('infoTime').textContent = currentTask.time;
+            document.getElementById('infoDeadline').textContent = currentTask.deadline || '未设置';
+            document.getElementById('infoViews').textContent = currentTask.views || 0;
+            document.getElementById('infoApplicants').textContent = currentTask.applicants || 0;
+            document.getElementById('publisherAvatar').textContent = currentTask.publisher[0];
+            document.getElementById('publisherName').textContent = currentTask.publisher;
+            document.getElementById('publisherRating').textContent = currentTask.rating || 4.5;
+            document.getElementById('publisherTasks').textContent = currentTask.tasks || 0;
+            document.getElementById('applicantCount').textContent = currentTask.applicantsList?.length || 0;
+
+            // 渲染标签
+            const tagsHtml = (currentTask.tags || []).map(tag => {
+                let cls = '';
+                if (tag === '热门') cls = 'hot';
+                if (tag === '紧急') cls = 'urgent';
+                if (tag === '最新') cls = 'new';
+                return `<span class="task-tag ${cls}">${tag}</span>`;
+            }).join('');
+            document.getElementById('taskTags').innerHTML = tagsHtml;
+
+            // 渲染接单者列表
+            renderApplicants();
+        }
+
+        function renderApplicants() {
+            const list = document.getElementById('applicantsList');
+            const applicants = currentTask.applicantsList || [];
+
+            if (applicants.length === 0) {
+                list.innerHTML = `
+                    <div class="success-state show">
+                        <div class="success-icon">👥</div>
+                        <div class="success-title">暂无人申请</div>
+                        <div class="success-desc">成为第一个接单者吧！</div>
+                    </div>
+                `;
+            } else {
+                list.innerHTML = applicants.map(a => `
+                    <div class="applicant-item">
+                        <div class="applicant-avatar">${a.avatar}</div>
+                        <div class="applicant-info">
+                            <div class="applicant-name">
+                                ${a.name}
+                                <span class="user-badge" style="font-size:9px;padding:1px 4px;">已认证</span>
+                            </div>
+                            <div class="applicant-rating">⭐ ${a.rating} · 已完成 ${a.tasks} 单</div>
+                        </div>
+                        <button class="select-btn" onclick="selectApplicant('${a.name}')">选择</button>
+                    </div>
+                `).join('');
+            }
+        }
+
+        function updateCollectButton() {
+            const btn = document.getElementById('collectBtn');
+            const isCollected = collectedTasks.includes(currentTask?.id);
+            btn.textContent = isCollected ? '❤️' : '🤍';
+        }
+
+        function toggleCollect() {
+            if (!currentTask) return;
+            const index = collectedTasks.indexOf(currentTask.id);
+            if (index > -1) {
+                collectedTasks.splice(index, 1);
+                showNotification('已取消收藏');
+            } else {
+                collectedTasks.push(currentTask.id);
+                showNotification('已添加到收藏');
+            }
+            localStorage.setItem('collectedTasks', JSON.stringify(collectedTasks));
+            updateCollectButton();
+        }
+
+        function shareTask() {
+            if (navigator.share) {
+                navigator.share({
+                    title: currentTask?.title,
+                    text: `【任务推荐】${currentTask?.title}，报酬 ¥${currentTask?.budget}`,
+                    url: window.location.href
+                });
+            } else {
+                // 复制链接
+                navigator.clipboard.writeText(window.location.href);
+                showNotification('链接已复制到剪贴板');
+            }
+        }
+
+        function contactPublisher() {
+            window.location.href = `chat-detail.html?user=${encodeURIComponent(currentTask?.publisher || '未知用户')}`;
+        }
+
+        function applyTask() {
+            // 保存申请记录
+            const applications = JSON.parse(localStorage.getItem('applications') || '[]');
+            if (!applications.find(a => a.taskId === currentTask?.id)) {
+                applications.push({
+                    taskId: currentTask?.id,
+                    taskTitle: currentTask?.title,
+                    appliedTime: new Date().toISOString()
+                });
+                localStorage.setItem('applications', JSON.stringify(applications));
+            }
+            showNotification('申请成功！等待发布者确认');
+        }
+
+        function selectApplicant(name) {
+            showNotification(`已选择 ${name} 接单`);
+        }
+
+        function viewUserProfile() {
+            showNotification('查看用户资料功能开发中');
+        }
+
+        function reportTask() {
+            closeModal();
+            showNotification('举报功能开发中');
+        }
+
+        function showModal() {
+            document.getElementById('moreModal').classList.add('show');
+        }
+
+        function closeModal() {
+            document.getElementById('moreModal').classList.remove('show');
+        }
+
+        function goBack() {
+            history.back();
+        }
+
+        function showNotification(message) {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.classList.add('show');
+            setTimeout(() => notification.classList.remove('show'), 2000);
+        }
+
+        // 点击模态框外部关闭
+        document.getElementById('moreModal').addEventListener('click', (e) => {
+            if (e.target.classList.contains('modal-overlay')) {
+                closeModal();
+            }
+        });
+
+        loadTask();
+    </script>
+</body>
+</html>

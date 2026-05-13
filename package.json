@@ -1,0 +1,62 @@
+{
+  "name": "wanneng-renwu-app",
+  "version": "1.0.0",
+  "description": "万能任务APP - 企业级任务发布与接单平台",
+  "main": "main.js",
+  "scripts": {
+    "dev": "uni --watch",
+    "build:h5": "uni build --platform h5",
+    "build:mp-weixin": "uni build --platform mp-weixin",
+    "build:app-android": "uni build --platform app --target android",
+    "build:app-ios": "uni build --platform app --target ios",
+    "build:all": "npm run build:h5 && npm run build:mp-weixin && npm run build:app-android",
+    "lint": "eslint . --ext .js,.vue",
+    "lint:fix": "eslint . --ext .js,.vue --fix",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
+    "test:unit": "jest --testPathPattern=tests/unit",
+    "test:integration": "jest --testPathPattern=tests/integration",
+    "analyze": "node utils/miniprogram-optimizer.js analyze",
+    "deploy:staging": "echo '部署到测试环境'",
+    "deploy:production": "echo '部署到生产环境'",
+    "postinstall": "echo '安装完成，请运行 npm run dev 启动开发服务器'"
+  },
+  "keywords": [
+    "uni-app",
+    "vue",
+    "task",
+    "renwu",
+    "wanneng"
+  ],
+  "author": "AI助手",
+  "license": "MIT",
+  "dependencies": {
+    "@capacitor/android": "^8.3.4",
+    "@capacitor/cli": "^8.3.4",
+    "@capacitor/core": "^8.3.4",
+    "vue": "^2.6.14",
+    "vue-router": "^3.5.1",
+    "vuex": "^3.6.2"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.16.0",
+    "@babel/preset-env": "^7.16.0",
+    "@vue/test-utils": "^1.3.0",
+    "babel-jest": "^27.3.1",
+    "eslint": "^8.4.1",
+    "eslint-plugin-vue": "^8.2.0",
+    "gradle": "^1.2.4",
+    "jest": "^27.4.5",
+    "jest-serializer-vue": "^2.0.2",
+    "vue-jest": "^3.0.7"
+  },
+  "engines": {
+    "node": ">=12.0.0"
+  },
+  "browserslist": [
+    "> 1%",
+    "last 2 versions",
+    "not dead"
+  ]
+}

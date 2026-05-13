@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#007AFF">
+    <title>我的 - 万能任务</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", sans-serif;
+            background: #f5f5f7;
+            color: #1d1d1f;
+            max-width: 375px;
+            margin: 0 auto;
+            min-height: 100vh;
+        }
+
+        .status-bar {
+            height: 44px;
+            background: #007AFF;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+            color: white;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .header {
+            background: #007AFF;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            color: white;
+            font-weight: 600;
+            margin: 0 auto 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+
+        .username {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .user-title {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            padding: 20px;
+            background: white;
+            margin: 12px 20px;
+            border-radius: 16px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+
+        .stat-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: #007AFF;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #666;
+        }
+
+        .menu-list {
+            background: white;
+            margin: 0 20px 12px;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+
+        .menu-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 16px;
+            cursor: pointer;
+            transition: background 0.2s;
+            border-bottom: 1px solid #f5f5f5;
+        }
+
+        .menu-item:last-child {
+            border-bottom: none;
+        }
+
+        .menu-item:active {
+            background: #f5f5f5;
+        }
+
+        .menu-icon {
+            font-size: 20px;
+            width: 28px;
+            text-align: center;
+        }
+
+        .menu-text {
+            flex: 1;
+            font-size: 16px;
+            color: #1d1d1f;
+        }
+
+        .menu-arrow {
+            color: #999;
+            font-size: 14px;
+        }
+
+        .tab-bar {
+            height: 83px;
+            background: white;
+            border-top: 1px solid #e0e0e0;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding-bottom: 20px;
+            position: fixed;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            max-width: 375px;
+        }
+
+        .tab-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            cursor: pointer;
+            color: #999;
+            font-size: 12px;
+        }
+
+        .tab-item.active {
+            color: #007AFF;
+        }
+
+        .tab-icon {
+            font-size: 22px;
+        }
+
+        .content {
+            padding-bottom: 100px;
+        }
+    </style>
+</head>
+<body>
+    <div class="status-bar">
+        <span>9:41</span>
+        <span>📶 100% 🔋</span>
+    </div>
+
+    <div class="content">
+        <div class="header">
+            <div class="avatar">我</div>
+            <div class="username">万能任务用户</div>
+            <div class="user-title">全栈开发者 · 5年经验</div>
+        </div>
+
+        <div class="stats">
+            <div class="stat-item">
+                <div class="stat-value">28</div>
+                <div class="stat-label">完成任务</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value">¥52k</div>
+                <div class="stat-label">总收益</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value">98%</div>
+                <div class="stat-label">好评率</div>
+            </div>
+        </div>
+
+        <div class="menu-list">
+            <div class="menu-item" onclick="showNotification('打开我的任务')">
+                <div class="menu-icon">📋</div>
+                <div class="menu-text">我的任务</div>
+                <div class="menu-arrow">›</div>
+            </div>
+            <div class="menu-item" onclick="showNotification('打开我的钱包')">
+                <div class="menu-icon">💰</div>
+                <div class="menu-text">我的钱包</div>
+                <div class="menu-arrow">›</div>
+            </div>
+            <div class="menu-item" onclick="showNotification('打开我的评价')">
+                <div class="menu-icon">⭐</div>
+                <div class="menu-text">我的评价</div>
+                <div class="menu-arrow">›</div>
+            </div>
+        </div>
+
+        <div class="menu-list">
+            <div class="menu-item" onclick="showNotification('打开技能认证')">
+                <div class="menu-icon">🎓</div>
+                <div class="menu-text">技能认证</div>
+                <div class="menu-arrow">›</div>
+            </div>
+            <div class="menu-item" onclick="showNotification('打开系统设置')">
+                <div class="menu-icon">⚙️</div>
+                <div class="menu-text">系统设置</div>
+                <div class="menu-arrow">›</div>
+            </div>
+            <div class="menu-item" onclick="showNotification('联系客服')">
+                <div class="menu-icon">📞</div>
+                <div class="menu-text">联系客服</div>
+                <div class="menu-arrow">›</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="tab-bar">
+        <div class="tab-item" onclick="switchTab('home')">
+            <div class="tab-icon">🏠</div>
+            <span>首页</span>
+        </div>
+        <div class="tab-item" onclick="switchTab('chat')">
+            <div class="tab-icon">💬</div>
+            <span>聊天</span>
+        </div>
+        <div class="tab-item" onclick="switchTab('plan')">
+            <div class="tab-icon">📋</div>
+            <span>计划</span>
+        </div>
+        <div class="tab-item active">
+            <div class="tab-icon">👤</div>
+            <span>我的</span>
+        </div>
+    </div>
+
+    <script>
+        function switchTab(tab) {
+            const pages = {
+                'home': 'index.html',
+                'chat': 'chat.html',
+                'plan': 'plan.html',
+                'profile': 'profile.html'
+            };
+            if (pages[tab]) {
+                window.location.href = pages[tab];
+            }
+        }
+
+        function showNotification(message) {
+            const existing = document.querySelector('.notification');
+            if (existing) existing.remove();
+
+            const notification = document.createElement('div');
+            notification.className = 'notification';
+            notification.textContent = message;
+            notification.style.cssText = `
+                position: fixed;
+                top: 60px;
+                left: 50%;
+                transform: translateX(-50%);
+                background: #34c759;
+                color: white;
+                padding: 12px 24px;
+                border-radius: 8px;
+                font-size: 14px;
+                font-weight: 500;
+                z-index: 3000;
+                animation: slideDown 0.3s ease-out;
+                white-space: nowrap;
+            `;
+            document.body.appendChild(notification);
+
+            setTimeout(() => notification.remove(), 2000);
+        }
+
+        // 添加CSS动画
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideDown {
+                from {
+                    transform: translateX(-50%) translateY(-100%);
+                    opacity: 0;
+                }
+                to {
+                    transform: translateX(-50%) translateY(0);
+                    opacity: 1;
+                }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>

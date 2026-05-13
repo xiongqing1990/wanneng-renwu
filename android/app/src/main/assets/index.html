@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="万能任务">
+    <meta name="theme-color" content="#007AFF">
+    <link rel="manifest" href="manifest.json">
+    <title>万能任务 - 智能任务平台</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", sans-serif;
+            background: #f5f5f7;
+            color: #1d1d1f;
+            max-width: 375px;
+            margin: 0 auto;
+            min-height: 100vh;
+        }
+
+        .status-bar {
+            height: 44px;
+            background: #007AFF;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+            color: white;
+            font-size: 14px;
+            font-weight: 600;
+            position: fixed;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            max-width: 375px;
+            z-index: 1000;
+        }
+
+        .header {
+            background: #007AFF;
+            color: white;
+            padding: 60px 20px 20px;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .header p {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            padding: 20px;
+            background: white;
+            margin: -12px 20px 12px;
+            border-radius: 16px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+            position: relative;
+            z-index: 10;
+        }
+
+        .quick-action-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+        }
+
+        .quick-action-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+
+        .quick-action-name {
+            font-size: 11px;
+            color: #666;
+        }
+
+        .section {
+            padding: 20px 20px 12px;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1d1d1f;
+        }
+
+        .section-more {
+            font-size: 14px;
+            color: #007AFF;
+            cursor: pointer;
+        }
+
+        .task-card {
+            background: white;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 12px;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .task-card:active {
+            transform: scale(0.98);
+        }
+
+        .task-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .task-tag {
+            background: #007AFF;
+            color: white;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .task-price {
+            font-size: 18px;
+            font-weight: 700;
+            color: #34c759;
+        }
+
+        .task-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 6px;
+            color: #1d1d1f;
+        }
+
+        .task-desc {
+            font-size: 13px;
+            color: #666;
+            line-height: 1.5;
+            margin-bottom: 12px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .task-bottom {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 12px;
+            border-top: 1px solid #f0f0f0;
+        }
+
+        .task-user {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .user-avatar {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .user-name {
+            font-size: 13px;
+            color: #333;
+        }
+
+        .task-time {
+            font-size: 12px;
+            color: #999;
+        }
+
+        .fab {
+            position: fixed;
+            bottom: 100px;
+            right: 20px;
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: #007AFF;
+            color: white;
+            border: none;
+            font-size: 24px;
+            box-shadow: 0 4px 12px rgba(0,122,255,0.4);
+            cursor: pointer;
+            z-index: 100;
+            transition: transform 0.2s;
+        }
+
+        .fab:active {
+            transform: scale(0.9);
+        }
+
+        .tab-bar {
+            height: 83px;
+            background: white;
+            border-top: 1px solid #e0e0e0;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding-bottom: 20px;
+            position: fixed;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            max-width: 375px;
+            z-index: 1000;
+        }
+
+        .tab-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            cursor: pointer;
+            color: #999;
+            font-size: 12px;
+            position: relative;
+        }
+
+        .tab-item.active {
+            color: #007AFF;
+        }
+
+        .tab-icon {
+            font-size: 22px;
+        }
+
+        .badge {
+            position: absolute;
+            top: -6px;
+            right: -10px;
+            background: #ff3b30;
+            color: white;
+            font-size: 10px;
+            min-width: 16px;
+            height: 16px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 4px;
+        }
+
+        .content {
+            padding-bottom: 100px;
+        }
+
+        .ai-suggestion {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 16px 20px;
+            margin: 0 20px 12px;
+            border-radius: 12px;
+        }
+
+        .ai-suggestion-title {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .ai-suggestion-text {
+            font-size: 13px;
+            line-height: 1.5;
+            opacity: 0.95;
+        }
+    </style>
+</head>
+<body>
+    <div class="status-bar">
+        <span>9:41</span>
+        <span>📶 100% 🔋</span>
+    </div>
+
+    <div class="header">
+        <h1>💼 万能任务</h1>
+        <p>智能任务匹配 · 高效完成</p>
+    </div>
+
+    <div class="content">
+        <div class="quick-actions">
+            <div class="quick-action-item" onclick="filterByCategory('设计')">
+                <div class="quick-action-icon" style="background: #fff0f5;">🎨</div>
+                <div class="quick-action-name">设计</div>
+            </div>
+            <div class="quick-action-item" onclick="filterByCategory('开发')">
+                <div class="quick-action-icon" style="background: #f0f8ff;">💻</div>
+                <div class="quick-action-name">开发</div>
+            </div>
+            <div class="quick-action-item" onclick="filterByCategory('文案')">
+                <div class="quick-action-icon" style="background: #f0fff0;">✍️</div>
+                <div class="quick-action-name">文案</div>
+            </div>
+            <div class="quick-action-item" onclick="filterByCategory('翻译')">
+                <div class="quick-action-icon" style="background: #fffacd;">🌐</div>
+                <div class="quick-action-name">翻译</div>
+            </div>
+        </div>
+
+        <div class="ai-suggestion">
+            <div class="ai-suggestion-title">
+                🤖 智能建议
+            </div>
+            <div class="ai-suggestion-text" id="aiSuggestion">
+                根据您的技能画像，推荐您接单"开发微信小程序商城"，预算 ¥8000，匹配度 95%
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-header">
+                <div class="section-title">🔥 推荐任务</div>
+                <div class="section-more" onclick="viewAll()">查看全部</div>
+            </div>
+            <div id="taskList"></div>
+        </div>
+    </div>
+
+    <button class="fab" onclick="showPublishModal()">＋</button>
+
+    <div class="tab-bar">
+        <div class="tab-item active" onclick="switchTab('home')">
+            <div class="tab-icon">🏠</div>
+            <span>首页</span>
+        </div>
+        <div class="tab-item" onclick="switchTab('chat')">
+            <div class="tab-icon">💬</div>
+            <span>聊天</span>
+            <div class="badge">3</div>
+        </div>
+        <div class="tab-item" onclick="switchTab('plan')">
+            <div class="tab-icon">📋</div>
+            <span>计划</span>
+        </div>
+        <div class="tab-item" onclick="switchTab('profile')">
+            <div class="tab-icon">👤</div>
+            <span>我的</span>
+        </div>
+    </div>
+
+    <script>
+        let tasks = [
+            {
+                id: 1,
+                title: "开发微信小程序商城",
+                desc: "需要开发完整的微信小程序商城，包含商品展示、购物车、支付等功能模块",
+                category: "开发",
+                budget: 8000,
+                publisher: "李*",
+                time: "2小时前",
+                matchScore: 95
+            },
+            {
+                id: 2,
+                title: "设计企业官网首页",
+                desc: "现代化企业官网首页设计，风格简洁大气，符合企业级标准",
+                category: "设计",
+                budget: 2000,
+                publisher: "张*",
+                time: "5小时前",
+                matchScore: 88
+            },
+            {
+                id: 3,
+                title: "撰写产品宣传文案",
+                desc: "为新产品撰写吸引眼球的宣传文案，要求转化率高",
+                category: "文案",
+                budget: 500,
+                publisher: "王*",
+                time: "1天前",
+                matchScore: 92
+            }
+        ];
+
+        let currentCategory = '全部';
+
+        function init() {
+            renderTasks();
+            startAISuggestionRotation();
+        }
+
+        function renderTasks() {
+            const taskList = document.getElementById('taskList');
+            const filteredTasks = currentCategory === '全部' 
+                ? tasks 
+                : tasks.filter(t => t.category === currentCategory);
+
+            taskList.innerHTML = '';
+            filteredTasks.forEach(task => {
+                const taskElement = createTaskElement(task);
+                taskList.appendChild(taskElement);
+            });
+        }
+
+        function createTaskElement(task) {
+            const div = document.createElement('div');
+            div.className = 'task-card';
+            div.onclick = () => viewTask(task.id);
+            div.innerHTML = `
+                <div class="task-top">
+                    <span class="task-tag">${task.category}</span>
+                    <span class="task-price">¥${task.budget}</span>
+                </div>
+                <div class="task-title">${task.title}</div>
+                <div class="task-desc">${task.desc}</div>
+                <div class="task-bottom">
+                    <div class="task-user">
+                        <div class="user-avatar">${task.publisher[0]}</div>
+                        <span class="user-name">${task.publisher}</span>
+                    </div>
+                    <span class="task-time">${task.time}</span>
+                </div>
+            `;
+            return div;
+        }
+
+        function filterByCategory(category) {
+            currentCategory = category;
+            renderTasks();
+            showNotification(`已筛选：${category}`);
+        }
+
+        function viewTask(id) {
+            window.location.href = `task-detail.html?id=${id}`;
+        }
+
+        function viewAll() {
+            currentCategory = '全部';
+            renderTasks();
+            showNotification('显示全部任务');
+        }
+
+        function showPublishModal() {
+            showNotification('打开发布页面...');
+            setTimeout(() => {
+                window.location.href = 'publish.html';
+            }, 500);
+        }
+
+        function switchTab(tab) {
+            const tabs = document.querySelectorAll('.tab-item');
+            tabs.forEach(t => t.classList.remove('active'));
+            event.currentTarget.classList.add('active');
+
+            const pages = {
+                'home': 'index.html',
+                'chat': 'chat.html',
+                'plan': 'plan.html',
+                'profile': 'profile.html'
+            };
+
+            if (pages[tab] && pages[tab] !== 'index.html') {
+                window.location.href = pages[tab];
+            }
+        }
+
+        function showNotification(message) {
+            const existing = document.querySelector('.notification');
+            if (existing) existing.remove();
+
+            const notification = document.createElement('div');
+            notification.className = 'notification';
+            notification.textContent = message;
+            notification.style.cssText = `
+                position: fixed;
+                top: 60px;
+                left: 50%;
+                transform: translateX(-50%);
+                background: #34c759;
+                color: white;
+                padding: 12px 24px;
+                border-radius: 8px;
+                font-size: 14px;
+                font-weight: 500;
+                z-index: 3000;
+                animation: slideDown 0.3s ease-out;
+                white-space: nowrap;
+            `;
+            document.body.appendChild(notification);
+
+            setTimeout(() => notification.remove(), 2000);
+        }
+
+        function startAISuggestionRotation() {
+            const suggestions = [
+                "根据您的技能画像，推荐您接单"开发微信小程序商城"，预算 ¥8000，匹配度 95%",
+                "您擅长设计，刚发布了一个企业官网项目，预算 ¥2000，建议立即抢单",
+                "本周任务完成率 100%，系统为您匹配了 3 个高预算任务",
+                "检测到您有空闲时间，推荐接单"撰写产品文案"，预计 2 小时完成"
+            ];
+
+            let index = 0;
+            setInterval(() => {
+                index = (index + 1) % suggestions.length;
+                document.getElementById('aiSuggestion').textContent = suggestions[index];
+            }, 5000);
+        }
+
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function() {
+                navigator.serviceWorker.register('service-worker.js');
+            });
+        }
+
+        init();
+    </script>
+</body>
+</html>

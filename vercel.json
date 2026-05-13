@@ -1,0 +1,32 @@
+{
+  "version": 2,
+  "name": "万能任务APP",
+  "builds": [
+    {
+      "src": "mobile-preview.html",
+      "use": "@vercel/static"
+    },
+    {
+      "src": "install-guide.html",
+      "use": "@vercel/static"
+    },
+    {
+      "src": "generate-icons.html",
+      "use": "@vercel/static"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/",
+      "dest": "/mobile-preview.html"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/$1"
+    }
+  ],
+  "github": {
+    "enabled": true,
+    "autoAlias": true
+  }
+}

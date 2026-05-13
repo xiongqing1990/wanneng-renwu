@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>万能任务APP - 最终版预览</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #07C160 0%, #06ad56 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .header {
+            text-align: center;
+            color: white;
+            padding: 20px 0;
+        }
+        
+        .app-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        
+        .phone {
+            background: #f0f0f0;
+            border-radius: 40px;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            width: 300px;
+            height: 580px;
+            margin: 0 auto;
+            position: relative;
+        }
+        
+        .phone::before {
+            content: '';
+            position: absolute;
+            top: 8px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 70px;
+            height: 20px;
+            background: #333;
+            border-radius: 12px;
+            z-index: 10;
+        }
+        
+        .screen {
+            height: 100%;
+            overflow: hidden;
+            background: #f0f0f0;
+            position: relative;
+        }
+        
+        .page { display: none; height: 100%; flex-direction: column; }
+        .page.active { display: flex; }
+        
+        /* Tabbar */
+        .tabbar {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: #f7f7f7;
+            display: flex;
+            border-top: 1px solid #dcdcdc;
+            padding: 8px 0;
+            z-index: 100;
+        }
+        
+        .tabbar-item {
+            flex: 1;
+            text-align: center;
+            font-size: 9px;
+            color: #999;
+            position: relative;
+            cursor: pointer;
+        }
+        
+        .tabbar-item.active { color: #07C160; }
+        .tabbar-item .icon { font-size: 20px; display: block; margin-bottom: 2px; }
+        .tabbar-item .badge {
+            position: absolute;
+            top: -3px;
+            right: 50%;
+            transform: translateX(20px);
+            background: #f43530;
+            color: white;
+            font-size: 9px;
+            min-width: 14px;
+            height: 14px;
+            border-radius: 7px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 3px;
+        }
+        
+        /* 聊天详情页 */
+        .chat-detail-page { background: #ededed; }
+        
+        .chat-detail-page .header-bar {
+            background: #f7f7f7;
+            text-align: center;
+            padding: 12px;
+            font-size: 15px;
+            font-weight: bold;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        .chat-detail-page .messages {
+            flex: 1;
+            padding: 12px;
+            overflow-y: auto;
+        }
+        
+        .chat-detail-page .msg-item {
+            display: flex;
+            margin-bottom: 12px;
+            align-items: flex-start;
+        }
+        
+        .chat-detail-page .msg-item.my { flex-direction: row-reverse; }
+        
+        .chat-detail-page .msg-item .avatar {
+            width: 36px;
+            height: 36px;
+            background: #ddd;
+            border-radius: 4px;
+            margin: 0 6px;
+            flex-shrink: 0;
+        }
+        
+        .chat-detail-page .msg-item .bubble {
+            max-width: 200px;
+            padding: 8px 10px;
+            border-radius: 5px;
+            font-size: 13px;
+            line-height: 1.4;
+        }
+        
+        .chat-detail-page .msg-item.other .bubble { background: white; }
+        .chat-detail-page .msg-item.my .bubble { background: #07C160; color: white; }
+        
+        .chat-detail-page .input-area {
+            background: #f7f7f7;
+            padding: 8px 12px;
+            display: flex;
+            align-items: center;
+            border-top: 1px solid #dcdcdc;
+        }
+        
+        .chat-detail-page .input-area .more-btn { font-size: 20px; color: #666; margin-right: 8px; }
+        .chat-detail-page .input-area input {
+            flex: 1;
+            background: white;
+            padding: 6px 10px;
+            border-radius: 4px;
+            font-size: 13px;
+            border: 1px solid #e0e0e0;
+        }
+        
+        .chat-detail-page .input-area .send-btn {
+            background: #07C160;
+            color: white;
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-size: 12px;
+            margin-left: 6px;
+        }
+        
+        /* 消息列表 */
+        .chat-list-page { background: white; }
+        
+        .chat-list-page .header-bar {
+            background: #f7f7f7;
+            text-align: center;
+            padding: 12px;
+            font-size: 15px;
+            font-weight: bold;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        .chat-list-page .chat-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 15px;
+            border-bottom: 1px solid #f0f0f0;
+            cursor: pointer;
+        }
+        
+        .chat-list-page .avatar {
+            width: 44px;
+            height: 44px;
+            background: #ddd;
+            border-radius: 4px;
+            margin-right: 10px;
+        }
+        
+        .chat-list-page .chat-info { flex: 1; }
+        .chat-list-page .chat-info .name { font-size: 14px; font-weight: bold; margin-bottom: 3px; }
+        .chat-list-page .chat-info .msg { font-size: 12px; color: #999; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 150px; }
+        .chat-list-page .time { font-size: 10px; color: #999; }
+        .chat-list-page .unread { background: #f43530; color: white; font-size: 10px; min-width: 16px; height: 16px; border-radius: 8px; display: flex; align-items: center; justify-content: center; padding: 0 4px; margin-top: 5px; }
+        
+        /* 首页 */
+        .home-page { background: white; }
+        .home-page .search-bar { background: #07C160; padding: 12px; }
+        .home-page .search-bar input { background: white; border-radius: 4px; padding: 6px 12px; border: none; width: 100%; font-size: 13px; }
+        .home-page .content { padding: 12px; }
+        .home-page .task-card { background: white; border-radius: 8px; padding: 10px; margin-bottom: 10px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        .home-page .user { display: flex; align-items: center; margin-bottom: 8px; }
+        .home-page .avatar { width: 32px; height: 32px; background: #ddd; border-radius: 4px; margin-right: 8px; }
+        .home-page .name { font-size: 13px; font-weight: bold; }
+        .home-page .time { font-size: 10px; color: #999; margin-left: auto; }
+        .home-page .title { font-size: 14px; font-weight: bold; margin-bottom: 5px; }
+        .home-page .desc { font-size: 12px; color: #666; margin-bottom: 8px; }
+        .home-page .tags { display: flex; gap: 6px; align-items: center; }
+        .home-page .budget { color: #07C160; font-weight: bold; font-size: 12px; }
+        .home-page .deposit { color: #ff9800; font-size: 11px; }
+        .home-page .stats { margin-left: auto; font-size: 11px; color: #999; }
+        
+        /* 发布页 */
+        .publish-page { background: white; }
+        .publish-page .header-bar { background: #f7f7f7; text-align: center; padding: 12px; font-size: 15px; font-weight: bold; border-bottom: 1px solid #e0e0e0; }
+        .publish-page .form { padding: 15px; flex: 1; overflow-y: auto; }
+        .publish-page .form-item { margin-bottom: 12px; }
+        .publish-page .form-item label { display: block; font-size: 12px; font-weight: bold; margin-bottom: 6px; }
+        .publish-page .form-item input, .publish-page .form-item textarea { width: 100%; padding: 8px; border: 1px solid #e0e0e0; border-radius: 4px; font-size: 13px; }
+        .publish-page .form-item textarea { height: 60px; }
+        .publish-page .tags { display: flex; flex-wrap: wrap; gap: 6px; }
+        .publish-page .tag { padding: 5px 12px; background: #f5f5f5; border-radius: 15px; font-size: 11px; color: #666; }
+        .publish-page .tag.active { background: #07C160; color: white; }
+        .publish-page .upload-box { width: 60px; height: 60px; border: 1px dashed #ddd; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 20px; color: #ddd; }
+        .publish-page .btn-publish { background: #07C160; color: white; text-align: center; padding: 12px; border-radius: 20px; font-size: 14px; font-weight: bold; margin: 10px 15px; }
+        
+        /* 个人中心 */
+        .profile-page { background: white; }
+        .profile-page .header-bar { background: #f7f7f7; text-align: center; padding: 12px; font-size: 15px; font-weight: bold; border-bottom: 1px solid #e0e0e0; }
+        .profile-page .profile-header { background: linear-gradient(135deg, #07C160 0%, #06ad56 100%); padding: 25px 15px; text-align: center; color: white; }
+        .profile-page .profile-header .avatar { width: 56px; height: 56px; background: white; border-radius: 8px; margin: 0 auto 8px; }
+        .profile-page .profile-header .name { font-size: 15px; font-weight: bold; }
+        .profile-page .profile-header .id { font-size: 11px; opacity: 0.8; }
+        .profile-page .stats-row { display: flex; padding: 15px 0; background: white; }
+        .profile-page .stats-row .stat-item { flex: 1; text-align: center; display: flex; flex-direction: column; }
+        .profile-page .stats-row .num { font-size: 18px; font-weight: bold; }
+        .profile-page .stats-row .label { font-size: 11px; color: #999; }
+        .profile-page .credit-card { background: #f9f9f9; margin: 10px; padding: 12px; border-radius: 8px; }
+        .profile-page .credit-header { display: flex; justify-content: space-between; margin-bottom: 8px; }
+        .profile-page .credit-header .title { font-size: 12px; font-weight: bold; }
+        .profile-page .credit-header .score { font-size: 16px; font-weight: bold; color: #07C160; }
+        .profile-page .credit-bar { height: 6px; background: #e0e0e0; border-radius: 3px; overflow: hidden; }
+        .profile-page .credit-bar .bar { height: 100%; background: #07C160; width: 75%; }
+        .profile-page .menu-section { padding: 0 10px; }
+        .profile-page .menu-section .section-title { font-size: 12px; color: #999; display: block; padding: 12px 0 8px; }
+        .profile-page .menu-item { display: flex; align-items: center; padding: 10px 0; border-bottom: 1px solid #f5f5f5; }
+        .profile-page .menu-item .icon { font-size: 18px; margin-right: 10px; }
+        .profile-page .menu-item .label { flex: 1; font-size: 13px; }
+        .profile-page .menu-item .badge { background: #f43530; color: white; font-size: 10px; min-width: 16px; height: 16px; border-radius: 8px; display: flex; align-items: center; justify-content: center; padding: 0 4px; }
+        
+        /* 设置页 */
+        .settings-page { background: #f5f5f5; }
+        .settings-page .header-bar { background: #f7f7f7; text-align: center; padding: 12px; font-size: 15px; font-weight: bold; border-bottom: 1px solid #e0e0e0; }
+        .settings-page .section { background: white; margin: 10px; border-radius: 8px; }
+        .settings-page .section-title { display: block; padding: 10px 12px 6px; font-size: 11px; color: #999; }
+        .settings-page .menu-item { display: flex; align-items: center; padding: 12px; border-bottom: 1px solid #f5f5f5; }
+        .settings-page .menu-item:last-child { border-bottom: none; }
+        .settings-page .menu-item .icon { font-size: 18px; margin-right: 10px; }
+        .settings-page .menu-item .label { flex: 1; font-size: 13px; }
+        .settings-page .btn-logout { background: white; padding: 14px; text-align: center; border-radius: 8px; color: #f43530; font-size: 14px; margin: 20px 10px; }
+        
+        /* 帮助页 */
+        .help-page { background: white; }
+        .help-page .header-bar { background: #f7f7f7; text-align: center; padding: 12px; font-size: 15px; font-weight: bold; border-bottom: 1px solid #e0e0e0; }
+        .help-page .section { padding: 15px; border-bottom: 1px solid #f5f5f5; }
+        .help-page .section-title { font-size: 14px; font-weight: bold; margin-bottom: 12px; }
+        .help-page .faq-item { margin-bottom: 10px; }
+        .help-page .question { font-size: 13px; font-weight: bold; margin-bottom: 5px; }
+        .help-page .answer { font-size: 12px; color: #666; line-height: 1.5; }
+        
+        .intro { max-width: 1400px; margin: 30px auto 0; color: white; text-align: center; padding: 20px; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>📋 万能任务APP - 功能预览</h1>
+        <p>点击底部导航切换页面</p>
+    </div>
+    
+    <div class="app-container">
+        <!-- 聊天详情 -->
+        <div class="phone">
+            <div class="screen">
+                <div class="page chat-detail-page active" id="p-chat-detail">
+                    <div class="header-bar">小明</div>
+                    <div class="messages">
+                        <div class="msg-item other"><div class="avatar"></div><div class="bubble">你好，我看到你发布的电影票任务</div></div>
+                        <div class="msg-item my"><div class="bubble">是的，我想买5月15日的</div><div class="avatar"></div></div>
+                        <div class="msg-item other"><div class="avatar"></div><div class="bubble">可以的，15元一张</div></div>
+                        <div class="msg-item my"><div class="bubble">好的，怎么交易？</div><div class="avatar"></div></div>
+                        <div class="msg-item other"><div class="avatar"></div><div class="bubble">先付10元押金</div></div>
+                    </div>
+                    <div class="input-area"><span class="more-btn">➕</span><input type="text" placeholder="发给小明"><span class="send-btn">发送</span></div>
+                </div>
+                <div class="tabbar">
+                    <div class="tabbar-item" onclick="showPage('p-home')"><span class="icon">🏠</span>首页</div>
+                    <div class="tabbar-item" onclick="showPage('p-publish')"><span class="icon">➕</span>发布</div>
+                    <div class="tabbar-item" onclick="showPage('p-chat-list')"><span class="icon">💬</span>消息<span class="badge">2</span></div>
+                    <div class="tabbar-item" onclick="showPage('p-profile')"><span class="icon">👤</span>我的</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 消息列表 -->
+        <div class="phone">
+            <div class="screen">
+                <div class="page chat-list-page" id="p-chat-list">
+                    <div class="header-bar">消息</div>
+                    <div class="chat-item" onclick="showPage('p-chat-detail')">
+                        <div class="avatar"></div>
+                        <div class="chat-info"><div class="name">小明</div><div class="msg">好的，没问题</div></div>
+                        <div><div class="time">10:30</div><div class="unread">2</div></div>
+                    </div>
+                    <div class="chat-item">
+                        <div class="avatar"></div>
+                        <div class="chat-info"><div class="name">大王</div><div class="msg">金币还在吗</div></div>
+                        <div><div class="time">昨天</div></div>
+                    </div>
+                    <div class="chat-item">
+                        <div class="avatar"></div>
+                        <div class="chat-info"><div class="name">小红</div><div class="msg">5折券有的</div></div>
+                        <div><div class="time">昨天</div></div>
+                    </div>
+                </div>
+                <div class="tabbar">
+                    <div class="tabbar-item" onclick="showPage('p-home')"><span class="icon">🏠</span>首页</div>
+                    <div class="tabbar-item" onclick="showPage('p-publish')"><span class="icon">➕</span>发布</div>
+                    <div class="tabbar-item active" onclick="showPage('p-chat-list')"><span class="icon">💬</span>消息<span class="badge">2</span></div>
+                    <div class="tabbar-item" onclick="showPage('p-profile')"><span class="icon">👤</span>我的</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 首页 -->
+        <div class="phone">
+            <div class="screen">
+                <div class="page home-page active" id="p-home">
+                    <div class="search-bar"><input type="text" placeholder="搜索任务..."></div>
+                    <div class="content">
+                        <div class="task-card">
+                            <div class="user"><div class="avatar"></div><span class="name">小明</span><span class="time">2分钟前</span></div>
+                            <div class="title">求5月15日电影票2张</div>
+                            <div class="desc">3排5座，预算15元/张</div>
+                            <div class="tags"><span class="budget">💰 ¥30</span><span class="deposit">🔒 ¥10</span><span class="stats">👍12 💬3</span></div>
+                        </div>
+                        <div class="task-card">
+                            <div class="user"><div class="avatar"></div><span class="name">大王</span><span class="time">5分钟前</span></div>
+                            <div class="title">出售游戏金币1000个</div>
+                            <div class="desc">诚心出售，100元</div>
+                            <div class="tags"><span class="budget">💰 ¥100</span><span class="stats">👍8 💬1</span></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="tabbar">
+                    <div class="tabbar-item active" onclick="showPage('p-home')"><span class="icon">🏠</span>首页</div>
+                    <div class="tabbar-item" onclick="showPage('p-publish')"><span class="icon">➕</span>发布</div>
+                    <div class="tabbar-item" onclick="showPage('p-chat-list')"><span class="icon">💬</span>消息<span class="badge">2</span></div>
+                    <div class="tabbar-item" onclick="showPage('p-profile')"><span class="icon">👤</span>我的</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 发布页 -->
+        <div class="phone">
+            <div class="screen">
+                <div class="page publish-page" id="p-publish">
+                    <div class="header-bar">发布任务</div>
+                    <div class="form">
+                        <div class="form-item"><label>标题</label><input type="text" placeholder="一句话说明你的需求"></div>
+                        <div class="form-item"><label>描述</label><textarea placeholder="详细说明你的需求..."></textarea></div>
+                        <div class="form-item"><label>预算（元）</label><input type="text" placeholder="你愿意出的钱"></div>
+                        <div class="form-item"><label>分类</label><div class="tags"><span class="tag active">票券</span><span class="tag">游戏</span><span class="tag">生活</span></div></div>
+                        <div class="form-item"><label>图片</label><div class="upload-box">+</div></div>
+                    </div>
+                    <div class="btn-publish">发布任务</div>
+                </div>
+                <div class="tabbar">
+                    <div class="tabbar-item" onclick="showPage('p-home')"><span class="icon">🏠</span>首页</div>
+                    <div class="tabbar-item active" onclick="showPage('p-publish')"><span class="icon">➕</span>发布</div>
+                    <div class="tabbar-item" onclick="showPage('p-chat-list')"><span class="icon">💬</span>消息<span class="badge">2</span></div>
+                    <div class="tabbar-item" onclick="showPage('p-profile')"><span class="icon">👤</span>我的</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 个人中心 -->
+        <div class="phone">
+            <div class="screen">
+                <div class="page profile-page" id="p-profile">
+                    <div class="header-bar">我的</div>
+                    <div class="profile-header">
+                        <div class="avatar"></div>
+                        <div class="name">用户昵称</div>
+                        <div class="id">ID: 123456</div>
+                    </div>
+                    <div class="stats-row">
+                        <div class="stat-item"><span class="num">12</span><span class="label">任务</span></div>
+                        <div class="stat-item"><span class="num">8</span><span class="label">聊天</span></div>
+                        <div class="stat-item"><span class="num">56</span><span class="label">粉丝</span></div>
+                        <div class="stat-item"><span class="num">30</span><span class="label">关注</span></div>
+                    </div>
+                    <div class="credit-card">
+                        <div class="credit-header"><span class="title">信用分</span><span class="score">750</span></div>
+                        <div class="credit-bar"><div class="bar"></div></div>
+                    </div>
+                    <div class="menu-section">
+                        <div class="section-title">我的服务</div>
+                        <div class="menu-item"><span class="icon">📋</span><span class="label">我的任务</span><span class="badge">2</span></div>
+                        <div class="menu-item"><span class="icon">⭐</span><span class="label">评价</span></div>
+                        <div class="menu-item"><span class="icon">🔒</span><span class="label">保证金</span></div>
+                        <div class="menu-item"><span class="icon">✅</span><span class="label">实名认证</span></div>
+                    </div>
+                    <div class="menu-section">
+                        <div class="section-title">其他</div>
+                        <div class="menu-item"><span class="icon">⚙️</span><span class="label">设置</span></div>
+                        <div class="menu-item"><span class="icon">❓</span><span class="label">帮助反馈</span></div>
+                        <div class="menu-item"><span class="icon">ℹ️</span><span class="label">关于我们</span></div>
+                    </div>
+                </div>
+                <div class="tabbar">
+                    <div class="tabbar-item" onclick="showPage('p-home')"><span class="icon">🏠</span>首页</div>
+                    <div class="tabbar-item" onclick="showPage('p-publish')"><span class="icon">➕</span>发布</div>
+                    <div class="tabbar-item" onclick="showPage('p-chat-list')"><span class="icon">💬</span>消息<span class="badge">2</span></div>
+                    <div class="tabbar-item active" onclick="showPage('p-profile')"><span class="icon">👤</span>我的</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 设置页 -->
+        <div class="phone">
+            <div class="screen">
+                <div class="page settings-page" id="p-settings">
+                    <div class="header-bar">设置</div>
+                    <div class="section">
+                        <div class="section-title">基本设置</div>
+                        <div class="menu-item"><span class="icon">🔔</span><span class="label">新消息通知</span></div>
+                        <div class="menu-item"><span class="icon">🔊</span><span class="label">声音</span></div>
+                        <div class="menu-item"><span class="icon">🌙</span><span class="label">夜间模式</span></div>
+                    </div>
+                    <div class="section">
+                        <div class="section-title">账号安全</div>
+                        <div class="menu-item"><span class="icon">🔑</span><span class="label">修改密码</span></div>
+                        <div class="menu-item"><span class="icon">📱</span><span class="label">更换手机号</span></div>
+                    </div>
+                    <div class="btn-logout">退出登录</div>
+                </div>
+                <div class="tabbar">
+                    <div class="tabbar-item" onclick="showPage('p-home')"><span class="icon">🏠</span>首页</div>
+                    <div class="tabbar-item" onclick="showPage('p-publish')"><span class="icon">➕</span>发布</div>
+                    <div class="tabbar-item" onclick="showPage('p-chat-list')"><span class="icon">💬</span>消息<span class="badge">2</span></div>
+                    <div class="tabbar-item active" onclick="showPage('p-settings')"><span class="icon">👤</span>我的</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 帮助页 -->
+        <div class="phone">
+            <div class="screen">
+                <div class="page help-page" id="p-help">
+                    <div class="header-bar">帮助与反馈</div>
+                    <div class="section">
+                        <div class="section-title">常见问题</div>
+                        <div class="faq-item">
+                            <div class="question">如何发布任务？</div>
+                            <div class="answer">点击底部"发布"按钮，填写任务信息即可发布。</div>
+                        </div>
+                        <div class="faq-item">
+                            <div class="question">押金是什么？</div>
+                            <div class="answer">押金是保障交易双方权益的保证金，任务完成后会退还。</div>
+                        </div>
+                        <div class="faq-item">
+                            <div class="question">遇到骗子怎么办？</div>
+                            <div class="answer">请立即举报，我们会第一时间处理。</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="tabbar">
+                    <div class="tabbar-item" onclick="showPage('p-home')"><span class="icon">🏠</span>首页</div>
+                    <div class="tabbar-item" onclick="showPage('p-publish')"><span class="icon">➕</span>发布</div>
+                    <div class="tabbar-item" onclick="showPage('p-chat-list')"><span class="icon">💬</span>消息<span class="badge">2</span></div>
+                    <div class="tabbar-item" onclick="showPage('p-settings')"><span class="icon">⚙️</span>设置</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="intro">
+        <h2>✅ 已完成功能</h2>
+        <div style="margin-top: 15px; text-align: left; display: inline-block;">
+            <p>✅ <strong>首页</strong> - 瀑布流任务列表 + 搜索</p>
+            <p>✅ <strong>发布</strong> - 一键发布（标题+描述+预算+图片）</p>
+            <p>✅ <strong>消息</strong> - 微信式聊天 + 未读红点</p>
+            <p>✅ <strong>聊天详情</strong> - 绿色/白色气泡 + 输入框</p>
+            <p>✅ <strong>我的</strong> - 个人资料 + 信用分 + 菜单</p>
+            <p>✅ <strong>设置</strong> - 通知 + 账号安全 + 退出登录</p>
+            <p>✅ <strong>帮助</strong> - 常见问题 + 客服</p>
+        </div>
+    </div>
+    
+    <script>
+        function showPage(pageId) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.getElementById(pageId).classList.add('active');
+        }
+    </script>
+</body>
+</html>

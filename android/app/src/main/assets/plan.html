@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#007AFF">
+    <title>计划 - 万能任务</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", sans-serif;
+            background: #f5f5f7;
+            color: #1d1d1f;
+            max-width: 375px;
+            margin: 0 auto;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .status-bar {
+            height: 44px;
+            background: #007AFF;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+            color: white;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .header {
+            background: #007AFF;
+            color: white;
+            padding: 12px 20px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .back-btn {
+            font-size: 24px;
+            cursor: pointer;
+            background: none;
+            border: none;
+            color: white;
+            padding: 0;
+        }
+
+        .header-title {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .add-btn {
+            font-size: 24px;
+            cursor: pointer;
+            background: none;
+            border: none;
+            color: white;
+            padding: 0;
+        }
+
+        .date-nav {
+            display: flex;
+            gap: 8px;
+            padding: 16px 20px;
+            overflow-x: auto;
+            background: white;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .date-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 8px 12px;
+            border-radius: 12px;
+            cursor: pointer;
+            min-width: 48px;
+            transition: all 0.2s;
+        }
+
+        .date-item.active {
+            background: #007AFF;
+            color: white;
+        }
+
+        .date-item:not(.active) {
+            background: #f5f5f7;
+            color: #333;
+        }
+
+        .date-weekday {
+            font-size: 12px;
+            margin-bottom: 4px;
+        }
+
+        .date-day {
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .plan-list {
+            flex: 1;
+            padding: 16px;
+            overflow-y: auto;
+        }
+
+        .plan-group-title {
+            font-size: 13px;
+            color: #999;
+            margin-bottom: 8px;
+            padding-left: 4px;
+        }
+
+        .plan-item {
+            background: white;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+            transition: transform 0.2s;
+        }
+
+        .plan-item:active {
+            transform: scale(0.98);
+        }
+
+        .plan-checkbox {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            border: 2px solid #007AFF;
+            cursor: pointer;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .plan-checkbox.checked {
+            background: #007AFF;
+        }
+
+        .plan-checkbox.checked::after {
+            content: "✓";
+            color: white;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .plan-content {
+            flex: 1;
+        }
+
+        .plan-title {
+            font-size: 15px;
+            font-weight: 500;
+            margin-bottom: 4px;
+        }
+
+        .plan-title.completed {
+            text-decoration: line-through;
+            color: #999;
+        }
+
+        .plan-time {
+            font-size: 12px;
+            color: #999;
+        }
+
+        .plan-tag {
+            font-size: 11px;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-weight: 500;
+        }
+
+        .plan-tag.urgent {
+            background: #ffebee;
+            color: #ff3b30;
+        }
+
+        .plan-tag.normal {
+            background: #e3f2fd;
+            color: #007AFF;
+        }
+
+        .plan-tag.low {
+            background: #e8f5e9;
+            color: #34c759;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #999;
+        }
+
+        .empty-state .icon {
+            font-size: 48px;
+            margin-bottom: 12px;
+        }
+
+        .empty-state p {
+            font-size: 14px;
+        }
+
+        .tab-bar {
+            height: 83px;
+            background: white;
+            border-top: 1px solid #e0e0e0;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding-bottom: 20px;
+        }
+
+        .tab-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            cursor: pointer;
+            color: #999;
+            font-size: 12px;
+        }
+
+        .tab-item.active {
+            color: #007AFF;
+        }
+
+        .tab-icon {
+            font-size: 22px;
+        }
+    </style>
+</head>
+<body>
+    <div class="status-bar">
+        <span>9:41</span>
+        <span>📶 100% 🔋</span>
+    </div>
+
+    <div class="header">
+        <button class="back-btn" onclick="goBack()">←</button>
+        <div class="header-title">📋 我的计划</div>
+        <button class="add-btn" onclick="addPlan()">＋</button>
+    </div>
+
+    <div class="date-nav" id="dateNav"></div>
+
+    <div class="plan-list" id="planList"></div>
+
+    <div class="tab-bar">
+        <div class="tab-item" onclick="switchTab('home')">
+            <div class="tab-icon">🏠</div>
+            <span>首页</span>
+        </div>
+        <div class="tab-item" onclick="switchTab('chat')">
+            <div class="tab-icon">💬</div>
+            <span>聊天</span>
+        </div>
+        <div class="tab-item active">
+            <div class="tab-icon">📋</div>
+            <span>计划</span>
+        </div>
+        <div class="tab-item" onclick="switchTab('profile')">
+            <div class="tab-icon">👤</div>
+            <span>我的</span>
+        </div>
+    </div>
+
+    <script>
+        let plans = [
+            {
+                id: 1,
+                title: "完成小程序商城开发",
+                time: "09:00 - 12:00",
+                tag: "urgent",
+                completed: false,
+                date: "2026-05-12"
+            },
+            {
+                id: 2,
+                title: "设计官网首页",
+                time: "14:00 - 16:00",
+                tag: "normal",
+                completed: false,
+                date: "2026-05-12"
+            },
+            {
+                id: 3,
+                title: "撰写产品文案",
+                time: "16:30 - 17:30",
+                tag: "low",
+                completed: true,
+                date: "2026-05-12"
+            },
+            {
+                id: 4,
+                title: "测试支付功能",
+                time: "10:00 - 11:00",
+                tag: "urgent",
+                completed: false,
+                date: "2026-05-13"
+            }
+        ];
+
+        let selectedDate = '2026-05-12';
+
+        function init() {
+            renderDateNav();
+            renderPlans();
+        }
+
+        function renderDateNav() {
+            const dateNav = document.getElementById('dateNav');
+            const dates = [];
+            
+            // 生成未来7天的日期
+            for (let i = 0; i < 7; i++) {
+                const date = new Date();
+                date.setDate(date.getDate() + i);
+                dates.push(date);
+            }
+
+            dateNav.innerHTML = '';
+            dates.forEach(date => {
+                const dateStr = date.toISOString().split('T')[0];
+                const weekday = ['日', '一', '二', '三', '四', '五', '六'][date.getDay()];
+                const day = date.getDate();
+                
+                const div = document.createElement('div');
+                div.className = `date-item ${dateStr === selectedDate ? 'active' : ''}`;
+                div.onclick = () => selectDate(dateStr);
+                div.innerHTML = `
+                    <div class="date-weekday">周${weekday}</div>
+                    <div class="date-day">${day}</div>
+                `;
+                dateNav.appendChild(div);
+            });
+        }
+
+        function selectDate(dateStr) {
+            selectedDate = dateStr;
+            renderDateNav();
+            renderPlans();
+        }
+
+        function renderPlans() {
+            const planList = document.getElementById('planList');
+            const filteredPlans = plans.filter(p => p.date === selectedDate);
+
+            if (filteredPlans.length === 0) {
+                planList.innerHTML = `
+                    <div class="empty-state">
+                        <div class="icon">📭</div>
+                        <p>当天暂无计划<br/>点击"＋"添加新计划</p>
+                    </div>
+                `;
+                return;
+            }
+
+            // 按完成状态分组
+            const completed = filteredPlans.filter(p => p.completed);
+            const pending = filteredPlans.filter(p => !p.completed);
+
+            planList.innerHTML = '';
+
+            if (pending.length > 0) {
+                const title = document.createElement('div');
+                title.className = 'plan-group-title';
+                title.textContent = `待完成 (${pending.length})`;
+                planList.appendChild(title);
+
+                pending.forEach(plan => {
+                    planList.appendChild(createPlanElement(plan));
+                });
+            }
+
+            if (completed.length > 0) {
+                const title = document.createElement('div');
+                title.className = 'plan-group-title';
+                title.style.marginTop = pending.length > 0 ? '16px' : '0';
+                title.textContent = `已完成 (${completed.length})`;
+                planList.appendChild(title);
+
+                completed.forEach(plan => {
+                    planList.appendChild(createPlanElement(plan));
+                });
+            }
+        }
+
+        function createPlanElement(plan) {
+            const div = document.createElement('div');
+            div.className = 'plan-item';
+            div.innerHTML = `
+                <div class="plan-checkbox ${plan.completed ? 'checked' : ''}" 
+                     onclick="togglePlan(${plan.id})"></div>
+                <div class="plan-content">
+                    <div class="plan-title ${plan.completed ? 'completed' : ''}">${plan.title}</div>
+                    <div class="plan-time">${plan.time}</div>
+                </div>
+                <span class="plan-tag ${plan.tag}">
+                    ${plan.tag === 'urgent' ? '紧急' : plan.tag === 'normal' ? '普通' : '低'}
+                </span>
+            `;
+            return div;
+        }
+
+        function togglePlan(id) {
+            const plan = plans.find(p => p.id === id);
+            if (plan) {
+                plan.completed = !plan.completed;
+                renderPlans();
+                showNotification(plan.completed ? '✅ 已完成' : '↩️ 标记未完成');
+            }
+        }
+
+        function addPlan() {
+            const title = prompt('输入计划内容：');
+            if (!title) return;
+
+            const newPlan = {
+                id: Date.now(),
+                title: title,
+                time: '待定',
+                tag: 'normal',
+                completed: false,
+                date: selectedDate
+            };
+
+            plans.push(newPlan);
+            renderPlans();
+            showNotification('✅ 计划已添加');
+        }
+
+        function goBack() {
+            window.location.href = 'index.html';
+        }
+
+        function switchTab(tab) {
+            const pages = {
+                'home': 'index.html',
+                'chat': 'chat.html',
+                'plan': 'plan.html',
+                'profile': 'profile.html'
+            };
+            if (pages[tab]) {
+                window.location.href = pages[tab];
+            }
+        }
+
+        function showNotification(message) {
+            const existing = document.querySelector('.notification');
+            if (existing) existing.remove();
+
+            const notification = document.createElement('div');
+            notification.className = 'notification';
+            notification.textContent = message;
+            notification.style.cssText = `
+                position: fixed;
+                top: 60px;
+                left: 50%;
+                transform: translateX(-50%);
+                background: #34c759;
+                color: white;
+                padding: 12px 24px;
+                border-radius: 8px;
+                font-size: 14px;
+                font-weight: 500;
+                z-index: 3000;
+                animation: slideDown 0.3s ease-out;
+                white-space: nowrap;
+            `;
+            document.body.appendChild(notification);
+
+            setTimeout(() => notification.remove(), 2000);
+        }
+
+        // 添加CSS动画
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideDown {
+                from {
+                    transform: translateX(-50%) translateY(-100%);
+                    opacity: 0;
+                }
+                to {
+                    transform: translateX(-50%) translateY(0);
+                    opacity: 1;
+                }
+            }
+        `;
+        document.head.appendChild(style);
+
+        init();
+    </script>
+</body>
+</html>
