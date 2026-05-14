@@ -17,6 +17,24 @@ buildscript {
 
 apply from: "variables.gradle"
 
+// Force Java 17 for ALL subprojects (overrides plugin toolchain defaults)
+subprojects {
+    afterEvaluate { project ->
+        project.tasks.withType(JavaCompile).configureEach {
+            sourceCompatibility = JavaVersion.VERSION_17
+            targetCompatibility = JavaVersion.VERSION_17
+        }
+        project.plugins.withId('com.android.library') {
+            project.android {
+                compileOptions {
+                    sourceCompatibility JavaVersion.VERSION_17
+                    targetCompatibility JavaVersion.VERSION_17
+                }
+            }
+        }
+    }
+}
+
 allprojects {
     repositories {
         google()

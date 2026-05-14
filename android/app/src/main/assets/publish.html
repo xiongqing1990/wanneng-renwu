@@ -3,329 +3,231 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="theme-color" content="#007AFF">
     <title>发布任务 - 万能任务</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            -webkit-tap-highlight-color: transparent;
-        }
+        *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+        body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC",sans-serif;background:#f5f5f5;color:#1d1d1f;max-width:375px;margin:0 auto;min-height:100vh}
+        
+        .header{background:#fff;padding:12px 16px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #eee;padding-top:50px;position:sticky;top:0;z-index:100}
+        .back-btn{font-size:28px;color:#07C160;cursor:pointer;background:none;border:none;font-weight:300;padding:0}
+        .header-title{font-size:17px;font-weight:600}
+        
+        /* 模式切换 */
+        .mode-switch{display:flex;background:#fff;margin:12px;border-radius:14px;padding:4px;box-shadow:0 2rpx 8px rgba(0,0,0,.04)}
+        .mode-btn{flex:1;display:flex;align-items:center;justify-content:center;gap:6px;padding:12px 0;border-radius:12px;font-size:14px;color:#666;cursor:pointer;transition:all .3s;border:none;background:transparent}
+        .mode-btn.active{background:#07C160;color:#fff;font-weight:500;box-shadow:0 3px 10px rgba(7,193,96,.25)}
+        .mode-icon{font-size:18px}
 
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", sans-serif;
-            background: #f5f5f7;
-            color: #1d1d1f;
-            max-width: 375px;
-            margin: 0 auto;
-            min-height: 100vh;
-        }
+        .form-container{padding:12px;padding-bottom:140px}
+        .form-group{background:#fff;border-radius:14px;padding:18px;margin-bottom:12px;box-shadow:0 1px 6px rgba(0,0,0,.04)}
+        .form-group.highlight{border-left:5px solid #07C160}
+        
+        .section-label{font-size:15px;font-weight:600;color:#1d1d1f;display:block;margin-bottom:14px}
+        .form-label{font-size:13px;color:#666;margin-bottom:8px;display:block;font-weight:500}
+        .optional{font-size:11px;color:#999;margin-left:auto}
+        
+        .form-input{width:100%;padding:12px;border:1.5px solid #e5e5e5;border-radius:10px;font-size:15px;outline:none;transition:border-color .3s}
+        .form-input:focus{border-color:#07C160}
+        .form-textarea{min-height:100px;resize:vertical}
+        
+        /* 任务类型卡片 */
+        .type-cards{display:flex;gap:12px}
+        .type-card{flex:1;padding:16px 12px;border-radius:13px;border:2px solid #eee;text-align:center;cursor:pointer;transition:all .3s}
+        .type-card.active{border-color:#07C160;background:#e8f5e9}
+        .type-icon{font-size:28px;display:block;margin-bottom:6px}
+        .type-name{font-size:14px;font-weight:600;color:#333;display:block;margin-bottom:4px}
+        .type-desc{font-size:11px;color:#999}
+        .type-card.active .type-name{color:#07C160}
 
-        .status-bar {
-            height: 44px;
-            background: #007AFF;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0 20px;
-            color: white;
-            font-size: 14px;
-            font-weight: 600;
-        }
+        /* 预算快捷输入 */
+        .budget-inline{display:flex;align-items:center;margin-bottom:10px}
+        .budget-num{width:130px;padding:12px;border:1.5px solid #e5e5e5;border-radius:10px;font-size:20px;font-weight:bold;text-align:center;outline:none}
+        .yuan{font-size:15px;color:#666;margin-left:6px}
+        .quick-budget-tags{display:flex;gap:8px;flex-wrap:wrap}
+        .qb-tag{padding:7px 20px;border-radius:18px;font-size:13px;color:#333;background:#f5f5f5;border:1.5px solid transparent;cursor:pointer;transition:all .3s}
+        .qb-tag.active{background:#e8f5e9;color:#07C160;border-color:#07C160}
+        
+        /* 分类横向滚动 */
+        .cat-scroll{white-space:nowrap;overflow-x:auto;margin-top:8px;-webkit-overflow-scrolling:touch}
+        .cat-scroll::-webkit-scrollbar{display:none}
+        .cat-pill{display:inline-block;padding:8px 18px;border-radius:18px;font-size:13px;color:#666;background:#f5f5f5;margin-right:8px;cursor:pointer;transition:all .3s}
+        .cat-pill.active{background:#07C160;color:#fff}
 
-        .header {
-            background: #007AFF;
-            color: white;
-            padding: 12px 20px 16px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
+        /* 广告位区域 */
+        .ad-section{border-left:5px solid #ffd700;cursor:pointer}
+        .ad-header{display:flex;justify-content:space-between;align-items:center}
+        .ad-title{font-size:14px;font-weight:500;color:#1d1d1f}
+        .expand-icon{font-size:12px;color:#999}
+        .ad-option{display:flex;align-items:center;padding:12px 0;border-bottom:1px solid #f5f5f5}
+        .ad-radio{width:22px;height:22px;border-radius:50%;border:2px solid #ddd;margin-right:12px;flex-shrink:0;transition:all .3s}
+        .ad-radio.checked{background:#ffd700;border-color:#ffd700}
+        .ad-info{flex:1;display:flex;justify-content:space-between;align-items:center}
+        .ad-name{font-size:14px;font-weight:500}
+        .ad-price{font-size:13px;color:#ff9800;font-weight:bold}
+        .free-ad-tip{display:flex;align-items:center;gap:8px;padding:12px;background:#fff8e1;border-radius:10px;margin-top:10px}
+        .tip-icon{font-size:20px}
+        .tip-text{font-size:12px;color:#666}
+        .highlight-green{color:#07C160;font-weight:bold}
 
-        .back-btn {
-            font-size: 24px;
-            cursor: pointer;
-            background: none;
-            border: none;
-            color: white;
-            padding: 0;
-        }
+        .toggle-more{text-align:center;padding:16px;color:#07C160;font-size:13px;cursor:pointer}
 
-        .header-title {
-            font-size: 18px;
-            font-weight: 600;
-        }
-
-        .form-container {
-            padding: 20px;
-        }
-
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        .form-label {
-            font-size: 14px;
-            color: #666;
-            margin-bottom: 8px;
-            display: block;
-            font-weight: 500;
-        }
-
-        .form-input {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid #e0e0e0;
-            border-radius: 8px;
-            font-size: 16px;
-            outline: none;
-            font-family: inherit;
-            transition: border-color 0.2s;
-        }
-
-        .form-input:focus {
-            border-color: #007AFF;
-        }
-
-        .form-textarea {
-            min-height: 120px;
-            resize: vertical;
-        }
-
-        .form-select {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid #e0e0e0;
-            border-radius: 8px;
-            font-size: 16px;
-            outline: none;
-            background: white;
-            cursor: pointer;
-        }
-
-        .ai-suggest {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 16px;
-            border-radius: 12px;
-            margin-bottom: 20px;
-        }
-
-        .ai-suggest-title {
-            font-size: 14px;
-            font-weight: 600;
-            margin-bottom: 8px;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .ai-suggest-text {
-            font-size: 13px;
-            line-height: 1.5;
-            opacity: 0.95;
-        }
-
-        .btn-publish {
-            width: 100%;
-            padding: 16px;
-            background: #007AFF;
-            color: white;
-            border: none;
-            border-radius: 12px;
-            font-size: 18px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: background 0.2s;
-        }
-
-        .btn-publish:active {
-            background: #0051D5;
-        }
-
-        .btn-auto {
-            width: 100%;
-            padding: 14px;
-            background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
-            color: white;
-            border: none;
-            border-radius: 12px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            margin-top: 12px;
-            transition: transform 0.2s;
-        }
-
-        .btn-auto:active {
-            transform: scale(0.98);
-        }
-
-        .notification {
-            position: fixed;
-            top: 60px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: #34c759;
-            color: white;
-            padding: 12px 24px;
-            border-radius: 8px;
-            font-size: 14px;
-            font-weight: 500;
-            z-index: 3000;
-            animation: slideDown 0.3s ease-out;
-            white-space: nowrap;
-        }
-
-        @keyframes slideDown {
-            from {
-                transform: translateX(-50%) translateY(-100%);
-                opacity: 0;
-            }
-            to {
-                transform: translateX(-50%) translateY(0);
-                opacity: 1;
-            }
-        }
+        .footer{position:fixed;bottom:0;left:0;right:0;background:#fff;padding:14px 16px;padding-bottom:24px;box-shadow:0 -3px 12px rgba(0,0,0,.06);z-index:99}
+        .btn-publish{width:100%;background:linear-gradient(135deg,#07C160,#06AD56);color:#fff;padding:16px;border-radius:30px;font-size:16px;font-weight:bold;border:none;box-shadow:0 4px 16px rgba(7,193,96,.3);cursor:pointer}
+        .btn-publish:active{transform:scale(.97)}
+        
+        .notification{position:fixed;top:50px;left:50%;transform:translateX(-50%);background:#07C160;color:#fff;padding:10px 20px;border-radius:8px;font-size:13px;font-weight:500;z-index:3000;animation:slideDown .3s ease-out}
+        @keyframes slideDown{from{opacity:0;transform:translateX(-50%) translateY(-10px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
     </style>
 </head>
 <body>
-    <div class="status-bar">
-        <span>9:41</span>
-        <span>📶 100% 🔋</span>
-    </div>
 
-    <div class="header">
-        <button class="back-btn" onclick="goBack()">←</button>
-        <div class="header-title">📝 发布任务</div>
-    </div>
+<div class="header">
+    <button class="back-btn" onclick="history.back()">‹</button>
+    <div class="header-title">发布任务</div>
+</div>
 
-    <div class="form-container">
-        <div class="ai-suggest">
-            <div class="ai-suggest-title">
-                🤖 智能建议
-            </div>
-            <div class="ai-suggest-text" id="aiSuggest">
-                根据历史数据，建议预算设为 ¥1500-2500，更容易被接单
-            </div>
-        </div>
+<div class="mode-switch">
+    <button class="mode-btn" id="modeFull" onclick="setMode('full')">📝 完整发布</button>
+    <button class="mode-btn active" id="modeQuick" onclick="setMode('quick')">⚡ 快捷发布</button>
+</div>
 
-        <div class="form-group">
-            <label class="form-label">任务标题</label>
-            <input type="text" class="form-input" id="taskTitle" placeholder="简要描述任务">
-        </div>
+<div class="form-container" id="formContainer"></div>
 
-        <div class="form-group">
-            <label class="form-label">任务分类</label>
-            <select class="form-select" id="taskCategory" onchange="updateSuggest()">
-                <option value="设计">设计</option>
-                <option value="开发">开发</option>
-                <option value="文案">文案</option>
-                <option value="翻译">翻译</option>
-                <option value="视频">视频</option>
-                <option value="其他">其他</option>
-            </select>
-        </div>
+<div class="footer">
+    <button class="btn-publish" onclick="doPublish()" id="publishBtn">⚡ 快捷发布</button>
+</div>
 
-        <div class="form-group">
-            <label class="form-label">任务描述</label>
-            <textarea class="form-input form-textarea" id="taskDesc" placeholder="详细描述任务需求..."></textarea>
-        </div>
+<script>
+let quickMode = true;
+let showAd = false;
+let selectedAdPos = '';
+const categories = [
+    {id:'ticket',name:'🎫 票券'},{id:'dining',name:'🍔 餐饮'},{id:'secondhand',name:'📱 二手'},
+    {id:'life',name:'🏠 生活'},{id:'shopping',name:'🛒 代购'},{id:'transport',name:'🏃 跑腿'},
+    {id:'game',name:'🎮 游戏'}
+];
 
-        <div class="form-group">
-            <label class="form-label">预算（元）</label>
-            <input type="number" class="form-input" id="taskBudget" placeholder="设置任务预算" oninput="updateSuggest()">
-        </div>
+function setMode(mode){
+    quickMode = (mode==='quick');
+    document.getElementById('modeFull').classList.toggle('active',!quickMode);
+    document.getElementById('modeQuick').classList.toggle('active',quickMode);
+    document.getElementById('publishBtn').textContent = quickMode ? '⚡ 快捷发布' : '📝 发布任务';
+    renderForm();
+}
 
-        <div class="form-group">
-            <label class="form-label">截止时间</label>
-            <input type="date" class="form-input" id="taskDeadline">
-        </div>
+function renderForm(){
+    let html = '';
+    
+    if(quickMode){
+        // ===== 快捷模式 =====
+        html += `<div class="form-group highlight">
+            <span class="section-label">🎯 选择任务类型</span>
+            <div class="type-cards">
+                <div class="type-card active" id="tcShort" onclick="selectType('short')"><div class="type-icon">⚡</div><div class="type-name">短期任务</div><div class="type-desc">一人接取即下架</div></div>
+                <div class="type-card" id="tcLong" onclick="selectType('long')"><div class="type-icon">📅</div><div class="type-name">长期任务</div><div class="type-desc">多人可接取长期有效</div></div>
+            </div></div>`;
 
-        <button class="btn-publish" onclick="publishTask()">发布任务</button>
-        <button class="btn-auto" onclick="autoPublish()">🤖 智能发布（自动填写）</button>
-    </div>
+        html += `<div class="form-group">
+            <input type="text" class="form-input" id="title" placeholder="一句话说明需求（如：求购电影票2张）" maxlength="50">
+            <small style="color:#ccc;font-size:11px;display:block;text-align:right;margin-top:4px"><span id="titleCount">0</span>/50</small></div>`;
 
-    <script>
-        const suggestData = {
-            '设计': { min: 1000, max: 3000, suggest: '设计类任务建议预算 ¥1000-3000，包含源文件交付' },
-            '开发': { min: 5000, max: 15000, suggest: '开发类任务建议预算 ¥5000-15000，根据功能复杂度调整' },
-            '文案': { min: 300, max: 1000, suggest: '文案类任务建议预算 ¥300-1000，根据字数和难度调整' },
-            '翻译': { min: 500, max: 1500, suggest: '翻译类任务建议预算 ¥500-1500，根据字数和语种调整' },
-            '视频': { min: 2000, max: 8000, suggest: '视频类任务建议预算 ¥2000-8000，根据时长和质量要求调整' },
-            '其他': { min: 500, max: 2000, suggest: '建议先发布，根据接单者报价调整预算' }
-        };
+        html += `<div class="form-group">
+            <label class="form-label">💰 预算</label>
+            <div class="budget-inline"><input type="number" class="budget-num" id="budget" placeholder="金额"><span class="yuan">元</span></div>
+            <div class="quick-budget-tags">${[5,10,20,50,100].map(v=>`<span class="qb-tag" onclick="setBudget(${v})">${v}</span>`).join('')}</div></div>`;
 
-        function updateSuggest() {
-            const category = document.getElementById('taskCategory').value;
-            const budget = document.getElementById('taskBudget').value;
-            const suggest = suggestData[category];
-            
-            let text = suggest.suggest;
-            
-            if (budget && (parseInt(budget) < suggest.min || parseInt(budget) > suggest.max)) {
-                text += `。当前预算不在推荐范围 ¥${suggest.min}-${suggest.max}，可能影响接单速度`;
-            }
-            
-            document.getElementById('aiSuggest').textContent = text;
-        }
+        html += `<div class="form-group">
+            <label class="form-label">📂 分类</label>
+            <div class="cat-scroll">${categories.map(c=>`<span class="cat-pill" onclick="selectCat(this,'${c.id}')">${c.name}</span>`).join('')}</div></div>`;
 
-        function publishTask() {
-            const title = document.getElementById('taskTitle').value.trim();
-            const category = document.getElementById('taskCategory').value;
-            const desc = document.getElementById('taskDesc').value.trim();
-            const budget = document.getElementById('taskBudget').value;
+        // 广告位
+        html += `<div class="form-group ad-section" onclick="toggleAd()">
+            <div class="ad-header"><span class="ad-title">📢 购买广告位 <small style="color:#999">(选填)</small></span><span class="expand-icon" id="adExpandIcon">▼</span></div>
+            <div id="adOptions" style="display:none">
+                <div class="ad-option" onclick="selectAd('top_pinned')"><div class="ad-radio" id="radio_top"></div><div class="ad-info"><span class="ad-name">📌 置顶推广</span><span class="ad-price">¥5/小时</span></div></div>
+                <div class="ad-option" onclick="selectAd('recommend')"><div class="ad-radio" id="radio_rec"></div><div class="ad-info"><span class="ad-name">🔥 热门推荐</span><span class="ad-price">¥3/小时</span></div></div>
+                <div class="free-ad-tip"><span class="tip-icon">🎁</span><span class="tip-text">您当前有 <span class="highlight-green">1</span> 次免费广告位可用！</span></div>
+            </div></div>`;
 
-            if (!title || !desc || !budget) {
-                showNotification('请填写完整信息', 'warning');
-                return;
-            }
+        // 更多选项
+        html += `<div class="toggle-more" onclick="document.getElementById('moreOpts').style.display=document.getElementById('moreOpts').style.display==='block'?'none':'block'">展开更多选项 ▼</div>`;
+        html += `<div id="moreOpts" style="display:none">
+            <div class="form-group"><label class="form-label">📝 详细描述（选填）</label><textarea class="form-input form-textarea" id="desc" placeholder="补充时间、地点、要求等..." maxlength="500"></textarea></div>
+            <div class="form-group"><label class="form-label">📍 位置（选填）</label><input type="text" class="form-input" id="location" placeholder="点击选择或手动输入"></textarea></div>
+        </div>`;
+    }else{
+        // ===== 完整模式 =====
+        html += `<div class="form-group"><label class="form-label">✚ 标题 <span class="optional">*</span></label><input type="text" class="form-input" id="title" placeholder="简要描述你的需求" maxlength="50"></div>`;
+        
+        html += `<div class="form-group highlight"><span class="section-label">🎯 任务类型</span>
+            <div style="display:flex;gap:10px">
+                <div style="flex:1;padding:14px;border-radius:12px;border:2px solid #eee;text-align:center;cursor:pointer" id="fcShort" onclick="selectTypeF('short')"><b>⚡ 短期任务</b> — 一人接取即下架</div>
+                <div style="flex:1;padding:14px;border-radius:12px;border:2px solid #eee;text-align:center;cursor:pointer" id="fcLong" onclick="selectTypeF('long')"><b>📅 长期任务</b> — 多人可接取</div>
+            </div></div>`;
 
-            showNotification('✅ 任务发布成功！');
-            setTimeout(() => {
-                window.location.href = 'index.html';
-            }, 1500);
-        }
+        html += `<div class="form-group"><label class="form-label">✚ 详细描述 <span class="optional">*</span></label><textarea class="form-input form-textarea" id="desc" placeholder="详细说明需求，包括时间、地点、具体要求等" maxlength="500"></textarea></div>`;
+        
+        html += `<div class="form-group"><label class="form-label">📂 分类</label>
+            <div style="display:flex;flex-wrap:wrap;gap:10px">${categories.map(c=>`<span class="cat-pill" onclick="selectCat(this,'${c.id}')">${c.name}</span>`).join('')}</div></div>`;
 
-        function autoPublish() {
-            // 自动填写示例数据
-            const categories = ['设计', '开发', '文案', '翻译'];
-            const randomCategory = categories[Math.floor(Math.random() * categories.length)];
-            const suggest = suggestData[randomCategory];
-            const randomBudget = Math.floor(Math.random() * (suggest.max - suggest.min)) + suggest.min;
+        html += `<div class="form-group"><label class="form-label">💰 预算(元) <span class="optional">*</span></label><input type="number" class="form-input" id="budget" placeholder="输入金额"></div>`;
 
-            document.getElementById('taskCategory').value = randomCategory;
-            document.getElementById('taskTitle').value = `需要${randomCategory}师完成项目`;
-            document.getElementById('taskDesc').value = `详细描述${randomCategory}需求，包括风格、尺寸、交付物等`;
-            document.getElementById('taskBudget').value = randomBudget;
-            
-            updateSuggest();
-            showNotification('🤖 已自动填写示例数据');
-        }
+        // 广告位
+        html += `<div class="form-group ad-section" onclick="toggleAd()">
+            <div class="ad-header"><span class="ad-title">📢 推广加持 <span class="optional">(选填)</span></span><span class="expand-icon" id="adExpandIcon">▼</span></div>
+            <div id="adOptions" style="display:none">
+                <div class="ad-option" onclick="selectAd('top_pinned')"><div class="ad-radio" id="radio_top"></div><div class="ad-info"><span class="ad-name">📌 置顶推广</span><span class="ad-price">¥5/时</span></div></div>
+                <div class="ad-option" onclick="selectAd('recommend')"><div class="ad-radio" id="radio_rec"></div><div class="ad-info"><span class="ad-name">🔥 热门推荐</span><span class="ad-price">¥3/时</span></div></div>
+                <div class="ad-option" onclick="selectAd('home_banner')"><div class="ad-radio" id="radio_banner"></div><div class="ad-info"><span class="ad-name">🎯 首页Banner</span><span class="ad-price">¥10/天</span></div></div>
+                <div class="free-ad-tip"><span class="tip-icon">🎁</span><span class="tip-text">当前有 <span class="highlight-green">1</span> 次免费广告位！</span></div>
+            </div></div>`;
+    }
 
-        function goBack() {
-            window.location.href = 'index.html';
-        }
+    document.getElementById('formContainer').innerHTML = html;
 
-        function showNotification(message, type = 'success') {
-            const existing = document.querySelector('.notification');
-            if (existing) existing.remove();
+    // 字数统计
+    const titleInput = document.getElementById('title');
+    if(titleInput) titleInput.addEventListener('input', function(){
+        document.getElementById('titleCount').textContent=this.value.length;
+    });
+}
 
-            const notification = document.createElement('div');
-            notification.className = 'notification';
-            notification.textContent = message;
-            notification.style.background = type === 'warning' ? '#ff9500' : '#34c759';
+// 当前选择的类型和分类
+let curType='short';
+let curCat='ticket';
 
-            document.body.appendChild(notification);
+function selectType(t){
+    curType=t;
+    document.querySelectorAll('#tcShort,#tcLong').forEach(el=>el.classList.remove('active'));
+    document.querySelectorAll('#fcShort,#fcLong').forEach(el=>el.style.borderColor='#eee');
+    if(t==='short'){document.getElementById('tcShort')&&document.getElementById('tcShort').classList.add('active');document.getElementById('fcShort')&&(document.getElementById('fcShort').style.borderColor='#07C160')}
+    else{document.getElementById('tcLong')&&document.getElementById('tcLong').classList.add('active');document.getElementById('fcLong')&&(document.getElementById('fcLong').style.borderColor='#07C160')}
+}
+function selectTypeF(t){selectType(t)}
+function setBudget(v){document.getElementById('budget').value=v;document.querySelectorAll('.qb-tag').forEach(el=>el.classList.remove('active'));event.target.classList.add('active')}
+function selectCat(el,id){curCat=id;el.parentElement.querySelectorAll('.cat-pill').forEach(e=>e.classList.remove('active'));el.classList.add('active')}
+function toggleAd(){showAd=!showAd;document.getElementById('adOptions').style.display=showAd?'block':'none';document.getElementById('adExpandIcon').textContent=showAd?'▲':'▼'}
+function selectAd(pos){selectedAdPos=(selectedAdPos===pos)?'':pos;['top','rec','banner'].forEach(p=>{
+    const r=document.getElementById('radio_'+p);if(r)r.className='ad-radio'+((selectedAdPos===p||pos.replace('_pinned',''))?' checked':'')
+})}
 
-            setTimeout(() => notification.remove(), 2000);
-        }
+function doPublish(){
+    const title=document.getElementById('title').value.trim();
+    const budget=document.getElementById('budget').value;
+    if(!title){showNotif('请输入标题');return}
+    if(!budget||Number(budget)<1){showNotif('请填写预算');return}
 
-        // 初始化建议
-        updateSuggest();
-    </script>
+    showNotif('✅ 发布成功！');
+    setTimeout(()=>{window.location.href='index.html'},1200);
+}
+
+function showNotif(msg){
+    const n=document.createElement('div');n.className='notification';n.textContent=msg;document.body.appendChild(n);
+    setTimeout(()=>n.remove(),2000);
+}
+
+// 初始化
+renderForm();
+</script>
 </body>
 </html>

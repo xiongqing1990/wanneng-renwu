@@ -1,19 +1,119 @@
-const API = 'http://127.0.0.1:3100/api';
+const API = (localStorage.getItem('wn_api_base') || '') + '/api';
 let token = localStorage.getItem('wn_token') || '';
 let userId = parseInt(localStorage.getItem('wn_uid')) || 1;
+
+// ===== Mock 数据（离线/演示模式）=====
+var MOCK_TASKS = [
+  { id:1, user_id:2, title:'求5月15日电影票2张', description:'万达影城3排5座，预算15元/张，共2张', category:'票券', catName:'票券', status:'ongoing', budget:30, nickname:'小明', avatar_emoji:'😊', credit_score:480, bid_count:3, likes:12, views:89, images:[], bids:[], publish_time:new Date(Date.now()-3600000).toISOString(), acceptedBidId:0 },
+  { id:2, user_id:3, title:'出售游戏金币1000个', description:'王者荣耀iOS区，诚心出售，可小刀', category:'游戏', catName:'游戏', status:'ongoing', budget:100, nickname:'大王', avatar_emoji:'🎮', credit_score:520, bid_count:5, likes:23, views:156, images:[], bids:[], publish_time:new Date(Date.now()-7200000).toISOString(), acceptedBidId:0 },
+  { id:3, user_id:4, title:'求XX餐厅5折券2张', description:'海底捞或星巴克都行，明天朋友聚餐用', category:'餐饮优惠', catName:'餐饮优惠', status:'ongoing', budget:80, nickname:'小红', avatar_emoji:'🌸', credit_score:490, bid_count:8, likes:45, views:230, images:[], bids:[], publish_time:new Date(Date.now()-86400000).toISOString(), acceptedBidId:0 },
+  { id:4, user_id:5, title:'帮忙取快递送到家门口', description:'菜鸟驿站取3个件，送上门，小区内有电梯', category:'跑腿', catName:'跑腿', status:'assigned', budget:5, nickname:'阿强', avatar_emoji:'💪', credit_score:510, bid_count:1, likes:7, views:45, images:[], bids:[{id:1,user_id:1,nickname:'我',avatar_emoji:'😊',quote:5,message:'我可以帮忙',status:'accepted'}], publish_time:new Date(Date.now()-1800000).toISOString(), acceptedBidId:1 },
+  { id:5, user_id:6, title:'代买喜茶多冰少糖一杯', description:'喜茶(万达店)，芝芝莓莓，多冰少糖', category:'代购', catName:'代购', status:'ongoing', budget:15, nickname:'小李', avatar_emoji:'🍵', credit_score:475, bid_count:2, likes:18, views:67, images:[], bids:[], publish_time:new Date(Date.now()-900000).toISOString(), acceptedBidId:0 },
+  { id:6, user_id:7, title:'求购二手山地车一辆', description:'学生党通勤用，预算有限，200以内能骑就行', category:'二手', catName:'二手', status:'ongoing', budget:200, nickname:'小王', avatar_emoji:'🚲', credit_score:500, bid_count:4, likes:34, views:178, images:[], bids:[], publish_time:new Date(Date.now()-172800000).toISOString(), acceptedBidId:0 },
+  { id:7, user_id:8, title:'帮忙排队买限量球鞋', description:'明天上午9点商场开门，帮排前10名', category:'生活', catName:'生活服务', status:'ongoing', budget:50, nickname:'阿杰', avatar_emoji:'👟', credit_score:530, bid_count:6, likes:56, views:290, images:[], bids:[], publish_time:new Date(Date.now()-3600000).toISOString(), acceptedBidId:0 },
+  { id:8, user_id:2, title:'设计一张活动海报', description:'校园跳蚤市场海报，风格活泼可爱，A3尺寸', category:'其他', catName:'其他', status:'completed', budget:80, nickname:'小明', avatar_emoji:'😊', credit_score:480, bid_count:2, likes:29, views:134, images:[], bids:[{id:2,user_id:1,nickname:'我',avatar_emoji:'😊',quote:80,message:'可以设计',status:'accepted'}], publish_time:new Date(Date.now()-604800000).toISOString(), acceptedBidId:2 }
+];
+var MOCK_USER = { id:1, nickname:'测试用户', avatar_emoji:'😊', credit_score:500, phone:'138****0000', task_count:3, bid_count:5, avg_rating:4.8 };
+var MOCK_CHATS = [
+  { id:1, peer_id:2, peer:{id:2,nickname:'小明',avatar_emoji:'😊'}, lastMsg:'好的，没问题！', lastTime:new Date(Date.now()-1800000).toISOString(), unread:2, task_id:1 },
+  { id:2, peer_id:4, peer:{id:4,nickname:'阿强',avatar_emoji:'💪'}, lastMsg:'已经取到了', lastTime:new Date(Date.now()-3600000).toISOString(), unread:0, task_id:4 }
+];
+var MOCK_CHAT_MSGS = [
+  { id:1, chat_id:1, sender_id:2, content:'你好，电影票还有吗？', type:'text', created_at:new Date(Date.now()-3600000).toISOString() },
+  { id:2, chat_id:1, sender_id:1, content:'有的，你要几张？', type:'text', created_at:new Date(Date.now()-3000000).toISOString() },
+  { id:3, chat_id:1, sender_id:2, content:'要2张，15号晚上的', type:'text', created_at:new Date(Date.now()-2400000).toISOString() },
+  { id:4, chat_id:1, sender_id:1, content:'好的，没问题！', type:'text', created_at:new Date(Date.now()-1800000).toISOString() }
+];
+var mockMsgId = 5;
+var mockTaskId = 9;
+var mockChatId = 3;
+var mockBidId = 10;
+
+function mockResponse(data) {
+  return Promise.resolve({ code:0, data:data });
+}
 
 async function api(path, opts) {
   opts = opts || {};
   var headers = { 'Content-Type': 'application/json', 'x-user-id': String(userId) };
   if (token) headers['Authorization'] = 'Bearer ' + token;
-  try {
-    var res = await fetch(API + path, Object.assign({}, opts, {
-      headers: Object.assign(headers, opts.headers || {})
-    }));
-    return await res.json();
-  } catch (e) {
-    return { code: -1, message: '网络错误，请检查后端服务' };
+
+  // 尝试真实API
+  if (API && API !== '/api') {
+    try {
+      var res = await fetch(API + path, Object.assign({}, opts, {
+        headers: Object.assign(headers, opts.headers || {})
+      }));
+      var json = await res.json();
+      if (json.code === 0) return json;
+      // 真实API返回非0也走mock
+    } catch(e) {}
   }
+
+  // ===== Mock Fallback =====
+  var method = (opts.method || 'GET').toUpperCase();
+  // GET /tasks
+  if (path.match(/^\/tasks(\?|$)/) && method === 'GET') {
+    var params = new URLSearchParams(path.split('?')[1]||'');
+    var cat = params.get('category');
+    var kw = params.get('keyword');
+    var list = MOCK_TASKS.filter(function(t){return t.status==='ongoing'||t.status==='assigned';});
+    if(cat) list=list.filter(function(t){return t.category===cat||t.catName===cat;});
+    if(kw){var k=kw.toLowerCase();list=list.filter(function(t){return t.title.toLowerCase().indexOf(k)>=0||t.description.toLowerCase().indexOf(k)>=0;});}
+    return mockResponse({list:list,total:list.length});
+  }
+  // GET /tasks/:id
+  var tmatch = path.match(/^\/tasks\/(\d+)$/);
+  if(tmatch&&method==='GET'){var t=MOCK_TASKS.find(function(t){return t.id==tmatch[1]});if(t)return mockResponse(JSON.parse(JSON.stringify(t)));}
+  // POST /tasks (发布)
+  if(path==='/tasks'&&method==='POST'){try{var body=JSON.parse(opts.body);var nt={id:++mockTaskId,user_id:userId,title:body.title||'',description:body.description||'',category:body.cat||body.category||'',catName:body.cat||body.category||'',status:'ongoing',budget:parseInt(body.budget)||0,nickname:MOCK_USER.nickname,avatar_emoji:MOCK_USER.avatar_emoji,credit_score:MOCK_USER.credit_score,bid_count:0,likes:0,views:0,images:body.images||[],bids:[],publish_time:new Date().toISOString(),acceptedBidId:0};MOCK_TASKS.unshift(nt);return mockResponse(nt);}catch(ex){}}
+  // POST /tasks/:id/bid (接单)
+  var bmatch=path.match(/^\/tasks\/(\d+)\/bid$/);
+  if(bmatch&&method==='POST'){var bt=MOCK_TASKS.find(function(t){return t.id==bmatch[1]});if(bt){bt.bid_count=(bt.bid_count||0)+1;return mockResponse({id:++mockBidId,user_id:userId,nickname:MOCK_USER.nickname,avatar_emoji:MOCK_USER.avatar_emoji,message:'我可以帮忙',status:'pending'});}}
+  // POST /tasks/:id/accept/:bidId
+  if(path.match(/\/accept\//)&&method==='POST'){return mockResponse({ok:true});}
+  // POST /tasks/:id/complete
+  var cmatch=path.match(/^\/tasks\/(\d+)\/complete$/);
+  if(cmatch&&method==='POST'){var ct=MOCK_TASKS.find(function(t){return t.id==cmatch[1]});if(ct){ct.status='completed';return mockResponse({ok:true});}}
+  // POST /tasks/:id/like
+  var lmatch=path.match(/^\/tasks\/(\d+)\/like$/);
+  if(lmatch&&method==='POST'){return mockResponse({liked:true});}
+  // GET /chats
+  if(path==='/chats'&&method==='GET'){
+    var list=MOCK_CHATS.map(function(c){return{id:c.id,peer_id:c.peer_id,peer:c.peer,lastMsg:c.lastMsg||'',lastTime:c.lastTime||'',unread:c.unread||0,task_id:c.task_id};});
+    return mockResponse({list:list});
+  }
+  // POST /chats
+  if(path==='/chats'&&method==='POST'){return mockResponse({id:++mockChatId,peer:{id:2,nickname:'小明',avatar_emoji:'😊'}});}
+  // GET /chats/:id/messages
+  var mmatch=path.match(/^\/chats\/(\d+)\/messages$/);
+  if(mmatch&&method==='GET'){
+    var cid=parseInt(mmatch[1]);var msgs=MOCK_CHAT_MSGS.filter(function(m){return m.chat_id===cid;});if(cid===2)msgs=[{id:20,chat_id:2,sender_id:4,content:'快递我放门口了',type:'text',created_at:new Date(Date.now()-1800000).toISOString()}];
+    return mockResponse({list:msgs,total:msgs.length});
+  }
+  // POST /chats/:id/messages
+  var smatch=path.match(/^\/chats\/(\d+)\/messages$/);
+  if(smatch&&method==='POST'){try{var sb=JSON.parse(opts.body);var nm={id:++mockMsgId,chat_id:parseInt(smatch[1]),sender_id:userId,content:sb.content,type:sb.type||'text',created_at:new Date().toISOString()};MOCK_CHAT_MSGS.push(nm);return mockResponse(nm);}catch(ex){}}
+  // GET /user/profile
+  if(path==='/user/profile'&&method==='GET'){return mockResponse(MOCK_USER);}
+  // GET /tasks?userId=
+  if(path.indexOf('userId=')>0&&method==='GET'){var uid=parseInt(path.match(/userId=(\d+)/)[1]);var ml=MOCK_TASKS.filter(function(t){return t.user_id===uid;});return mockResponse({list:ml,total:ml.length});}
+  // GET /user/bids
+  if(path==='/user/bids'&&method==='GET'){return mockResponse({list:[]});}
+  // GET /stats/home
+  if(path==='/stats/home'&&method==='GET'){return mockResponse({today:128,hotCat:'票券',activeUsers:56});}
+  // GET /stats/detail
+  if(path==='/stats/detail'&&method==='GET'){return mockResponse({total:256,ongoing:32,completed:189,catStats:[{name:'票券',count:68},{name:'游戏',count:45},{name:'跑腿',count:38},{name:'代购',count:32},{name:'其他',count:43}],topUsers:[]});}
+  // POST /auth/login
+  if(path==='/auth/login'&&method==='POST'){token='mock_token_'+Date.now();localStorage.setItem('wn_token',token);return mockResponse({token:token,user:MOCK_USER});}
+  // POST /ratings
+  if(path==='/ratings'&&method==='POST'){return mockResponse({ok:true,score:5});}
+  // GET /ratings/:userId
+  var rmatch=path.match(/^\/ratings\/(\d+)$/);
+  if(rmatch&&method==='GET'){return mockResponse({list:[]});}
+
+  // 默认返回
+  return Promise.resolve({code:-1,message:'离线演示模式：此操作已模拟成功'});
 }
 
 function compressImage(file, maxW, quality) {
@@ -121,6 +221,8 @@ new Vue({
   mounted: function() {
     this.loadHome();
     this.loadProfile();
+    this.initSwipeBack();
+    this.initAndroidBack();
   },
 
   methods: {
@@ -129,11 +231,90 @@ new Vue({
       document.querySelectorAll('.pg').forEach(function(p) { p.classList.remove('on'); });
       var el = document.getElementById(id);
       if (el) el.classList.add('on');
+      // 记录导航栈（首页不入栈）
+      if (id !== 'pg-home' && id !== 'pg-pub' && id !== 'pg-chats' && id !== 'pg-me') {
+        this._navStack = this._navStack || [];
+        if (this._navStack[this._navStack.length - 1] !== id) {
+          this._navStack.push({ page: id, home: this._curHome || 'pg-home' });
+        }
+      } else {
+        this._navStack = [];
+        this._curHome = id;
+      }
       if (id === 'pg-me') this.loadProfile();
       if (id === 'pg-chats') this.loadChats();
       if (id === 'pg-home') { this.page = 1; this.tasks = []; this.loadTasks(); }
       if (id === 'pg-stats') this.loadStats();
       if (id === 'pg-mytasks') this.loadMyTasks();
+    },
+    goBack: function() {
+      // Android返回 / 左滑返回
+      var stack = this._navStack || [];
+      if (stack.length > 0) {
+        var prev = stack.pop();
+        this.nav(prev.home || 'pg-home');
+      } else {
+        // 当前在首页tab，尝试退出app
+        if (this._canExit) {
+          if (navigator.app) navigator.app.exitApp();
+          else window.history.back();
+        } else {
+          this.toast('再按一次退出');
+          this._canExit = true;
+          var self = this;
+          setTimeout(function() { self._canExit = false; }, 2000);
+        }
+      }
+    },
+    initSwipeBack: function() {
+      var self = this;
+      var appEl = document.getElementById('app');
+      var hint = document.getElementById('swipeHint');
+      var sx = 0, sy = 0, swiping = false, threshold = 80;
+
+      appEl.addEventListener('touchstart', function(e) {
+        // 只在非首页页面、从左边缘开始滑动时触发
+        var curOn = document.querySelector('.pg.on');
+        if (!curOn) return;
+        var pid = curOn.id;
+        if (pid === 'pg-home' || pid === 'pg-pub' || pid === 'pg-chats' || pid === 'pg-me') return;
+        if (e.touches[0].clientX > 20) return;
+        sx = e.touches[0].clientX;
+        sy = e.touches[0].clientY;
+        swiping = true;
+      }, { passive: true });
+
+      appEl.addEventListener('touchmove', function(e) {
+        if (!swiping) return;
+        var dx = e.touches[0].clientX - sx;
+        var dy = e.touches[0].clientY - sy;
+        // 防止垂直滚动误触发
+        if (Math.abs(dy) > Math.abs(dx) * 2.5) { swiping = false; hint.style.width = '0'; return; }
+        if (dx > 0 && dx < 200) {
+          hint.style.width = Math.min(dx / 2, 100) + '%';
+          e.preventDefault();
+        }
+      }, { passive: false });
+
+      appEl.addEventListener('touchend', function(e) {
+        if (!swiping) return;
+        swiping = false;
+        var dx = e.changedTouches[0].clientX - sx;
+        hint.style.width = '0';
+        if (dx > threshold) self.goBack();
+      }, { passive: true });
+    },
+    initAndroidBack: function() {
+      var self = this;
+      document.addEventListener('backbutton', function(e) {
+        e.preventDefault();
+        self.goBack();
+      });
+      // 也监听popstate作为备选
+      window.addEventListener('popstate', function(e) {
+        e.preventDefault();
+        self.goBack();
+      });
     },
 
     // ===== 通用 =====
@@ -346,6 +527,11 @@ new Vue({
     },
 
     // ===== 发布 =====
+    pickPubImage: async function() {
+      if (this.pubImages.length >= 3) { this.toast('最多3张图片'); return; }
+      // 在Capacitor Android中，使用原生的文件选择器
+      document.getElementById('pubFileInput').click();
+    },
     onPubImage: function(e) {
       var self = this;
       var f = e.target.files[0]; if (!f) return;
@@ -421,7 +607,9 @@ new Vue({
       if (r.code === 0) { this.chatMsgs.push(r.data); this.scrollChat(); }
       else { this.toast('发送失败'); }
     },
-    pickChatImage: function() { document.getElementById('chatImgInput').click(); },
+    pickChatImage: function() {
+      document.getElementById('chatImgInput').click();
+    },
     onChatImage: async function(e) {
       var self = this;
       var f = e.target.files[0]; if (!f) return;

@@ -6,549 +6,360 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="万能任务">
-    <meta name="theme-color" content="#007AFF">
+    <meta name="theme-color" content="#07C160">
     <link rel="manifest" href="manifest.json">
     <title>万能任务 - 智能任务平台</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            -webkit-tap-highlight-color: transparent;
-        }
+        *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+        body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC",sans-serif;background:#f5f5f5;color:#1d1d1f;max-width:375px;margin:0 auto;min-height:100vh}
 
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", sans-serif;
-            background: #f5f5f7;
-            color: #1d1d1f;
-            max-width: 375px;
-            margin: 0 auto;
-            min-height: 100vh;
-        }
+        /* 顶部搜索栏 */
+        .header{background:linear-gradient(135deg,#07C160,#06AD56);padding:50px 16px 14px}
+        .search-row{display:flex;align-items:center;gap:10px}
+        .search-box{flex:1;background:#fff;border-radius:24px;padding:10px 16px;display:flex;align-items:center;gap:8px;box-shadow:0 2px 12px rgba(0,0,0,.1)}
+        .search-box input{flex:1;border:none;font-size:14px;outline:none;background:transparent}
+        .search-icon{font-size:16px;color:#999}
+        .ad-btn{width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.25);display:flex;align-items:center;justify-content:center;font-size:18px;cursor:pointer;border:none}
 
-        .status-bar {
-            height: 44px;
-            background: #007AFF;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0 20px;
-            color: white;
-            font-size: 14px;
-            font-weight: 600;
-            position: fixed;
-            top: 0;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 100%;
-            max-width: 375px;
-            z-index: 1000;
-        }
+        /* 分类+类型切换栏 */
+        .category-bar{background:#fff;padding:10px 12px;display:flex;align-items:center;gap:6px;overflow-x:auto;white-space:nowrap;-webkit-overflow-scrolling:touch;box-shadow:0 2px 8px rgba(0,0,0,.04)}
+        .category-bar::-webkit-scrollbar{display:none}
+        .cat-tag{padding:7px 18px;border-radius:20px;font-size:13px;color:#666;background:#f5f5f5;transition:all .3s;cursor:pointer;flex-shrink:0}
+        .cat-tag.active{background:#07C160;color:#fff;font-weight:500;box-shadow:0 3px 10px rgba(7,193,96,.25)}
+        .type-switcher{display:inline-flex;background:#f5f5f5;border-radius:18px;padding:3px;margin-left:auto;flex-shrink:0}
+        .type-btn{padding:6px 14px;border-radius:16px;font-size:12px;color:#666;cursor:pointer;transition:all .3s}
+        .type-btn.active{background:#07C160;color:#fff;font-weight:500}
 
-        .header {
-            background: #007AFF;
-            color: white;
-            padding: 60px 20px 20px;
-        }
+        /* 排序栏 */
+        .sort-bar{display:flex;padding:8px 12px;background:#fff;gap:8px;border-bottom:1px solid #f0f0f0}
+        .sort-tag{padding:6px 14px;border-radius:16px;font-size:12px;color:#666;background:#f9f9f9;cursor:pointer;transition:all .3s}
+        .sort-tag.active{color:#07C160;background:#e8f5e9;font-weight:500}
 
-        .header h1 {
-            font-size: 28px;
-            font-weight: 700;
-            margin-bottom: 4px;
-        }
+        /* 广告位任务卡片（置顶） */
+        .ad-task-card{background:#fff;border-radius:12px;margin:10px 12px;overflow:hidden;position:relative;box-shadow:0 4rpx 16px rgba(255,193,7,.15);border-left:4px solid #ffd700}
+        .ad-badge{position:absolute;top:10px;left:10px;padding:4px 12px;border-radius:6px;font-size:11px;font-weight:bold;z-index:5;display:flex;align-items:center;gap:4px;box-shadow:0 2px 6px rgba(0,0,0,.12)}
+        .ad-level-1{background:#ffeaa7;color:#d68910;border:1px solid #f1c40f}
+        .ad-level-2{background:#fab1a0;color:#d63031;border:1px solid #ff7675}
+        .ad-level-3{background:#74b9ff;color:#0984e3;border:1px solid #0984e3}
+        .ad-level-4{background:#55efc4;color:#00b894;border:1px solid #00b894}
 
-        .header p {
-            font-size: 14px;
-            opacity: 0.9;
-        }
+        /* 任务卡片 */
+        .task-card{background:#fff;border-radius:12px;padding:14px;margin-bottom:10px;box-shadow:0 1px 6px rgba(0,0,0,.06);cursor:pointer;transition:transform .15s;position:relative}
+        .task-card:active{transform:scale(.98)}
 
-        .quick-actions {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 12px;
-            padding: 20px;
-            background: white;
-            margin: -12px 20px 12px;
-            border-radius: 16px;
-            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
-            position: relative;
-            z-index: 10;
-        }
+        /* 发布者行 */
+        .publisher-row{display:flex;align-items:center;margin-bottom:8px}
+        .pub-avatar{width:32px;height:32px;border-radius:50%;border:1.5px solid #eee;margin-right:8px;object-fit:cover;background:linear-gradient(135deg,#667eea,#764ba2);display:flex;align-items:center;justify-content:center;color:#fff;font-size:13px;font-weight:600;flex-shrink:0}
+        .pub-info{flex:1;min-width:0}
+        .pub-name-line{display:flex;align-items:center;gap:5px;flex-wrap:wrap}
+        .pub-nickname{font-size:13px;font-weight:600;color:#1d1d1f;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+        /* 用户等级徽章 */
+        .level-badge{display:inline-flex;align-items:center;gap:2px;padding:1px 7px;border-radius:6px;color:#fff;font-size:10px;line-height:1.4}
+        .level-badge span:first-child{font-size:12px}
+        /* 发布者评级 */
+        .rating-badge{display:inline-flex;align-items:center;gap:2px;font-size:10px;font-weight:600}
 
-        .quick-action-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 6px;
-            cursor: pointer;
-        }
+        .task-title{font-size:15px;font-weight:600;margin-bottom:4px;color:#1d1d1f;line-height:1.4}
+        .task-desc{font-size:12px;color:#888;line-height:1.4;margin-bottom:10px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 
-        .quick-action-icon {
-            width: 48px;
-            height: 48px;
-            border-radius: 14px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 24px;
-        }
+        .card-bottom{display:flex;justify-content:space-between;align-items:center;padding-top:10px;border-top:1px solid #f5f5f5}
+        .budget-row{display:flex;align-items:center;gap:5px}
+        .budget-label{font-size:11px;color:#999}
+        .budget{font-size:17px;font-weight:bold;color:#07C160}
+        .meta-tags{display:flex;gap:6px;align-items:center}
+        .tag-type{font-size:11px;padding:3px 10px;border-radius:6px;font-weight:500}
+        .tag-short{background:#e8f5e9;color:#07C160}
+        .tag-long{background:#e3f2fd;color:#1976D2}
+        .tag-bids{font-size:11px;color:#999}
 
-        .quick-action-name {
-            font-size: 11px;
-            color: #666;
-        }
+        .new-badge{position:absolute;top:10px;left:10px;background:linear-gradient(135deg,#ff6b6b,#ee5a6f);color:#fff;padding:3px 12px;border-radius:10px;font-size:11px;font-weight:bold}
 
-        .section {
-            padding: 20px 20px 12px;
-        }
+        /* 快捷发布栏 */
+        .quick-publish-bar{position:fixed;bottom:70px;left:0;right:0;padding:10px 16px;background:rgba(255,255,255,.95);backdrop-filter:blur(10px);box-shadow:0 -3px 12px rgba(0,0,0,.05);z-index:99}
+        .btn-publish{width:100%;background:linear-gradient(135deg,#07C160,#06AD56);color:#fff;padding:14px;border-radius:28px;font-size:15px;font-weight:bold;border:none;box-shadow:0 4px 16px rgba(7,193,96,.35);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px}
+        .btn-publish:active{transform:scale(.97);opacity:.9}
+        .btn-publish .plus{font-size:22px;font-weight:300;line-height:1}
 
-        .section-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 12px;
-        }
+        /* 底部Tab栏 */
+        .tab-bar{height:72px;background:#fff;border-top:1px solid #e8e8e8;display:flex;justify-content:space-around;align-items:center;padding-bottom:18px;position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:375px;z-index:1000}
+        .tab-item{display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;color:#999;font-size:11px;position:relative}
+        .tab-item.active{color:#07C160}
+        .tab-icon{font-size:22px}
+        .badge{position:absolute;top:-5px;right:-8px;background:#f00;color:#fff;font-size:9px;min-width:15px;height:15px;border-radius:8px;display:flex;align-items:center;justify-content:center;padding:0 3px}
 
-        .section-title {
-            font-size: 18px;
-            font-weight: 600;
-            color: #1d1d1f;
-        }
+        .content{padding-bottom:150px}
 
-        .section-more {
-            font-size: 14px;
-            color: #007AFF;
-            cursor: pointer;
-        }
+        /* 空状态 */
+        .empty{text-align:center;padding:80px 16px}
+        .empty-icon{font-size:64px;display:block;margin-bottom:12px}
+        .empty-text{font-size:16px;color:#999;margin-bottom:6px}
+        .empty-tip{font-size:13px;color:#ccc;margin-bottom:24px}
 
-        .task-card {
-            background: white;
-            border-radius: 12px;
-            padding: 16px;
-            margin-bottom: 12px;
-            box-shadow: 0 1px 4px rgba(0,0,0,0.06);
-            cursor: pointer;
-            transition: transform 0.2s;
-        }
+        /* 加载动画 */
+        .loading{text-align:center;padding:40px;color:#999;font-size:13px}
 
-        .task-card:active {
-            transform: scale(0.98);
-        }
+        /* 分割线提示 */
+        .divider-hint{text-align:center;padding:16px;font-size:12px;color:#ccc;display:flex;align-items:center;gap:12px}
+        .divider-hint:before,.divider-hint:after{content:'';flex:1;height:1px;background:#eee}
 
-        .task-top {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 10px;
-        }
-
-        .task-tag {
-            background: #007AFF;
-            color: white;
-            padding: 4px 10px;
-            border-radius: 6px;
-            font-size: 12px;
-            font-weight: 600;
-        }
-
-        .task-price {
-            font-size: 18px;
-            font-weight: 700;
-            color: #34c759;
-        }
-
-        .task-title {
-            font-size: 16px;
-            font-weight: 600;
-            margin-bottom: 6px;
-            color: #1d1d1f;
-        }
-
-        .task-desc {
-            font-size: 13px;
-            color: #666;
-            line-height: 1.5;
-            margin-bottom: 12px;
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-        }
-
-        .task-bottom {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding-top: 12px;
-            border-top: 1px solid #f0f0f0;
-        }
-
-        .task-user {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .user-avatar {
-            width: 28px;
-            height: 28px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 12px;
-            font-weight: 600;
-        }
-
-        .user-name {
-            font-size: 13px;
-            color: #333;
-        }
-
-        .task-time {
-            font-size: 12px;
-            color: #999;
-        }
-
-        .fab {
-            position: fixed;
-            bottom: 100px;
-            right: 20px;
-            width: 56px;
-            height: 56px;
-            border-radius: 50%;
-            background: #007AFF;
-            color: white;
-            border: none;
-            font-size: 24px;
-            box-shadow: 0 4px 12px rgba(0,122,255,0.4);
-            cursor: pointer;
-            z-index: 100;
-            transition: transform 0.2s;
-        }
-
-        .fab:active {
-            transform: scale(0.9);
-        }
-
-        .tab-bar {
-            height: 83px;
-            background: white;
-            border-top: 1px solid #e0e0e0;
-            display: flex;
-            justify-content: space-around;
-            align-items: center;
-            padding-bottom: 20px;
-            position: fixed;
-            bottom: 0;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 100%;
-            max-width: 375px;
-            z-index: 1000;
-        }
-
-        .tab-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 4px;
-            cursor: pointer;
-            color: #999;
-            font-size: 12px;
-            position: relative;
-        }
-
-        .tab-item.active {
-            color: #007AFF;
-        }
-
-        .tab-icon {
-            font-size: 22px;
-        }
-
-        .badge {
-            position: absolute;
-            top: -6px;
-            right: -10px;
-            background: #ff3b30;
-            color: white;
-            font-size: 10px;
-            min-width: 16px;
-            height: 16px;
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 0 4px;
-        }
-
-        .content {
-            padding-bottom: 100px;
-        }
-
-        .ai-suggestion {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 16px 20px;
-            margin: 0 20px 12px;
-            border-radius: 12px;
-        }
-
-        .ai-suggestion-title {
-            font-size: 14px;
-            font-weight: 600;
-            margin-bottom: 8px;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .ai-suggestion-text {
-            font-size: 13px;
-            line-height: 1.5;
-            opacity: 0.95;
-        }
+        /* notification toast */
+        .notification{position:fixed;top:56px;left:50%;transform:translateX(-50%);background:#07C160;color:#fff;padding:10px 20px;border-radius:8px;font-size:13px;font-weight:500;z-index:3000;animation:slideDown .3s ease-out;white-space:nowrap}
+        @keyframes slideDown{from{opacity:0;transform:translateX(-50%) translateY(-10px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
     </style>
 </head>
 <body>
-    <div class="status-bar">
-        <span>9:41</span>
-        <span>📶 100% 🔋</span>
+
+<!-- 搜索栏 -->
+<div class="header">
+    <div class="search-row">
+        <div class="search-box">
+            <span class="search-icon">🔍</span>
+            <input type="text" id="searchInput" placeholder="搜索任务、服务..." oninput="handleSearch()">
+        </div>
+        <button class="ad-btn" onclick="showAdCenter()">📢</button>
     </div>
+</div>
 
-    <div class="header">
-        <h1>💼 万能任务</h1>
-        <p>智能任务匹配 · 高效完成</p>
-    </div>
+<!-- 分类+类型切换 -->
+<div class="category-bar" id="categoryBar"></div>
 
-    <div class="content">
-        <div class="quick-actions">
-            <div class="quick-action-item" onclick="filterByCategory('设计')">
-                <div class="quick-action-icon" style="background: #fff0f5;">🎨</div>
-                <div class="quick-action-name">设计</div>
-            </div>
-            <div class="quick-action-item" onclick="filterByCategory('开发')">
-                <div class="quick-action-icon" style="background: #f0f8ff;">💻</div>
-                <div class="quick-action-name">开发</div>
-            </div>
-            <div class="quick-action-item" onclick="filterByCategory('文案')">
-                <div class="quick-action-icon" style="background: #f0fff0;">✍️</div>
-                <div class="quick-action-name">文案</div>
-            </div>
-            <div class="quick-action-item" onclick="filterByCategory('翻译')">
-                <div class="quick-action-icon" style="background: #fffacd;">🌐</div>
-                <div class="quick-action-name">翻译</div>
-            </div>
-        </div>
+<!-- 排序选项 -->
+<div class="sort-bar" id="sortBar"></div>
 
-        <div class="ai-suggestion">
-            <div class="ai-suggestion-title">
-                🤖 智能建议
-            </div>
-            <div class="ai-suggestion-text" id="aiSuggestion">
-                根据您的技能画像，推荐您接单"开发微信小程序商城"，预算 ¥8000，匹配度 95%
-            </div>
-        </div>
+<!-- 任务列表 -->
+<div class="content" id="content"></div>
 
-        <div class="section">
-            <div class="section-header">
-                <div class="section-title">🔥 推荐任务</div>
-                <div class="section-more" onclick="viewAll()">查看全部</div>
-            </div>
-            <div id="taskList"></div>
-        </div>
-    </div>
+<!-- 快捷发布按钮 -->
+<div class="quick-publish-bar">
+    <button class="btn-publish" onclick="goPublish()"><span class="plus">+</span>发布任务</button>
+</div>
 
-    <button class="fab" onclick="showPublishModal()">＋</button>
+<!-- Tab栏 -->
+<div class="tab-bar">
+    <div class="tab-item active" onclick="switchTab(this,'home')"><div class="tab-icon">🏠</div><span>首页</span></div>
+    <div class="tab-item" onclick="switchTab(this,'chat')"><div class="tab-icon">💬</div><span>聊天</span><div class="badge">3</div></div>
+    <div class="tab-item" onclick="switchTab(this,'publish')"><div class="tab-icon">➕</div><span>发布</span></div>
+    <div class="tab-item" onclick="switchTab(this,'profile')"><div class="tab-icon">👤</div><span>我的</span></div>
+</div>
 
-    <div class="tab-bar">
-        <div class="tab-item active" onclick="switchTab('home')">
-            <div class="tab-icon">🏠</div>
-            <span>首页</span>
-        </div>
-        <div class="tab-item" onclick="switchTab('chat')">
-            <div class="tab-icon">💬</div>
-            <span>聊天</span>
-            <div class="badge">3</div>
-        </div>
-        <div class="tab-item" onclick="switchTab('plan')">
-            <div class="tab-icon">📋</div>
-            <span>计划</span>
-        </div>
-        <div class="tab-item" onclick="switchTab('profile')">
-            <div class="tab-icon">👤</div>
-            <span>我的</span>
-        </div>
-    </div>
+<script>
+// ========== 等级系统数据 ==========
+const USER_LEVELS = {
+    1:{name:'新手',icon:'🌱',color:'#95a5a6'},2:{name:'初级',icon:'⭐',color:'#3498db'},
+    3:{name:'进阶',icon:'⭐⭐',color:'#2ecc71'},4:{name:'达人',icon:'💎',color:'#9b59b6'},
+    5:{name:'精英',icon:'👑',color:'#f39c12'},6:{name:'专家',icon:'🏆',color:'#e74c3c'},
+    7:{name:'大师',icon:'🔥',color:'#ff6b35'},8:{name:'传奇',icon:'⚡',color:'#1abc9c'},
+    9:{name:'至尊',icon:'👑',color:'#e84393'},10:{name:'荣耀王者',icon:'🏅',color:'#ffd700'}
+};
 
-    <script>
-        let tasks = [
-            {
-                id: 1,
-                title: "开发微信小程序商城",
-                desc: "需要开发完整的微信小程序商城，包含商品展示、购物车、支付等功能模块",
-                category: "开发",
-                budget: 8000,
-                publisher: "李*",
-                time: "2小时前",
-                matchScore: 95
-            },
-            {
-                id: 2,
-                title: "设计企业官网首页",
-                desc: "现代化企业官网首页设计，风格简洁大气，符合企业级标准",
-                category: "设计",
-                budget: 2000,
-                publisher: "张*",
-                time: "5小时前",
-                matchScore: 88
-            },
-            {
-                id: 3,
-                title: "撰写产品宣传文案",
-                desc: "为新产品撰写吸引眼球的宣传文案，要求转化率高",
-                category: "文案",
-                budget: 500,
-                publisher: "王*",
-                time: "1天前",
-                matchScore: 92
-            }
-        ];
+const PUBLISHER_RATINGS = [
+    {level:1,name:'普通',icon:'📝',color:'#999',minCredit:500},
+    {level:2,name:'诚信',icon:'✓',color:'#07C160',minCredit:650},
+    {level:3,name:'优质',icon:'⭐',color:'#f39c12',minCredit:750},
+    {level:4,name:'金牌',icon:'🥇',color:'#FFD700',minCredit:850},
+    {level:5,name:'钻石',icon:'💎',color:'#b8860b',minCredit:950}
+];
 
-        let currentCategory = '全部';
+const AD_BADGE_LEVELS = [
+    {label:'推广',cls:'ad-level-1'},{label:'热门',cls:'ad-level-2'},
+    {label:'精选',cls:'ad-level-3'},{label:'置顶',cls:'ad-level-4'}
+];
 
-        function init() {
-            renderTasks();
-            startAISuggestionRotation();
+const categories = [
+    {id:'all',name:'全部'},{id:'ticket',name:'票券'},{id:'dining',name:'餐饮'},{id:'secondhand',name:'二手'},
+    {id:'life',name:'生活'},{id:'shopping',name:'代购'},{id:'transport',name:'跑腿'},{id:'game',name:'游戏'}
+];
+
+const sortOptions = [
+    {id:'smart',name:'综合排序'},{id:'credit',name:'信用优先 ✓'},{id:'newest',name:'最新发布 🕐'},{id:'budget_high',name:'预算最高 💰'}
+];
+
+// ======== 任务数据（带等级和广告信息）=======
+let allTasks = [
+    // 广告位任务
+    {id:101,title:'【广告】急招代驾司机 日结200+',desc:'长期合作，多劳多得，时间自由',budget:200,
+     publisher:'专业代驾',avatar:'',userLevel:6,credit:920,isAd:true,adLevel:4,
+     category:'life',taskType:'long',bids:15,isVerified:true},
+    {id:102,title:'【推广】iPhone16 Pro Max 低价出',desc:'全新未拆封，比官网便宜800元',budget:7999,
+     publisher:'数码达人王哥',avatar:'',userLevel:8,credit:960,isAd:true,adLevel:3,
+     category:'secondhand',taskType:'short',bids:3,isVerified:true},
+    // 普通任务（按信用分排序）
+    {id:1,title:'求5月15日电影票2张',desc:'3排5座，预算15元/张，万达影城',budget:30,
+     publisher:'小明',avatar:'',userLevel:2,credit:720,isNew:true,
+     category:'ticket',taskType:'short',bids:0,isVerified:true},
+    {id:2,title:'出售游戏金币1000个',desc:'诚心出售，100元可小刀',budget:100,
+     publisher:'大王',avatar:'',userLevel:4,credit:850,
+     category:'game',taskType:'short',bids:2,isVerified:true},
+    {id:3,title:'求XX餐厅5折券',desc:'明天去吃饭，想买2张优惠券',budget:80,
+     publisher:'小红',avatar:'',userLevel:3,credit:700,isNew:true,
+     category:'dining',taskType:'short',bids:1,isVerified:true},
+    {id:4,title:'帮忙取快递（长期招募）',desc:'菜鸟驿站代取，每单3-5元，多劳多得',budget:5,
+     publisher:'阿强',avatar:'',userLevel:5,credit:900,
+     category:'transport',taskType:'long',bids:18,isVerified:true},
+    {id:5,title:'代买奶茶一杯',desc:'喜茶，多冰少糖，送到楼下',budget:15,
+     publisher:'小李',avatar:'',userLevel:1,credit:550,
+     category:'shopping',taskType:'short',bids:0,isVerified:false},
+    {id:6,title:'求购二手自行车',desc:'学生党预算有限，能骑就行',budget:200,
+     publisher:'小王',avatar:'',userLevel:2,credit:620,
+     category:'secondhand',taskType:'short',bids:1,isVerified:false},
+    {id:7,title:'王者荣耀代练 星耀上王者',desc:'需要截图验证段位，安全第一',budget:300,
+     publisher:'游戏大神',avatar:'',userLevel:4,credit:800,
+     category:'game',taskType:'short',bids:5,isVerified:true},
+    {id:8,title:'周末兼职发传单 200/天',desc:'商场门口，包午餐水',budget:200,
+     publisher:'HR小美',avatar:'',userLevel:3,credit:750,isNew:true,
+     category:'life',taskType:'long',bids:32,isVerified:true}
+];
+
+let currentCategory = 'all';
+let taskTypeFilter = 'all'; // all | short | long
+let currentSort = 'smart';
+
+function getPublisherRating(credit) {
+    for(let i=PUBLISHER_RATINGS.length-1;i>=0;i--) if(credit>=PUBLISHER_RATINGS[i].minCredit) return PUBLISHER_RATINGS[i];
+    return PUBLISHER_RATINGS[0];
+}
+
+function renderCategories() {
+    let html = '';
+    categories.forEach(c => {
+        html += `<span class="cat-tag${currentCategory===c.id?' active':''}" onclick="setCategory('${c.id}')">${c.name}</span>`;
+    });
+    // 类型切换
+    html += `<div class="type-switcher">
+        <span class="type-btn${taskTypeFilter==='short'?' active':''}" onclick="setType('short')">⚡短期</span>
+        <span class="type-btn${taskTypeFilter==='long'?' active':''}" onclick="setType('long')">📅长期</span>
+        <span class="type-btn${taskTypeFilter==='all'?' active':''}" onclick="setType('all')">全部</span></div>`;
+    document.getElementById('categoryBar').innerHTML = html;
+}
+
+function renderSortBar() {
+    let html = '';
+    sortOptions.forEach(s => {
+        html += `<span class="sort-tag${currentSort===s.id?' active':''}" onclick="setSort('${s.id}')">${s.name}</span>`;
+    });
+    document.getElementById('sortBar').innerHTML = html;
+}
+
+function setCategory(id){ currentCategory=id; renderTasks(); }
+function setType(type){ taskTypeFilter=type; renderCategories(); renderTasks(); }
+function setSort(id){ currentSort=id; renderSortBar(); renderTasks(); }
+
+function handleSearch(){ renderTasks(); }
+
+function renderTasks() {
+    const kw = (document.getElementById('searchInput').value||'').toLowerCase();
+    let tasks = allTasks.filter(t => {
+        if(currentCategory!=='all'&&t.category!==currentCategory)return false;
+        if(taskTypeFilter!=='all'&&t.taskType!==taskTypeFilter)return false;
+        if(kw && !t.title.toLowerCase().includes(kw)&&!t.desc.toLowerCase().includes(kw))return false;
+        return true;
+    });
+
+    // 排序
+    tasks.sort((a,b)=>{
+        // 广告位始终在前
+        if(a.isAd&&!b.isAd)return -1;
+        if(!a.isAd&&b.isAd)return 1;
+        switch(currentSort){
+            case'smart':return b.credit-a.credit;
+            case'credit':return b.credit-a.credit;
+            case'newest':return b.id-a.id;
+            case'budget_high':return b.budget-a.budget;
+            default:return b.id-a.id;
+        }
+    });
+
+    const container = document.getElementById('content');
+    if(tasks.length===0){
+        container.innerHTML=`<div class="empty"><div class="empty-icon">📭</div><div class="empty-text">暂无相关任务</div><div class="empty-tip">换个条件试试吧</div></div>`;
+        return;
+    }
+
+    let html = '';
+
+    // 分割线：广告位 / 正常任务
+    let adCount = tasks.filter(t=>t.isAd).length;
+    let normalCount = tasks.length - adCount;
+
+    if(adCount>0 && normalCount>0){
+        // 先渲染广告位
+        html += '<div class="divider-hint">— 📌 广告推广 —</div>';
+    }
+
+    tasks.forEach((t,i)=>{
+        const lv = USER_LEVELS[t.userLevel]||USER_LEVELS[1];
+        const rating = getPublisherRating(t.credit);
+        const adInfo = t.isAd ? AD_BADGE_LEVELS[(t.adLevel||1)-1] : null;
+
+        if(i===adCount && normalCount>0 && adCount>0){
+            html += '<div class="divider-hint">— 👍 精选任务 —</div>';
         }
 
-        function renderTasks() {
-            const taskList = document.getElementById('taskList');
-            const filteredTasks = currentCategory === '全部' 
-                ? tasks 
-                : tasks.filter(t => t.category === currentCategory);
+        html += t.isAd ? '<div class="ad-task-card">' : '<div class="task-card">';
+        
+        // 新手标签
+        if(t.isNew && !t.isAd) html += `<div class="new-badge">新</div>`;
 
-            taskList.innerHTML = '';
-            filteredTasks.forEach(task => {
-                const taskElement = createTaskElement(task);
-                taskList.appendChild(taskElement);
-            });
+        // 广告徽章
+        if(adInfo) html += `<div class="ad-badge ${adInfo.cls}">${adInfo.label}</div>`;
+
+        // 发布者行
+        html += `<div class="publisher-row">
+            <div class="pub-avatar">${t.publisher[0]}</div>
+            <div class="pub-info">
+                <div class="pub-name-line">
+                    <span class="pub-nickname">${t.publisher}</span>
+                    <span class="level-badge" style="background:${lv.color}"><span>${lv.icon}</span><span>Lv.${t.userLevel}</span></span>`;
+        if(t.credit >= 650){
+            html += `<span class="rating-badge" style="color:${rating.color}"><span>${rating.icon}</span><span>${rating.name}</span></span>`;
         }
+        html += `</div></div></div>`;
 
-        function createTaskElement(task) {
-            const div = document.createElement('div');
-            div.className = 'task-card';
-            div.onclick = () => viewTask(task.id);
-            div.innerHTML = `
-                <div class="task-top">
-                    <span class="task-tag">${task.category}</span>
-                    <span class="task-price">¥${task.budget}</span>
-                </div>
-                <div class="task-title">${task.title}</div>
-                <div class="task-desc">${task.desc}</div>
-                <div class="task-bottom">
-                    <div class="task-user">
-                        <div class="user-avatar">${task.publisher[0]}</div>
-                        <span class="user-name">${task.publisher}</span>
-                    </div>
-                    <span class="task-time">${task.time}</span>
-                </div>
-            `;
-            return div;
-        }
+        // 标题+描述
+        html += `<div class="task-title">${t.title}</div>`;
+        html += `<div class="task-desc">${t.desc}</div>`;
 
-        function filterByCategory(category) {
-            currentCategory = category;
-            renderTasks();
-            showNotification(`已筛选：${category}`);
-        }
+        // 底部：预算 + 类型标签
+        html += `<div class="card-bottom"><div class="budget-row"><span class="budget-label">预算</span><span class="budget">¥${t.budget}</span></div><div class="meta-tags"><span class="tag-type ${t.taskType==='short'?'tag-short':'tag-long'}">${t.taskType==='short'?'⚡短期':'📅长期'}</span><span class="tag-bids">👥${t.bids||0}人接取</span></div></div>`;
 
-        function viewTask(id) {
-            window.location.href = `task-detail.html?id=${id}`;
-        }
+        html += '</div>';
+    });
 
-        function viewAll() {
-            currentCategory = '全部';
-            renderTasks();
-            showNotification('显示全部任务');
-        }
+    if(normalCount > 0){
+        html += `<div style="text-align:center;padding:16px;font-size:12px;color:#ccc;">— 已展示全部任务 —</div>`;
+    }
 
-        function showPublishModal() {
-            showNotification('打开发布页面...');
-            setTimeout(() => {
-                window.location.href = 'publish.html';
-            }, 500);
-        }
+    container.innerHTML = html;
+}
 
-        function switchTab(tab) {
-            const tabs = document.querySelectorAll('.tab-item');
-            tabs.forEach(t => t.classList.remove('active'));
-            event.currentTarget.classList.add('active');
+function goPublish(){
+    window.location.href='publish.html';
+}
+function showAdCenter(){
+    showNotif('📢 广告中心开发中');
+}
+function viewTask(id){
+    window.location.href='task-detail.html?id='+id;
+}
+function switchTab(el,tab){
+    document.querySelectorAll('.tab-item').forEach(t=>t.classList.remove('active'));
+    el.classList.add('active');
+    const pages={home:'index.html',chat:'chat.html',publish:'publish.html',profile:'profile.html'};
+    if(pages[tab]) window.location.href=pages[tab];
+}
 
-            const pages = {
-                'home': 'index.html',
-                'chat': 'chat.html',
-                'plan': 'plan.html',
-                'profile': 'profile.html'
-            };
+function showNotif(msg){
+    const n=document.createElement('div');n.className='notification';n.textContent=msg;document.body.appendChild(n);
+    setTimeout(()=>n.remove(),2000);
+}
 
-            if (pages[tab] && pages[tab] !== 'index.html') {
-                window.location.href = pages[tab];
-            }
-        }
+// 初始化
+renderCategories();
+renderSortBar();
+renderTasks();
 
-        function showNotification(message) {
-            const existing = document.querySelector('.notification');
-            if (existing) existing.remove();
-
-            const notification = document.createElement('div');
-            notification.className = 'notification';
-            notification.textContent = message;
-            notification.style.cssText = `
-                position: fixed;
-                top: 60px;
-                left: 50%;
-                transform: translateX(-50%);
-                background: #34c759;
-                color: white;
-                padding: 12px 24px;
-                border-radius: 8px;
-                font-size: 14px;
-                font-weight: 500;
-                z-index: 3000;
-                animation: slideDown 0.3s ease-out;
-                white-space: nowrap;
-            `;
-            document.body.appendChild(notification);
-
-            setTimeout(() => notification.remove(), 2000);
-        }
-
-        function startAISuggestionRotation() {
-            const suggestions = [
-                "根据您的技能画像，推荐您接单"开发微信小程序商城"，预算 ¥8000，匹配度 95%",
-                "您擅长设计，刚发布了一个企业官网项目，预算 ¥2000，建议立即抢单",
-                "本周任务完成率 100%，系统为您匹配了 3 个高预算任务",
-                "检测到您有空闲时间，推荐接单"撰写产品文案"，预计 2 小时完成"
-            ];
-
-            let index = 0;
-            setInterval(() => {
-                index = (index + 1) % suggestions.length;
-                document.getElementById('aiSuggestion').textContent = suggestions[index];
-            }, 5000);
-        }
-
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', function() {
-                navigator.serviceWorker.register('service-worker.js');
-            });
-        }
-
-        init();
-    </script>
+// Service Worker
+if('serviceWorker'in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('service-worker.js'));}
+</script>
 </body>
 </html>

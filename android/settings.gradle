@@ -3,3 +3,12 @@ include ':capacitor-cordova-android-plugins'
 project(':capacitor-cordova-android-plugins').projectDir = new File('./capacitor-cordova-android-plugins/')
 
 apply from: 'capacitor.settings.gradle'
+// Disable auto-provisioning of JDK toolchains (we only have JDK 17)
+def javaToolchains = extensions.findByName('javaToolchains')
+if (javaToolchains != null) {
+    javaToolchains {
+        resolveEach {
+            javaVersion = JavaLanguageVersion.of(17)
+        }
+    }
+}
