@@ -8,8 +8,8 @@ android {
         applicationId "com.wanneng.task"
         minSdk rootProject.ext.minSdkVersion
         targetSdk rootProject.ext.targetSdkVersion
-        versionCode 4
-        versionName "4.4"
+        versionCode 7
+        versionName "4.7"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         manifestPlaceholders = [
             manifestPlaceholder: ""

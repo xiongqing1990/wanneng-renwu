@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#EDEDED">
+    <title>聊天 - 万能任务</title>
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+        body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Helvetica Neue",sans-serif;background:#EDEDED;color:#111;max-width:375px;margin:0 auto;height:100vh;display:flex;flex-direction:column;overflow:hidden}
+
+        /* ===== 微信风格导航栏 ===== */
+        .nav-bar{background:#EDEDED;padding:8px 12px;display:flex;align-items:center;gap:8px;border-bottom:1px solid #D9D9D9;flex-shrink:0;padding-top:28px}
+        .nav-back{width:32px;height:32px;display:flex;align-items:center;justify-content:center;font-size:20px;color:#000;cursor:pointer;background:none;border:none}
+        .nav-info{flex:1;display:flex;align-items:center;gap:8px;min-width:0}
+        .nav-avatar{width:36px;height:36px;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:600;color:#fff;flex-shrink:0}
+        .nav-name-area{display:flex;flex-direction:column;min-width:0}
+        .nav-name{font-size:16px;font-weight:500;color:#000;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+        .nav-sub{font-size:11px;color:green;display:flex;align-items:center;gap:3px}
+        .nav-dot{width:7px;height:7px;border-radius:50%;background:green}
+        .nav-actions{display:flex;gap:16px;align-items:center;flex-shrink:0}
+        .nav-btn{font-size:18px;cursor:pointer;background:none;border:none;padding:4px;color:#000}
+
+        /* ===== 聊天主体（微信背景） ===== */
+        .chat-body{flex:1;overflow-y:auto;background:#EDEDED;padding:10px 12px;display:flex;flex-direction:column;gap:2px;-webkit-overflow-scrolling:touch}
+
+        /* 时间分隔 */
+        .time-split{text-align:center;padding:6px 0}
+        .time-split span{background:rgba(0,0,0,.08);color:rgba(0,0,0,.45);font-size:11px;padding:3px 10px;border-radius:4px}
+
+        /* 消息行 */
+        .msg-row{display:flex;align-items:flex-start;gap:6px;margin:4px 0;max-width:85%}
+        .msg-row.self{flex-direction:row-reverse;align-self:flex-end}
+        .msg-row.other{align-self:flex-start}
+
+        /* 头像 */
+        .msg-avatar{width:40px;height:40px;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:14px;color:white;font-weight:600;flex-shrink:0}
+
+        /* 消息气泡容器 */
+        .msg-bubble-wrap{display:flex;flex-direction:column;max-width:260px;position:relative}
+        .msg-row.self .msg-bubble-wrap{align-items:flex-end}
+        .msg-row.other .msg-bubble-wrap{align-items:flex-start}
+
+        /* 发送者名（群聊用，单聊隐藏） */
+        .msg-sender{font-size:12px;color:rgba(0,0,0,.35);margin-bottom:2px;margin-left:8px}
+
+        /* 气泡 - 微信风格 */
+        .msg-bubble{padding:9px 11px;border-radius:6px;font-size:15px;line-height:1.5;word-break:break-word;position:relative}
+        /* 绿色气泡(自己) */
+        .msg-row.self .msg-bubble{background:#95EC69;color:#000}
+        /* 白色气泡(对方) */
+        .msg-row.other .msg-bubble{background:#fff;color:#000;box-shadow:0 1px 2px rgba(0,0,0,.08)}
+
+        /* 图片消息 */
+        .msg-img{max-width:200px;max-height:200px;border-radius:4px;display:block}
+        .msg-row.self .msg-img{border-radius:4px}
+        .msg-row.other .msg-img{border-radius:4px}
+
+        /* 语音消息 */
+        .msg-voice{display:flex;align-items:center;gap:6px;min-width:80px;cursor:pointer}
+        .msg-voice-icon{font-size:16px}
+        .msg-voice-len{font-size:13px;color:rgba(0,0,0,.5)}
+        .msg-row.self .msg-voice-icon{transform:scaleX(-1)}
+
+        /* 任务卡片消息 */
+        .msg-task-card{background:#fff;border-radius:6px;padding:10px;width:220px;box-shadow:0 1px 3px rgba(0,0,0,.1);border-left:3px solid #1677FF}
+        .msg-task-title{font-size:14px;font-weight:600;margin-bottom:4px}
+        .msg-task-budget{font-size:15px;font-weight:bold;color:#1677FF}
+        .msg-task-desc{font-size:11px;color:#999;margin-top:4px}
+
+        /* 消息状态 */
+        .msg-status-row{display:flex;align-items:center;gap:3px;margin-top:2px;padding:0 6px}
+        .msg-status-text{font-size:11px;color:rgba(0,0,0,.35)}
+        .msg-fail-icon{font-size:13px;color:red;cursor:pointer}
+
+        /* 引用消息 */
+        .msg-quote{background:rgba(0,0,0,.04);border-left:2px solid #CCC;padding:4px 8px;border-radius:3px;margin-bottom:6px;font-size:12px;color:rgba(0,0,0,.45);max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+        /* ===== 输入区域（微信多行工具栏） ===== */
+        .input-area{background:#F7F7F7;border-top:1px solid #D9D9D9;flex-shrink:0}
+        .input-toolbar{display:flex;align-items:center;padding:8px 10px;gap:6px}
+        .tool-btn{width:30px;height:30px;display:flex;align-items:center;justify-content:center;font-size:20px;cursor:pointer;background:none;border:none;color:#000}
+        .voice-btn-active{color:#1677FF}
+
+        .input-row{display:flex;align-items:center;padding:0 8px 8px;gap:8px}
+        .chat-input-box{flex:1;background:#fff;border:1px solid #D9D9D9;border-radius:6px;padding:8px 12px;font-size:15px;outline:none;min-height:36px;max-height:100px;line-height:1.4;font-family:inherit;transition:border-color .2s}
+        .chat-input-box:focus{border-color:#1677FF}
+        .send-btn{width:40px;height:36px;background:#95EC69;border:none;border-radius:4px;font-size:14px;font-weight:500;color:#000;cursor:pointer;display:flex;align-items:center;justify-content:center}
+        .send-btn:disabled{background:#ECE5CA;color:#BEB496;cursor:not-allowed}
+
+        /* 语音输入模式 */
+        .voice-input-btn{flex:1;background:#fff;border:1px solid #D9D9D9;border-radius:6px;padding:12px;text-align:center;font-size:15px;color:#333;-webkit-user-select:none}
+        .voice-input-btn.recording{background:#EAEAEA;color:red}
+
+        /* 更多功能面板 */
+        .more-panel{background:#F7F7F7;border-top:1px solid #D9D9D9;padding:16px 20px 24px;display:none}
+        .more-panel.show{display:block}
+        .more-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+        .more-item{display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer}
+        .more-icon{width:48px;height:48px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:26px}
+        .more-label{font-size:11px;color:#333}
+
+        /* 公告弹窗 */
+        .announce-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.5);z-index:2000;display:none;align-items:center;justify-content:center}
+        .announce-overlay.show{display:flex}
+        .announce-box{background:#fff;border-radius:14px;width:300px;max-height:400px;overflow:hidden}
+        .announce-header{background:linear-gradient(135deg,#FFD700,#FFA000);padding:16px;text-align:center}
+        .announce-header-icon{font-size:36px}
+        .announce-header-title{font-size:17px;font-weight:600;color:#000;margin-top:6px}
+        .announce-body{padding:16px;max-height:280px;overflow-y:auto}
+        .announce-item{padding:12px 0;border-bottom:1px solid #f0f0f0}
+        .announce-item:last-child{border-bottom:none}
+        .announce-item-tag{display:inline-block;padding:2px 8px;border-radius:4px;font-size:10px;font-weight:600;margin-right:6px}
+        .announce-item-tag.hot{background:#FFF3E0;color:#E65100}
+        .announce-item-tag.new{background:#E3F2FD;color:#1565C0}
+        .announce-item-tag.sys{background:#E8F5E9;color:#2E7D32}
+        .announce-item-title{font-size:14px;font-weight:500;margin-bottom:4px}
+        .announce-item-desc{font-size:12px;color:#888}
+        .announce-item-time{font-size:11px;color:#bbb;margin-top:4px}
+        .announce-close{display:block;width:100%;padding:14px;background:#f5f5f5;border:none;border-top:1px solid #eee;font-size:15px;color:#333;cursor:pointer;font-weight:500}
+
+        /* 图片预览 */
+        .img-preview{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.92);z-index:3000;display:none;align-items:center;justify-content:center}
+        .img-preview.show{display:flex}
+        .img-preview img{max-width:100%;max-height:100%;object-fit:contain}
+        .img-preview-close{position:absolute;top:40px;right:16px;font-size:28px;color:#fff;cursor:pointer;background:none;border:none}
+
+        /* Toast */
+        .toast{position:fixed;top:80px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.75);color:#fff;padding:10px 22px;border-radius:8px;font-size:13px;z-index:4000;white-space:nowrap;animation:fadeInOut 2s ease forwards}
+        @keyframes fadeInOut{0%{opacity:0;transform:translateX(-50%) translateY(-10px)}15%{opacity:1;transform:translateX(-50%) translateY(0)}85%{opacity:1}100%{opacity:0;transform:translateX(-50%) translateY(-10px)}}
+    </style>
+</head>
+<body>
+
+<!-- 导航栏 -->
+<div class="nav-bar">
+    <button class="nav-back" onclick="goBack()">‹</button>
+    <div class="nav-info">
+        <div class="nav-avatar" id="navAvatar" style="background:linear-gradient(135deg,#667eea,#764ba2)">张</div>
+        <div class="nav-name-area">
+            <div class="nav-name" id="navName">张*（发布者）</div>
+            <div class="nav-sub"><span class="nav-dot"></span>在线</div>
+        </div>
+    </div>
+    <div class="nav-actions">
+        <button class="nav-btn" onclick="showAnnounce()">📢</button>
+        <button class="nav-btn" onclick="showToast('语音通话开发中')">📞</button>
+    </div>
+</div>
+
+<!-- 聊天内容 -->
+<div class="chat-body" id="chatBody"></div>
+
+<!-- 输入区 -->
+<div class="input-area">
+    <!-- 工具栏 -->
+    <div class="input-toolbar">
+        <button class="tool-btn" id="voiceToggle" onclick="toggleVoiceMode()">🎤</button>
+        <button class="tool-btn" onclick="showMorePanel()">✚</button>
+    </div>
+
+    <!-- 文字输入行 -->
+    <div class="input-row" id="inputRow">
+        <input type="text" class="chat-input-box" id="msgInput" placeholder="消息..." onkeypress="onKeyPress(event)" onInput="onInputChange()">
+        <button class="send-btn" id="sendBtn" onclick="sendMsg()" disabled>发送</button>
+    </div>
+
+    <!-- 语音输入（默认隐藏） -->
+    <div class="input-row" id="voiceRow" style="display:none">
+        <div class="voice-input-btn" id="voiceBtn" ontouchstart="startVoice()" ontouchend="stopVoice()">按住 说话</div>
+    </div>
+</div>
+
+<!-- 更多功能面板 -->
+<div class="more-panel" id="morePanel">
+    <div class="more-grid">
+        <div class="more-item" onclick="pickImage()">
+            <div class="more-icon" style="background:#E3F2FD">📷</div>
+            <span class="more-label">相册</span>
+        </div>
+        <div class="more-item" onclick="takePhoto()">
+            <div class="more-icon" style="background:#FFF3E0">📸</div>
+            <span class="more-label">拍摄</span>
+        </div>
+        <div class="more-item" onclick="sendTaskCard()">
+            <div class="more-icon" style="background:#E8F5E9">📋</div>
+            <span class="more-label">任务卡片</span>
+        </div>
+        <div class="more-item" onclick="showToast('位置功能开发中')">
+            <div class="more-icon" style="background:#FCE4EC">📍</div>
+            <span class="more-label">位置</span>
+        </div>
+        <div class="more-item" onclick="showToast('红包功能开发中')">
+            <div class="more-icon" style="background#FFF8E1">🧧</div>
+            <span class="more-label">红包</span>
+        </div>
+        <div class="more-item" onClick="showToast('收藏功能开发中')">
+            <div class="more-icon" style="background:#F3E5F5">⭐</div>
+            <span class="more-label">收藏</span>
+        </div>
+    </div>
+</div>
+
+<!-- 公告弹窗 -->
+<div class="announce-overlay" id="announceOverlay" onclick="hideAnnounce(event)">
+    <div class="announce-box" onclick="event.stopPropagation()">
+        <div class="announce-header">
+            <div class="announce-header-icon">📢</div>
+            <div class="announce-header-title">公告与活动</div>
+        </div>
+        <div class="announce-body" id="announceBody"></div>
+        <button class="announce-close" onclick="hideAnnounceDirect()">关闭</button>
+    </div>
+</div>
+
+<!-- 图片预览 -->
+<div class="img-preview" id="imgPreview" onclick="this.classList.remove('show')">
+    <button class="img-preview-close">×</button>
+    <img id="previewImg" src="" alt="">
+</div>
+
+<script src="app-core.js"></script>
+<script src="app-update.js"></script>
+<script>
+// ========== 聊天数据 ==========
+const CHAT_CONTACTS = {
+    1:{name:'张*（发布者）',avatar:'张',avatarBg:'linear-gradient(135deg,#667eea,#764ba2)',online:true},
+    2:{name:'李*（开发者）',avatar:'李',avatarBg:'linear-gradient(135deg,#f093fb,#f5576c)',online:true},
+    3:{name:'王*（客户）',avatar:'王',avatarBg:'linear-gradient(135deg,#4facfe,#00f2fe)',online:false},
+};
+
+const ANNOUNCE_LIST = [
+    {tag:'hot',tagText:'🔥热门',title:'五一劳动节接单奖励翻倍',desc:'5月1日-5月5日期间完成订单，奖励金翻倍！',time:'10分钟前'},
+    {tag:'new',tagText:'🆕新规',title:'加精任务上线啦！',desc:'优质任务可申请加精置顶，获得更多曝光',time:'1小时前'},
+    {tag:'sys',tagText:'📢系统',title:'APP升级至v4.7版本',desc:'新增微信风格聊天界面、加精系统、VIP会员等功能，请及时更新',time:'今天 09:00'},
+];
+
+// 当前聊天ID
+let currentChatId = null;
+let contact = null;
+let voiceMode = false;
+
+// 模拟对话数据
+function getMessages(chatId){
+    const msgs = {
+        1:[
+            {type:'time',text:'今天 09:30'},
+            {type:'other',sender:'张',bg:'#667eea,#764ba2',
+             text:'你好，我对你的设计能力很感兴趣，想聊聊项目细节',time:'09:30'},
+            {type:'self',text:'好的，请问有什么具体需求？',time:'',status:'已读'},
+            {type:'other',sender:'张',bg:'#667eea,#764ba2',
+             text:'需要设计一个企业官网首页，风格要简洁大气，符合企业级标准',time:'09:32'},
+            {type:'self',text:'明白了，我可以帮你设计。有参考网站吗？',time:'',status:'已读'},
+            {type:'other',sender:'张',bg:'#667eea,#764ba2',
+             text:'有的，我发你参考链接。另外预算可以谈到2500，你觉得怎么样？',time:'09:35'},
+            {type:'self',text:'2500可以接受，我先出初稿给你看 👍',time:'',status:'已送达'},
+            {type:'other',sender:'张',bg:'#667eea,#764ba2',
+             text:'太好了！这是需求文档链接和参考网站',time:'09:38',quote:'2500可以接受，我先出初稿给你看'},
+            // 图片消息
+            {type:'other',sender:'张',bg:'#667eea,#764ba2',img:'data:image/svg+xml,'+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="200" height="120" viewBox="0 0 200 120"><rect fill="#e8f5e9" width="200" height="120"/><text x="100" y="55" text-anchor="middle" fill="#1677FF" font-size="14">📄 需求文档.png</text><text x="100" y="75" text-anchor="middle" fill="#999" font-size="11">点击查看大图</text></svg>'),time:'09:38'},
+            // 任务卡片
+            {type:'other',sender:'张',bg:'#667eea,#764ba2',taskCard:{title:'企业官网首页设计',budget:2500,desc:'简洁大气风格，含响应式适配'},time:'09:39'},
+            // 语音消息
+            {type:'other',sender:'张',bg:'#667eea,#764ba2',voice:5,time:'09:40'},
+            {type:'self',text:'收到，我看了下需求，大概3天内出第一版',time:'',status:'已读'},
+            {type:'system',text:'你已添加了张*，现在可以开始聊天了'},
+        ],
+        2:[
+            {type:'time',text:'昨天 20:15'},
+            {type:'other',sender:'李',bg:'#f093fb,#f5576c',
+             text:'小程序商城开发进度80%，预计明天交付',time:'20:15'},
+            {type:'self','text':'好的，支付模块测试了吗？',time:'',status:'已读'},
+            {type:'other',sender:'李',bg:'#f093fb,#f5576c',
+             text:'测了，微信支付沙箱环境跑通了，没问题 ✅',time:'20:18'},
+        ],
+        3:[
+            {type:'time',text:'昨天 16:42'},
+            {type:'other',sender:'王',bg:'#4facfe,#00f2fe',
+             text:'文案质量很好，付款已经转了，查收一下',time:'16:42'},
+            {type:'self',text:'收到了！感谢信任，后续有需求随时找我 😊',time:'',status:'已读'},
+            {type:'other',sender:'王',bg:'#4facfe,#00f2fe',
+             text:'好的好的，合作愉快！',time:'16:45'},
+        ]
+    };
+    return msgs[chatId] || msgs[1];
+}
+
+// ========== 初始化 ==========
+function init(){
+    const params = new URLSearchParams(window.location.search);
+    currentChatId = parseInt(params.get('id')) || 1;
+    contact = CHAT_CONTACTS[currentChatId] || CHAT_CONTACTS[1];
+
+    // 更新导航栏
+    document.getElementById('navAvatar').textContent = contact.avatar;
+    document.getElementById('navAvatar').style.background = contact.avatarBg;
+    document.getElementById('navNavName') || (document.getElementById('navName').textContent = contact.name);
+    document.getElementById('navName').textContent = contact.name;
+    document.querySelector('.nav-dot').style.background = contact.online ? 'green' : '#ccc';
+
+    renderMessages();
+}
+
+// ========== 渲染消息 ==========
+function renderMessages(){
+    const body = document.getElementById('chatBody');
+    const msgs = getMessages(currentChatId);
+    let html = '';
+
+    msgs.forEach(m => {
+        if(m.type === 'time'){
+            html += `<div class="time-split"><span>${m.text}</span></div>`;
+        } else if(m.type === 'system'){
+            html += `<div class="time-split"><span>${m.text}</span></div>`;
+        } else if(m.type === 'self'){
+            html += buildSelfMsg(m);
+        } else {
+            html += buildOtherMsg(m);
+        }
+    });
+
+    body.innerHTML = html;
+    scrollToBottom();
+}
+
+function buildSelfMsg(m){
+    let bubbleContent = '';
+    if(m.quote){
+        bubbleContent += `<div class="msg-quote">${m.quote}</div>`;
+    }
+    if(m.text) bubbleContent += `<div class="msg-bubble">${m.text}</div>`;
+    if(m.img) bubbleContent += `<img class="msg-img" src="${m.img}" onclick="previewImg(this.src)">`;
+    if(m.taskCard){
+        bubbleContent += `<div class="msg-task-card"><div class="msg-task-title">${m.taskCard.title}</div><div class="msg-task-budget">¥${m.taskCard.budget}</div><div class="msg-task-desc">${m.taskCard.desc}</div></div>`;
+    }
+    if(m.voice){
+        bubbleContent += `<div class="msg-voice" onclick="playVoice(this)"><span class="msg-voice-icon">🎙️</span><span class="msg-voice-len">${m.voice}"</span></div>`;
+    }
+
+    let statusHtml = m.status ? `<div class="msg-status-row"><span class="msg-status-text">${m.status}</span></div>` : '';
+
+    return `<div class="msg-row self"><div class="msg-avatar" style="background:linear-gradient(135deg,#4facfe,#00f2fe)">我</div><div class="msg-bubble-wrap">${bubbleContent}${statusHtml}</div></div>`;
+}
+
+function buildOtherMsg(m){
+    let bubbleContent = '';
+    if(m.quote){
+        bubbleContent += `<div class="msg-quote">${m.quote}</div>`;
+    }
+    if(m.text) bubbleContent += `<div class="msg-bubble">${m.text}</div>`;
+    if(m.img) bubbleContent += `<img class="msg-img" src="${m.img}" onclick="previewImg(this.src)" style="border-radius:4px">`;
+    if(m.taskCard){
+        bubbleContent += `<div class="msg-task-card"><div class="msg-task-title">📋 ${m.taskCard.title}</div><div class="msg-task-budget">¥${m.taskCard.budget}</div><div class="msg-task-desc">${m.taskCard.desc}</div></div>`;
+    }
+    if(m.voice){
+        bubbleContent += `<div class="msg-voice" onclick="playVoice(this)"><span class="msg-voice-icon">🎙️</span><span class="msg-voice-len">${m.voice}"</span></div>`;
+    }
+
+    return `<div class="msg-row other"><div class="msg-avatar" style="background:linear-gradient(${m.bg})">${m.sender}</div><div class="msg-bubble-wrap">${bubbleContent}<div class="msg-time" style="font-size:11px;color:rgba(0,0,0,.25);margin-top:3px;margin-left:8px">${m.time}</div></div></div>`;
+}
+
+// ========== 发送消息 ==========
+function sendMsg(){
+    const input = document.getElementById('msgInput');
+    const text = input.value.trim();
+    if(!text) return;
+
+    const body = document.getElementById('chatBody');
+
+    // 自己的消息
+    const selfHtml = buildSelfMsg({text:text,status:'已发送'});
+    body.insertAdjacentHTML('beforeend',selfHtml);
+
+    input.value = '';
+    onInputChange();
+    scrollToBottom();
+
+    // 模拟回复
+    setTimeout(() => {
+        const replies = [
+            '好的，收到！',
+            '没问题 👍',
+            '了解，稍后给你详细方案',
+            '这个可以安排，预计明天出结果',
+            'OK，我们保持沟通~',
+            '收到，谢谢！',
+        ];
+        const reply = replies[Math.floor(Math.random() * replies.length)];
+        const now = new Date();
+        const timeStr = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+        const otherHtml = buildOtherMsg({
+            sender:contact.avatar,
+            bg:contact.avatarBg.replace('linear-gradient(','').replace(')',''),
+            text:reply,
+            time:timeStr
+        });
+        // 修正bg格式
+        body.lastElementChild.outerHTML = buildOtherMsg({
+            sender:contact.avatar,
+            bg:contact.avatarBg.match(/linear-gradient\(([^)]+)\)/)?.[1]||'#667eea,#764ba2',
+            text:reply,
+            time:timeStr
+        });
+
+        // 更新上一条为已读
+        const allSelfRows = body.querySelectorAll('.msg-row.self');
+        if(allSelfRows.length > 1){
+            const statusEl = allSelfRows[allSelfRows.length-2].querySelector('.msg-status-text');
+            if(statusEl) statusEl.textContent = '已读';
+        }
+
+        scrollToBottom();
+    }, 800 + Math.random() * 1200);
+}
+
+function onKeyPress(e){
+    if(e.key === 'Enter' && !e.shiftKey){ e.preventDefault(); sendMsg(); }
+}
+
+function onInputChange(){
+    const val = document.getElementById('msgInput').value.trim();
+    document.getElementById('sendBtn').disabled = !val;
+}
+
+// ========== 工具栏功能 ==========
+function toggleVoiceMode(){
+    voiceMode = !voiceMode;
+    const btn = document.getElementById('voiceToggle');
+    const inputRow = document.getElementById('inputRow');
+    const voiceRow = document.getElementById('voiceRow');
+
+    if(voiceMode){
+        btn.classList.add('voice-btn-active');
+        btn.textContent = '⌨️';
+        inputRow.style.display = 'none';
+        voiceRow.style.display = 'flex';
+    } else {
+        btn.classList.remove('voice-btn-active');
+        btn.textContent = '🎤';
+        inputRow.style.display = 'flex';
+        voiceRow.style.display = 'none';
+    }
+    hideMorePanel();
+}
+
+function startVoice(){ document.getElementById('voiceBtn').classList.add('recording'); }
+function stopVoice(){
+    const btn = document.getElementById('voiceBtn');
+    btn.classList.remove('recording');
+    showToast('语音消息发送成功（演示）');
+}
+
+function showMorePanel(){
+    const panel = document.getElementById('morePanel');
+    panel.classList.toggle('show');
+    if(panel.classList.contains('show')) hideVoiceMode();
+}
+function hideMorePanel(){ document.getElementById('morePanel').classList.remove('show'); }
+
+function hideVoiceMode(){
+    if(voiceMode) toggleVoiceMode();
+}
+
+// 更多功能
+function pickImage(){
+    hideMorePanel();
+    // 演示：插入一张示例图
+    const demoSvg = '<svg xmlns="http://www.w3.org/2000/svg" width="200" height="150" viewBox="0 0 200 150"><rect fill="#f0f0f0" width="200" height="150"/><text x="100" y="70" text-anchor="middle" fill="#999" font-size="40">📷</text><text x="100" y="95" text-anchor="middle" fill="#bbb" font-size="12">示例图片</text></svg>';
+    const body = document.getElementById('chatBody');
+    body.insertAdjacentHTML('beforeend',buildSelfMsg({img:'data:image/svg+xml,'+encodeURIComponent(demoSvg),status:'已发送'}));
+    scrollToBottom();
+}
+
+function takePhoto(){
+    hideMorePanel();
+    showToast('📸 拍摄功能：请允许相机权限（演示模式）');
+    setTimeout(()=>pickImage(),500);
+}
+
+function sendTaskCard(){
+    hideMorePanel();
+    const body = document.getElementById('chatBody');
+    body.insertAdjacentHTML('beforeend',buildSelfMsg({
+        taskCard:{title:'企业官网首页设计',budget:'¥2500',desc:'简洁大气 · 3天交付'},
+        status:'已发送'
+    }));
+    scrollToBottom();
+}
+
+function playVoice(el){
+    el.querySelector('.msg-voice-icon').textContent = '🔊';
+    showToast(`播放 ${el.querySelector('.msg-voice-len').textContent} 语音`);
+    setTimeout(()=>{ el.querySelector('.msg-voice-icon').textContent = '🎙️'; }, 2000);
+}
+
+function previewImg(src){
+    const pv = document.getElementById('imgPreview');
+    document.getElementById('previewImg').src = src;
+    pv.classList.add('show');
+}
+
+// ========== 公告（小喇叭📢） ==========
+function showAnnounce(){
+    const body = document.getElementById('announceBody');
+    let html = '';
+    ANNOUNCE_LIST.forEach(a => {
+        html += `<div class="announce-item">
+            <div class="announce-item-title"><span class="announce-item-tag ${a.tag}">${a.tagText}</span> ${a.title}</div>
+            <div class="announce-item-desc">${a.desc}</div>
+            <div class="announce-item-time">${a.time}</div>
+        </div>`;
+    });
+    body.innerHTML = html;
+    document.getElementById('announceOverlay').classList.add('show');
+}
+
+function hideAnnounce(e){
+    if(e.target.id === 'announceOverlay') document.getElementById('announceOverlay').classList.remove('show');
+}
+function hideAnnounceDirect(){ document.getElementById('announceOverlay').classList.remove('show'); }
+
+// ========== 工具函数 ==========
+function showToast(msg){
+    const existing = document.querySelector('.toast');
+    if(existing) existing.remove();
+    const t = document.createElement('div');
+    t.className = 'toast'; t.textContent = msg;
+    document.body.appendChild(t);
+    setTimeout(()=>t.remove(),2000);
+}
+
+function scrollToBottom(){
+    const body = document.getElementById('chatBody');
+    requestAnimationFrame(()=>{
+        body.scrollTop = body.scrollHeight;
+    });
+}
+
+function goBack(){ window.location.href = 'chat.html'; }
+
+init();
+</script>
+</body>
+</html>

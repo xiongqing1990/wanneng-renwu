@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="万能任务">
+    <meta name="theme-color" content="#fff">
+    <link rel="manifest" href="manifest.json">
+    <title>万能任务 - 智能任务平台</title>
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+        body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC",sans-serif;background:#f7f8fa;color:#333;max-width:375px;margin:0 auto;min-height:100vh}
+
+        /* 简洁顶部搜索栏 */
+        .header{background:#fff;padding:12px 16px;padding-top:50px;border-bottom:1px solid #f0f0f0}
+        .search-row{display:flex;align-items:center;gap:10px}
+        .search-box{flex:1;background:#f5f6fa;border-radius:20px;padding:9px 14px;display:flex;align-items:center;gap:8px}
+        .search-box input{flex:1;border:none;font-size:14px;outline:none;background:transparent;color:#333}
+        .search-box input::placeholder{color:#bbb}
+        .search-icon{font-size:15px;color:#ccc}
+        .ad-btn{width:34px;height:34px;border-radius:50%;background:#f5f6fa;display:flex;align-items:center;justify-content:center;font-size:16px;cursor:pointer;border:none}
+
+        /* 分类栏 */
+        .category-bar{background:#fff;padding:10px 12px;display:flex;align-items:center;gap:6px;overflow-x:auto;white-space:nowrap;-webkit-overflow-scrolling:touch;border-bottom:1px solid #f5f5f5}
+        .category-bar::-webkit-scrollbar{display:none}
+        .cat-tag{padding:6px 16px;border-radius:18px;font-size:13px;color:#666;background:#f5f6fa;transition:all .2s;cursor:pointer;flex-shrink:0}
+        .cat-tag.active{background:#1677FF;color:#fff;font-weight:500}
+        .type-switcher{display:inline-flex;background:#f5f6fa;border-radius:16px;padding:2px;margin-left:auto;flex-shrink:0}
+        .type-btn{padding:5px 12px;border-radius:14px;font-size:12px;color:#666;cursor:pointer;transition:all .2s}
+        .type-btn.active{background:#1677FF;color:#fff;font-weight:500}
+
+        /* 排序栏 */
+        .sort-bar{display:flex;padding:8px 12px;background:#fff;gap:6px;border-bottom:1px solid #f5f5f5}
+        .sort-tag{padding:5px 12px;border-radius:14px;font-size:12px;color:#888;background:#fafbfc;cursor:pointer;transition:all .2s}
+        .sort-tag.active{color:#1677FF;background:#E8F4FF;font-weight:500}
+
+        /* 任务卡片 */
+        .task-card{background:#fff;border-radius:10px;padding:13px;margin:8px 12px;box-shadow:0 1px 4px rgba(0,0,0,.04);cursor:pointer;transition:transform .15s;position:relative}
+        .task-card:active{transform:scale(.98)}
+
+        /* 加精/广告卡片 */
+        .jing-task-card{background:#fff;border-radius:10px;margin:8px 12px;overflow:hidden;position:relative;box-shadow:0 2px 10px rgba(255,215,0,.15);border-left:3px solid #FFD700}
+        .ad-task-card{background:#fff;border-radius:10px;margin:8px 12px;overflow:hidden;position:relative;box-shadow:0 1px 6px rgba(255,193,7,.1);border-left:3px solid #ffd700}
+        .jing-badge{position:absolute;top:8px;left:8px;padding:2px 8px;border-radius:5px;font-size:10px;font-weight:bold;z-index:5;display:flex;align-items:center;gap:2px;background:linear-gradient(135deg,#FFD700,#FFA000);color:#7B5800;border:1px solid #E5A800}
+        .new-badge{position:absolute;top:8px;left:8px;background:#ff4d4f;color:#fff;padding:2px 10px;border-radius:8px;font-size:10px;font-weight:bold}
+        .ad-badge{position:absolute;top:8px;left:8px;padding:2px 10px;border-radius:5px;font-size:10px;font-weight:bold;z-index:5;display:flex;align-items:center;gap:3px}
+        .ad-level-1{background:#fef3c7;color:#b45309;border:1px solid #fcd34d}
+        .ad-level-2{background:#fee2e2;color:#dc2626;border:1px solid #fecaca}
+        .ad-level-3{background:#dbeafe;color:#2563eb;border:1px solid #bfdbfe}
+        .ad-level-4{background:#d1fae5;color:#059669;border:1px solid #a7f3d0}
+
+        /* 发布者行 */
+        .publisher-row{display:flex;align-items:center;margin-bottom:6px}
+        .pub-avatar{width:30px;height:30px;border-radius:50%;border:1.5px solid #eee;margin-right:8px;object-fit:cover;background:linear-gradient(135deg,#667eea,#764ba2);display:flex;align-items:center;justify-content:center;color:#fff;font-size:12px;font-weight:600;flex-shrink:0}
+        .pub-info{flex:1;min-width:0}
+        .pub-name-line{display:flex;align-items:center;gap:4px;flex-wrap:wrap}
+        .pub-nickname{font-size:13px;font-weight:600;color:#333;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+        .level-badge{display:inline-flex;align-items:center;gap:2px;padding:1px 6px;border-radius:5px;color:#fff;font-size:10px;line-height:1.4}
+        .rating-badge{display:inline-flex;align-items:center;gap:2px;font-size:10px;font-weight:600}
+
+        .task-title{font-size:15px;font-weight:600;margin-bottom:3px;color:#222;line-height:1.4}
+        .task-desc{font-size:12px;color:#999;line-height:1.4;margin-bottom:8px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+
+        .card-bottom{display:flex;justify-content:space-between;align-items:center;padding-top:8px;border-top:1px solid #f5f5f5}
+        .budget-row{display:flex;align-items:center;gap:4px}
+        .budget-label{font-size:11px;color:#aaa}
+        .budget{font-size:16px;font-weight:bold;color:#1677FF}
+        .meta-tags{display:flex;gap:5px;align-items:center}
+        .tag-type{font-size:11px;padding:3px 8px;border-radius:5px;font-weight:500}
+        .tag-short{background:#E8F4FF;color:#1677FF}
+        .tag-long{background:#f0f5ff;color:#3976cc}
+        .tag-bids{font-size:11px;color:#bbb}
+
+        /* 发布按钮 */
+        .quick-publish-bar{position:fixed;bottom:70px;left:0;right:0;padding:10px 16px;z-index:99}
+        .btn-publish{width:100%;background:#1677FF;color:#fff;padding:13px;border-radius:25px;font-size:15px;font-weight:bold;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px}
+        .btn-publish:active{opacity:.85}
+        .btn-publish .plus{font-size:20px;font-weight:300;line-height:1}
+
+        /* Tab栏 */
+        .tab-bar{height:68px;background:#fff;border-top:1px solid #eee;display:flex;justify-content:space-around;align-items:center;padding-bottom:16px;position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:375px;z-index:1000}
+        .tab-item{display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer:#999;font-size:11px;position:relative}
+        .tab-item{color:#bbb}
+        .tab-item.active{color:#1677FF}
+        .tab-icon{font-size:21px}
+        .badge{position:absolute;top:-4px;right:-8px;background:#ff4d4f;color:#fff;font-size:9px;min-width:14px;height:14px;border-radius:7px;display:flex;align-items:center;justify-content:center;padding:0 3px}
+
+        .content{padding-bottom:140px}
+
+        /* 空状态 */
+        .empty{text-align:center;padding:60px 16px}
+        .empty-icon{font-size:56px;display:block;margin-bottom:10px}
+        .empty-text{font-size:15px;color:#bbb;margin-bottom:4px}
+        .empty-tip{font-size:13px;color:#ddd;margin-bottom:20px}
+
+        /* 分割线 */
+        .divider-hint{text-align:center;padding:12px;font-size:11px;color:#ddd;display:flex;align-items:center;gap:10px}
+        .divider-hint:before,.divider-hint:after{content:'';flex:1;height:1px;background:#f0f0f0}
+
+        /* Toast */
+        .notification{position:fixed;top:50px;left:50%;transform:translateX(-50%);background:#333;color:#fff;padding:9px 18px;border-radius:6px;font-size:13px;font-weight:500;z-index:3000;animation:slideDown .25s ease-out;white-space:nowrap}
+        @keyframes slideDown{from{opacity:0;transform:translateX(-50%) translateY(-8px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
+    </style>
+</head>
+<body>
+
+<!-- 搜索栏 -->
+<div class="header">
+    <div class="search-row">
+        <div class="search-box">
+            <span class="search-icon">🔍</span>
+            <input type="text" id="searchInput" placeholder="搜索任务、服务..." oninput="handleSearch()">
+        </div>
+        <button class="ad-btn" onclick="showAdCenter()">📢</button>
+    </div>
+</div>
+
+<!-- 分类+类型切换 -->
+<div class="category-bar" id="categoryBar"></div>
+
+<!-- 排序选项 -->
+<div class="sort-bar" id="sortBar"></div>
+
+<!-- 任务列表 -->
+<div class="content" id="content"></div>
+
+<!-- 快捷发布按钮 -->
+<div class="quick-publish-bar">
+    <button class="btn-publish" onclick="goPublish()"><span class="plus">+</span>发布任务</button>
+</div>
+
+<!-- Tab栏 -->
+<div class="tab-bar">
+    <div class="tab-item active" onclick="switchTab(this,'home')"><div class="tab-icon">🏠</div><span>首页</span></div>
+    <div class="tab-item" onclick="switchTab(this,'chat')"><div class="tab-icon">💬</div><span>聊天</span><div class="badge">3</div></div>
+    <div class="tab-item" onclick="switchTab(this,'publish')"><div class="tab-icon">➕</div><span>发布</span></div>
+    <div class="tab-item" onclick="switchTab(this,'profile')"><div class="tab-icon">👤</div><span>我的</span></div>
+</div>
+
+<script src="app-core.js"></script>
+<script src="app-update.js"></script>
+<script>
+// ========== 数据定义 ==========
+const USER_LEVELS = {
+    1:{name:'新手',icon:'🌱',color:'#95a5a6'},2:{name:'初级',icon:'⭐',color:'#3498db'},
+    3:{name:'进阶',icon:'⭐⭐',color:'#2ecc71'},4:{name:'达人',icon:'💎',color:'#9b59b6'},
+    5:{name:'精英',icon:'👑',color:'#f39c12'},6:{name:'专家',icon:'🏆',color:'#e74c3c'},
+    7:{name:'大师',icon:'🔥',color:'#ff6b35'},8:{name:'传奇',icon:'⚡',color:'#1abc9c'},
+    9:{name:'至尊',icon:'👑',color:'#e84393'},10:{name:'荣耀王者',icon:'🏅',color:'#ffd700'}
+};
+
+const PUBLISHER_RATINGS = [
+    {level:1,name:'普通',icon:'📝',color:'#999',minCredit:500},
+    {level:2,name:'诚信',icon:'✓',color:'#1677FF',minCredit:650},
+    {level:3,name:'优质',icon:'⭐',color:'#f39c12',minCredit:750},
+    {level:4,name:'金牌',icon:'🥇',color:'#FFD700',minCredit:850},
+    {level:5,name:'钻石',icon:'💎',color:'#b8860b',minCredit:950}
+];
+
+const AD_BADGE_LEVELS = [
+    {label:'推广',cls:'ad-level-1'},{label:'热门',cls:'ad-level-2'},
+    {label:'精选',cls:'ad-level-3'},{label:'置顶',cls:'ad-level-4'}
+];
+
+const categories = [
+    {id:'all',name:'全部'},{id:'ticket',name:'票券'},{id:'dining',name:'餐饮'},{id:'secondhand',name:'二手'},
+    {id:'life',name:'生活'},{id:'shopping',name:'代购'},{id:'transport',name:'跑腿'},{id:'game',name:'游戏'}
+];
+
+const sortOptions = [
+    {id:'smart',name:'综合排序'},{id:'credit',name:'信用优先 ✓'},{id:'newest',name:'最新发布 🕐'},{id:'budget_high',name:'预算最高 💰'}
+];
+
+let allTasks = [
+    {id:101,title:'【广告】急招代驾司机 日结200+',desc:'长期合作，多劳多得，时间自由',budget:200,
+     publisher:'专业代驾',avatar:'',userLevel:6,credit:920,isAd:true,adLevel:4,
+     category:'life',taskType:'long',bids:15,isVerified:true},
+    {id:102,title:'【推广】iPhone16 Pro Max 低价出',desc:'全新未拆封，比官网便宜800元',budget:7999,
+     publisher:'数码达人王哥',avatar:'',userLevel:8,credit:960,isAd:true,adLevel:3,
+     category:'secondhand',taskType:'short',bids:3,isVerified:true},
+    {id:201,title:'🏆 【加精】企业官网设计接单中',desc:'5年UI/UX经验，已服务100+企业，交付快质量高，首单8折！',budget:3000,
+     publisher:'设计师小陈',avatar:'',userLevel:7,credit:950,isJing:true,
+     category:'life',taskType:'long',bids:42,isVerified:true},
+    {id:202,title:'🏆 【加精】专业小程序开发 团队接单',desc:'uni-app原生开发，支持微信/支付宝/抖音小程序，源码交付，售后无忧',budget:5000,
+     publisher:'码农工作室',avatar:'',userLevel:9,credit:980,isJing:true,
+     category:'shopping',taskType:'long',bids:28,isVerified:true},
+    {id:1,title:'求5月15日电影票2张',desc:'3排5座，预算15元/张，万达影城',budget:30,
+     publisher:'小明',avatar:'',userLevel:2,credit:720,isNew:true,
+     category:'ticket',taskType:'short',bids:0,isVerified:true},
+    {id:2,title:'出售游戏金币1000个',desc:'诚心出售，100元可小刀',budget:100,
+     publisher:'大王',avatar:'',userLevel:4,credit:850,
+     category:'game',taskType:'short',bids:2,isVerified:true},
+    {id:3,title:'求XX餐厅5折券',desc:'明天去吃饭，想买2张优惠券',budget:80,
+     publisher:'小红',avatar:'',userLevel:3,credit:700,isNew:true,
+     category:'dining',taskType:'short',bids:1,isVerified:true},
+    {id:4,title:'帮忙取快递（长期招募）',desc:'菜鸟驿站代取，每单3-5元，多劳多得',budget:5,
+     publisher:'阿强',avatar:'',userLevel:5,credit:900,
+     category:'transport',taskType:'long',bids:18,isVerified:true},
+    {id:5,title:'代买奶茶一杯',desc:'喜茶，多冰少糖，送到楼下',budget:15,
+     publisher:'小李',avatar:'',userLevel:1,credit:550,
+     category:'shopping',taskType:'short',bids:0,isVerified:false},
+    {id:6,title:'求购二手自行车',desc:'学生党预算有限，能骑就行',budget:200,
+     publisher:'小王',avatar:'',userLevel:2,credit:620,
+     category:'secondhand',taskType:'short',bids:1,isVerified:false},
+    {id:7,title:'王者荣耀代练 星耀上王者',desc:'需要截图验证段位，安全第一',budget:300,
+     publisher:'游戏大神',avatar:'',userLevel:4,credit:800,
+     category:'game',taskType:'short',bids:5,isVerified:true},
+    {id:8,title:'周末兼职发传单 200/天',desc:'商场门口，包午餐水',budget:200,
+     publisher:'HR小美',avatar:'',userLevel:3,credit:750,isNew:true,
+     category:'life',taskType:'long',bids:32,isVerified:true}
+];
+
+let currentCategory = 'all';
+let taskTypeFilter = 'all';
+let currentSort = 'smart';
+
+function getPublisherRating(credit) {
+    for(let i=PUBLISHER_RATINGS.length-1;i>=0;i--) if(credit>=PUBLISHER_RATINGS[i].minCredit) return PUBLISHER_RATINGS[i];
+    return PUBLISHER_RATINGS[0];
+}
+
+function renderCategories() {
+    let html = '';
+    categories.forEach(c => {
+        html += '<span class="cat-tag'+(currentCategory===c.id?' active':'')+'" onclick="setCategory(\''+c.id+'\')">'+c.name+'</span>';
+    });
+    html += '<div class="type-switcher">';
+    html += '<span class="type-btn'+(taskTypeFilter==='short'?' active':'')+'" onclick="setType(\'short\')">⚡短期</span>';
+    html += '<span class="type-btn'+(taskTypeFilter==='long'?' active':'')+'" onclick="setType(\'long\')">📅长期</span>';
+    html += '<span class="type-btn'+(taskTypeFilter==='all'?' active':'')+'" onclick="setType(\'all\')">全部</span></div>';
+    document.getElementById('categoryBar').innerHTML = html;
+}
+
+function renderSortBar() {
+    let html = '';
+    sortOptions.forEach(s => {
+        html += '<span class="sort-tag'+(currentSort===s.id?' active':'')+'" onclick="setSort(\''+s.id+'\')">'+s.name+'</span>';
+    });
+    document.getElementById('sortBar').innerHTML = html;
+}
+
+function setCategory(id){ currentCategory=id; renderTasks(); }
+function setType(type){ taskTypeFilter=type; renderCategories(); renderTasks(); }
+function setSort(id){ currentSort=id; renderSortBar(); renderTasks(); }
+function handleSearch(){ renderTasks(); }
+
+function renderTasks() {
+    const kw = (document.getElementById('searchInput').value||'').toLowerCase();
+    let tasks = allTasks.filter(t => {
+        if(currentCategory!=='all'&&t.category!==currentCategory)return false;
+        if(taskTypeFilter!=='all'&&t.taskType!==taskTypeFilter)return false;
+        if(kw && !t.title.toLowerCase().includes(kw)&&!t.desc.toLowerCase().includes(kw))return false;
+        return true;
+    });
+
+    tasks.sort((a,b)=>{
+        if(a.isJing && !b.isJing) return -1;
+        if(!a.isJing && b.isJing) return 1;
+        if(a.isAd&&!b.isAd)return -1;
+        if(!a.isAd&&b.isAd)return 1;
+        switch(currentSort){
+            case'smart':return b.credit-a.credit;
+            case'credit':return b.credit-a.credit;
+            case'newest':return b.id-a.id;
+            case'budget_high':return b.budget-a.budget;
+            default:return b.id-a.id;
+        }
+    });
+
+    const container = document.getElementById('content');
+    if(tasks.length===0){
+        container.innerHTML='<div class="empty"><div class="empty-icon">📭</div><div class="empty-text">暂无相关任务</div><div class="empty-tip">换个条件试试吧</div></div>';
+        return;
+    }
+
+    let html = '';
+    let jingCount = tasks.filter(t=>t.isJing).length;
+    let adCount = tasks.filter(t=>t.isAd).length;
+    let normalCount = tasks.length - jingCount - adCount;
+
+    if(jingCount > 0){
+        html += '<div class="divider-hint">— 🏆 精选加精 —</div>';
+    }
+    if(adCount>0 && (jingCount>0 || normalCount>0)){
+        html += '<div class="divider-hint">— 📌 广告推广 —</div>';
+    }
+
+    tasks.forEach((t,i)=>{
+        const lv = USER_LEVELS[t.userLevel]||USER_LEVELS[1];
+        const rating = getPublisherRating(t.credit);
+        const adInfo = t.isAd ? AD_BADGE_LEVELS[(t.adLevel||1)-1] : null;
+
+        if(i===jingCount && (adCount>0 || normalCount>0) && jingCount>0){
+            html += '<div class="divider-hint">— 📌 广告推广 —</div>';
+        }
+        if(i===jingCount+adCount && normalCount>0 && (jingCount>0||adCount>0)){
+            html += '<div class="divider-hint">— 👍 精选任务 —</div>';
+        }
+
+        if(t.isJing){ html+='<div class="jing-task-card">'; }
+        else if(t.isAd){ html+='<div class="ad-task-card">'; }
+        else{ html+='<div class="task-card">'; }
+
+        if(t.isNew && !t.isAd) html += '<div class="new-badge">新</div>';
+        if(t.isJing) html += '<div class="jing-badge">🏆 加精</div>';
+        if(adInfo) html += '<div class="ad-badge '+adInfo.cls+'">'+adInfo.label+'</div>';
+
+        html += '<div class="publisher-row">';
+        html += '<div class="pub-avatar">'+t.publisher[0]+'</div>';
+        html += '<div class="pub-info">';
+        html += '<div class="pub-name-line">';
+        html += '<span class="pub-nickname">'+t.publisher+'</span>';
+        html += '<span class="level-badge" style="background:'+lv.color+'"><span>'+lv.icon+'</span><span>Lv.'+t.userLevel+'</span></span>';
+        if(t.credit >= 650){
+            html += '<span class="rating-badge" style="color:'+rating.color+'"><span>'+rating.icon+'</span><span>'+rating.name+'</span></span>';
+        }
+        html += '</div></div></div>';
+
+        html += '<div class="task-title">'+t.title+'</div>';
+        html += '<div class="task-desc">'+t.desc+'</div>';
+
+        html += '<div class="card-bottom"><div class="budget-row"><span class="budget-label">预算</span><span class="budget">¥'+t.budget+'</span></div><div class="meta-tags"><span class="tag-type '+(t.taskType==='short'?'tag-short':'tag-long')+'">'+(t.taskType==='short'?'⚡短期':'📅长期')+'</span><span class="tag-bids">👥'+(t.bids||0)+'人接取</span></div></div>';
+
+        html += '</div>';
+    });
+
+    if(normalCount > 0){
+        html += '<div style="text-align:center;padding:14px;font-size:11px;color:#ddd;">— 已展示全部任务 —</div>';
+    }
+
+    container.innerHTML = html;
+}
+
+function goPublish(){
+    window.location.href='publish.html';
+}
+function showAdCenter(){
+    showNotif('📢 广告中心开发中');
+}
+function viewTask(id){
+    window.location.href='task-detail.html?id='+id;
+}
+function switchTab(el,tab){
+    document.querySelectorAll('.tab-item').forEach(function(t){t.classList.remove('active');});
+    el.classList.add('active');
+    var pages={home:'index.html',chat:'chat.html',publish:'publish.html',profile:'profile.html'};
+    if(pages[tab]) window.location.href=pages[tab];
+}
+
+function showNotif(msg){
+    var n=document.createElement('div');
+    n.className='notification';
+    n.textContent=msg;
+    document.body.appendChild(n);
+    setTimeout(function(){ n.remove(); },2000);
+}
+
+// ====== 初始化：确保DOM ready后再渲染 ======
+function initApp(){
+    try{
+        renderCategories();
+        renderSortBar();
+        renderTasks();
+        console.log('[Index] 首页初始化完成');
+    }catch(e){
+        console.error('[Index] 初始化失败:', e);
+    }
+}
+
+// 多重保障：DOMReady 或立即执行
+if(document.readyState === 'loading'){
+    document.addEventListener('DOMContentLoaded', initApp);
+}else{
+    initApp();
+}
+
+// Service Worker
+if('serviceWorker'in navigator){
+    window.addEventListener('load', function(){
+        navigator.serviceWorker.register('service-worker.js');
+    });
+}
+</script>
+</body>
+</html>

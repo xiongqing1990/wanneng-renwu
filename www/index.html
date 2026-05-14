@@ -7,538 +7,538 @@
 <style>
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 :root{
-  --g:#10b981;--g2:#ecfdf5;--g3:#059669;
-  --r:#ef4444;--r2:#fef2f2;
+  --g:#10b981;--g2:#ecfdf5;--g3:#059669;--g4:#d1fae5;
+  --r:#ef4444;--r2:#fef2f2;--r3:#fecaca;
   --b:#3b82f6;--o:#f59e0b;--p:#8b5cf6;
-  --bg:#f0f2f5;--card:#fff;--cd:#fff;
-  --t1:#1f2937;--t2:#6b7280;--t3:#9ca3af;
-  --bd:#e5e7eb;--sh:0 2px 8px rgba(0,0,0,.08);
-  --rx:12px;--tm:44px
+  --bg:#f5f7fa;--card:#fff;
+  --t1:#1a1a1a;--t2:#666;--t3:#aaa;
+  --bd:#e5e7eb;--sh:0 2px 12px rgba(0,0,0,.06);--sh2:0 4px 20px rgba(0,0,0,.1);--sh3:0 8px 30px rgba(0,0,0,.08);
+  --rx:14px;--tr:.25s ease
 }
-body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',sans-serif;background:var(--bg);width:100vw;height:100vh;overflow:hidden;user-select:none;-webkit-user-select:none;-webkit-tap-highlight-color:transparent;position:fixed;top:0;left:0}
-.P{width:100%;height:100%;background:var(--bg);position:relative;overflow:hidden;display:flex;flex-direction:column}
-.pg{display:none;flex-direction:column;height:100%}.pg.on{display:flex}
-/* 顶部 */
-.hd{height:50px;background:var(--card);display:flex;align-items:center;padding:0 16px;flex-shrink:0;position:relative;border-bottom:1px solid var(--bd);z-index:10}
-.hd .bk{font-size:26px;color:var(--g);cursor:pointer;font-weight:300;line-height:1;padding:4px 0}
-.hd .tt{flex:1;text-align:center;font-size:16px;font-weight:600;color:var(--t1)}
-.hd .rt{font-size:14px;color:var(--g);cursor:pointer;font-weight:500}
-/* 内容 */
-.sv{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch}
-/* 底栏 */
-.tb{height:56px;background:var(--card);display:flex;border-top:1px solid var(--bd);flex-shrink:0;padding-bottom:6px;padding-top:6px;align-items:center}
-.ti{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;font-size:10px;color:var(--t3);cursor:pointer;position:relative;height:100%;justify-content:center;-webkit-tap-highlight-color:transparent;transition:color .2s}
-.ti .tic{width:24px;height:24px;transition:all .2s}
-.ti .tic svg{width:100%;height:100%}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue','PingFang SC',sans-serif;background:var(--bg);width:100vw;height:100vh;overflow:hidden;user-select:none;position:fixed;top:0;left:0;color:var(--t1);-webkit-font-smoothing:antialiased;-webkit-text-size-adjust:100%}
+
+/* 页面容器 */
+.P{width:100%;height:100%;position:relative;overflow:hidden}
+.pg{display:none;flex-direction:column;height:100%;background:var(--bg);animation:fadeIn .25s ease}
+.pg.on{display:flex}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+
+/* ===== 顶栏 ===== */
+.hd{height:52px;display:flex;align-items:center;padding:0 16px;flex-shrink:0;position:relative;z-index:10}
+.hd-green{background:linear-gradient(135deg,#10b981 0%,#059669 50%,#047857 100%)}
+.hd-white{background:var(--card);border-bottom:1px solid var(--bd)}
+.hd .bk{font-size:24px;color:#fff;width:36px;height:36px;display:flex;align-items:center;justify-content:center;cursor:pointer;border-radius:50%;transition:bg .15s;-webkit-tap-highlight-color:transparent}
+.hd-white .bk{color:var(--g)}
+.hd .bk:active{background:rgba(255,255,255,.15)}
+.hd-white .bk:active{background:var(--g2)}
+.hd .tt{flex:1;text-align:center;font-size:17px;font-weight:600;color:#fff;letter-spacing:.5px}
+.hd-white .tt{color:var(--t1)}
+.hd .rt{font-size:13px;color:rgba(255,255,255,.9);cursor:pointer;font-weight:500;padding:4px 12px;border-radius:16px;transition:bg .15s}
+.hd .rt:active{background:rgba(255,255,255,.15)}
+
+/* ===== 内容滚动区 ===== */
+.sv{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain}
+
+/* ===== 底部Tab栏 ===== */
+.tb{height:56px;background:var(--card);display:flex;border-top:1px solid var(--bd);flex-shrink:0;align-items:center;padding-bottom:env(safe-area-inset-bottom,0);padding-bottom:4px;position:relative;z-index:10}
+.tb::before{content:'';position:absolute;top:-1px;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--bd),transparent)}
+.ti{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;font-size:10px;color:var(--t3);cursor:pointer;height:100%;justify-content:center;position:relative;-webkit-tap-highlight-color:transparent;transition:color var(--tr)}
 .ti.on{color:var(--g)}
-.ti.on .tic svg{stroke:var(--g)}
-.ti .dg{position:absolute;top:2px;right:calc(50% - 16px);background:var(--r);color:#fff;font-size:9px;min-width:15px;height:15px;border-radius:8px;display:flex;align-items:center;justify-content:center;line-height:1}
-/* 首页搜索 */
-.sch{padding:10px 16px 6px;background:var(--card)}
-.sch-in{display:flex;align-items:center;background:var(--bg);border-radius:12px;padding:9px 14px;gap:8px;border:1.5px solid transparent;transition:border-color .2s}
-.sch-in:focus-within{border-color:var(--g)}
-.sch-in input{flex:1;border:none;background:transparent;font-size:14px;outline:none;color:var(--t1)}
-.sch-in input::placeholder{color:var(--t3)}
-/* 分类横向滚动 */
-.scats{display:flex;padding:10px 16px 6px;gap:8px;overflow-x:auto;background:var(--card)}
-.scats::-webkit-scrollbar{display:none}
-.ct{padding:5px 14px;border-radius:20px;font-size:13px;color:var(--t2);background:var(--bg);white-space:nowrap;cursor:pointer;transition:all .2s;border:1px solid transparent}
-.ct.on{background:var(--g2);color:var(--g);border-color:var(--g)}
-/* 统计条 */
-.stat-bar{background:var(--card);padding:10px 16px;display:flex;border-top:1px solid var(--bd);margin-bottom:2px}
-.stat-bar .si{flex:1;text-align:center;position:relative}
-.stat-bar .si+.si::before{content:'';position:absolute;left:0;top:4px;bottom:4px;width:1px;background:var(--bd)}
-.stat-bar .sv{font-size:20px;font-weight:700;color:var(--g);display:block;line-height:1.2}
-.stat-bar .sl{font-size:10px;color:var(--t3);margin-top:1px}
-/* 任务卡片 */
-.tc{background:var(--card);margin:0 12px 8px;border-radius:var(--rx);padding:14px 16px;box-shadow:var(--sh);cursor:pointer;transition:transform .15s;border:1px solid rgba(0,0,0,.03)}
-.tc:active{transform:scale(.98);background:var(--bg)}
-.tc .cover{height:100px;background:var(--g2);border-radius:10px;margin-bottom:10px;display:flex;align-items:center;justify-content:center;font-size:36px;overflow:hidden;position:relative}
-.tc .cover img{width:100%;height:100%;object-fit:cover}
-.tc .cover .tag{position:absolute;top:6px;left:6px;background:var(--g);color:#fff;font-size:10px;padding:2px 8px;border-radius:10px}
-.tc .tl{font-size:15px;font-weight:600;color:var(--t1);margin-bottom:5px;line-height:1.4;display:flex;align-items:center;flex-wrap:gap}
-.tc .tl-tag{display:inline-flex;align-items:center;background:var(--g);color:#fff;font-size:10px;padding:1px 8px;border-radius:8px;margin-right:6px;font-weight:500;white-space:nowrap;line-height:1.6}
-.tc .ds{font-size:12px;color:var(--t2);margin-bottom:10px;line-height:1.5;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
-.tc .ft{display:flex;align-items:center;justify-content:space-between}
-.tc .au{display:flex;align-items:center;gap:6px}
-.tc .av{width:24px;height:24px;border-radius:50%;background:var(--g2);display:flex;align-items:center;justify-content:center;font-size:12px}
-.tc .nm{font-size:11px;color:var(--t2)}
-.tc .bd{font-size:13px;font-weight:700;color:var(--g)}
-.tc .st{font-size:11px;color:var(--t3);background:var(--bg);padding:2px 8px;border-radius:10px}
-/* 发布页 */
-.fm{padding:16px}
-.fg{margin-bottom:16px}
-.fg label{display:block;font-size:13px;font-weight:500;color:var(--t1);margin-bottom:6px}
-.fg input,.fg textarea{width:100%;padding:12px 14px;border:1px solid var(--bd);border-radius:10px;font-size:15px;outline:none;background:var(--card);color:var(--t1);transition:border-color .2s,box-shadow .2s}
-.fg input:focus,.fg textarea:focus{border-color:var(--g);box-shadow:0 0 0 3px rgba(16,185,129,.1)}
-.fg textarea{height:90px;resize:none;line-height:1.5}
-.tgs{display:flex;flex-wrap:wrap;gap:8px}
-.tg{padding:7px 16px;border-radius:20px;font-size:13px;background:var(--bg);color:var(--t2);cursor:pointer;transition:all .2s;border:1px solid transparent}
-.tg.on{background:var(--g2);color:var(--g);border-color:var(--g)}
-/* 图片上传 */
-.img-upload{display:flex;gap:8px;flex-wrap:wrap}
-.img-up-item{width:72px;height:72px;border-radius:10px;overflow:hidden;position:relative;border:1px solid var(--bd)}
-.img-up-item img{width:100%;height:100%;object-fit:cover}
-.img-up-item .del{position:absolute;top:2px;right:2px;width:18px;height:18px;background:rgba(0,0,0,.5);color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;cursor:pointer}
-.img-up-add{width:72px;height:72px;border-radius:10px;border:1px dashed var(--bd);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;cursor:pointer}
-.img-up-add i{font-size:22px;color:var(--t3);font-style:normal}
-.img-up-add span{font-size:10px;color:var(--t3)}
-.btn{background:var(--g);color:#fff;text-align:center;padding:14px;border-radius:12px;font-size:16px;font-weight:600;margin:8px 16px 16px;cursor:pointer;transition:background .2s,transform .1s;letter-spacing:.5px}
-.btn:active{background:var(--g3);transform:scale(.98)}
-/* 消息列表 */
-.ci{display:flex;align-items:center;padding:12px 16px;background:var(--card);border-bottom:1px solid var(--bg);cursor:pointer;transition:background .15s}
-.ci:active{background:var(--bg)}
-.ci .av{width:48px;height:48px;border-radius:10px;background:var(--g2);margin-right:12px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0}
-.ci .if{flex:1;min-width:0}
-.ci .nm{font-size:15px;font-weight:500;color:var(--t1);margin-bottom:3px}
-.ci .mg{font-size:13px;color:var(--t3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.ci .mt{text-align:right;flex-shrink:0;margin-left:8px}
-.ci .t2{font-size:11px;color:var(--t3)}
-.ci .ur{background:var(--r);color:#fff;font-size:10px;min-width:18px;height:18px;border-radius:9px;display:inline-flex;align-items:center;justify-content:center;margin-top:4px}
-/* 聊天 */
-.ma{flex:1;padding:10px 12px;overflow-y:auto;background:var(--bg);display:flex;flex-direction:column}
-.chat-date{text-align:center;font-size:11px;color:var(--t3);margin:8px 0}
-.mx{display:flex;margin-bottom:10px;align-items:flex-end;max-width:100%}
-.mx.ot{max-width:75%}
-.mx.me{max-width:75%;margin-left:auto;flex-direction:row-reverse}
-.mx .av{width:32px;height:32px;border-radius:50%;background:var(--g2);margin-right:6px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:13px}
-.mx.me .av{margin-right:0;margin-left:6px}
-.mx .bb{max-width:72%;padding:8px 12px;border-radius:14px;font-size:14px;line-height:1.5;word-break:break-word;position:relative;margin:0 4px}
-.mx.ot .bb{background:var(--card);color:var(--t1);border-bottom-left-radius:4px}
-.mx.me .bb{background:var(--g);color:#fff;border-bottom-right-radius:4px}
-/* 图片消息 */
-.mx .bb.imgbb{padding:4px;background:transparent;border-radius:10px}
-.mx .bb.imgbb img{max-width:180px;max-height:240px;border-radius:10px;display:block}
-.mx.ot .bb.imgbb::before,.mx.me .bb.imgbb::after{display:none}
-/* 语音消息 */
-.vb{display:flex;align-items:center;gap:6px;min-width:80px}
-.vb .bars{display:flex;align-items:center;gap:2px;height:18px}
-.vb .bar{width:3px;background:var(--g);border-radius:2px;opacity:.5}
-.mx.me .vb .bar{background:#fff}
-.vb.playing .bar{opacity:1;animation:vb .6s ease-in-out infinite alternate}
-@keyframes vb{0%{transform:scaleY(.4)}100%{transform:scaleY(1)}}
-.vb span{font-size:12px;color:inherit;opacity:.7}
-.vd{font-size:11px;color:var(--t3);margin-top:2px;text-align:right}
-/* 聊天输入 */
-.cb{padding:8px 10px;background:var(--card);display:flex;align-items:center;gap:6px;border-top:1px solid var(--bd);flex-shrink:0;padding-bottom:16px}
-.cb .ic{font-size:24px;cursor:pointer;padding:6px;color:var(--t2);flex-shrink:0;transition:color .2s}
-.cb .ic:active{color:var(--g)}
-.cb input{flex:1;padding:9px 14px;background:var(--bg);border-radius:20px;font-size:14px;outline:none;border:1.5px solid transparent;transition:border-color .2s}
-.cb input:focus{border-color:var(--g)}
-.cb .send{background:var(--g);color:#fff;padding:8px 16px;border-radius:18px;font-size:13px;font-weight:600;cursor:pointer;flex-shrink:0;transition:background .2s}
-/* 录音 */
-.rec-ui{position:absolute;bottom:0;left:0;right:0;background:var(--card);padding:20px;border-radius:16px 16px 0 0;box-shadow:0 -2px 12px rgba(0,0,0,.1);display:none;flex-direction:column;align-items:center;z-index:50}
-.rec-ui.on{display:flex}
-.rec-ui .ri{font-size:44px;animation:pk 1s infinite}
-.rec-ui .rt{font-size:18px;font-weight:600;color:var(--t1);margin-top:8px}
-.rec-ui .rh{font-size:12px;color:var(--t3);margin-top:4px}
-@keyframes pk{0%,100%{transform:scale(1)}50%{transform:scale(1.15)}}
-/* 图片预览 */
-.pv{position:absolute;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.95);display:none;align-items:center;justify-content:center;z-index:100}
-.pv.on{display:flex}
-.pv img{max-width:100%;max-height:100%}
-.pv .close{position:absolute;top:60px;right:16px;font-size:24px;color:#fff;cursor:pointer}
-/* 详情页 */
-.dh{padding:16px;background:var(--card);display:flex;align-items:center;gap:12px}
-.dh .av{width:44px;height:44px;border-radius:10px;background:var(--g2);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
-.dh .nm{font-size:15px;font-weight:600;color:var(--t1)}
-.dh .tm{font-size:12px;color:var(--t3);margin-top:2px}
-.dh .sg{background:var(--g2);color:var(--g);padding:3px 10px;border-radius:12px;font-size:11px;margin-left:auto;white-space:nowrap}
-.db{padding:16px;background:var(--card);margin-top:2px}
-.db .tl{font-size:18px;font-weight:700;color:var(--t1);margin-bottom:8px;line-height:1.4}
-.db .ds{font-size:14px;color:var(--t2);line-height:1.7;margin-bottom:12px}
-.db .imgs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
-.db .imgs img{width:90px;height:90px;border-radius:8px;object-fit:cover;cursor:pointer}
-.db .tgs{display:flex;gap:6px;flex-wrap:wrap}
-.db .tg{background:var(--g2);color:var(--g);padding:3px 10px;border-radius:12px;font-size:11px}
-.dm{display:flex;padding:14px 16px;background:var(--card);margin:2px 0;gap:0}
-.dm .di{flex:1;text-align:center;position:relative}
-.dm .di+.di::before{content:'';position:absolute;left:0;top:4px;bottom:4px;width:1px;background:var(--bd)}
-.dm .dl{font-size:10px;color:var(--t3);margin-bottom:4px}
-.dm .dv{font-size:18px;font-weight:700;color:var(--g)}
-.bds{padding:14px 16px;background:var(--card);margin:2px 0}
-.bds .hd{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
-.bds .tt{font-size:14px;font-weight:600;color:var(--t1)}
-.bds .ct{font-size:11px;color:var(--t3)}
-.bd{display:flex;align-items:center;padding:8px 0;border-bottom:1px solid var(--bg)}
-.bd:last-child{border:none}
-.bd .av{width:36px;height:36px;border-radius:8px;background:var(--g2);display:flex;align-items:center;justify-content:center;font-size:14px;margin-right:10px;flex-shrink:0}
-.bd .nm{font-size:14px;font-weight:500;color:var(--t1)}
-.bd .msg{font-size:12px;color:var(--t3);margin-top:2px}
-.da{padding:10px 16px 24px;background:var(--card);display:flex;gap:10px;margin-top:2px}
-.da .act{display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;font-size:10px;color:var(--t2);min-width:40px}
-.da .act i{font-size:22px;font-style:normal}
-.da .rl{flex:1;display:flex;gap:8px;padding-top:4px}
-.da .bc{flex:1;padding:10px;border-radius:20px;font-size:14px;font-weight:500;text-align:center;cursor:pointer}
-.da .b1{background:var(--bg);color:var(--t1)}
-.da .b2{background:var(--g);color:#fff}
-/* 我的 */
-.ph{padding:28px 16px 20px;text-align:center;background:var(--card);margin-bottom:2px}
-.ph .av{width:60px;height:60px;border-radius:50%;background:linear-gradient(135deg,var(--g),#34d399);margin:0 auto 10px;display:flex;align-items:center;justify-content:center;font-size:26px;box-shadow:0 4px 12px rgba(16,185,129,.25)}
-.ph .nm{font-size:18px;font-weight:600;color:var(--t1)}
-.ph .id{font-size:12px;color:var(--t3);margin-top:3px}
-.mc{background:var(--card);margin:2px 0}
-.ms{display:flex;padding:14px 16px;border-bottom:1px solid var(--bg);gap:0}
-.ms .mi{flex:1;text-align:center;position:relative}
-.ms .mi+.mi::before{content:'';position:absolute;left:0;top:4px;bottom:4px;width:1px;background:var(--bd)}
-.ms .mn{font-size:20px;font-weight:700;color:var(--g);display:block}
-.ms .ml{font-size:11px;color:var(--t3);margin-top:3px}
-.pm{background:var(--card);margin:2px 0}
-.pm .pg2{display:flex;align-items:center;padding:14px 16px;border-bottom:1px solid var(--bg);cursor:pointer}
-.pm .pg2:last-child{border:none}
-.pm .pi{font-size:20px;margin-right:12px;width:24px;text-align:center}
-.pm .lb{flex:1;font-size:15px;color:var(--t1)}
-.pm .ar{font-size:18px;color:var(--t3)}
-/* 我的任务 */
-.tabs{display:flex;padding:0 16px;background:var(--card);border-bottom:1px solid var(--bd)}
-.tab{flex:1;padding:12px 0;text-align:center;font-size:14px;color:var(--t2);cursor:pointer;position:relative;transition:color .2s}
-.tab.on{color:var(--g);font-weight:600}
-.tab.on::after{content:'';position:absolute;bottom:0;left:20%;right:20%;height:2px;background:var(--g);border-radius:2px}
-/* 分析页 */
-.an{padding:12px 16px}
-.an-card{background:var(--card);border-radius:var(--rx);padding:16px;margin-bottom:10px;box-shadow:var(--sh)}
-.an-card .ti{font-size:13px;font-weight:600;color:var(--t1);margin-bottom:12px;display:flex;align-items:center;gap:6px}
-.an-card .ti i{font-size:16px;font-style:normal}
-.an-card .ti i.ic{font-size:18px}
-.ac{display:flex;gap:0;text-align:center}
-.ac .di{flex:1;padding:4px 0}
-.ac .dv{font-size:22px;font-weight:700;color:var(--g);display:block}
-.ac .dl{font-size:11px;color:var(--t3);margin-top:2px}
-.hr-list{display:flex;flex-direction:column}
-.hr-item{display:flex;align-items:center;padding:8px 0;border-bottom:1px solid var(--bg)}
-.hr-item:last-child{border:none}
-.hr-item .rk{width:22px;font-size:14px;font-weight:700;color:var(--g);text-align:center}
-.hr-item .rk.g{color:var(--o)}
-.hr-item .rk.s{color:#94a3b8}
-.hr-item .em{font-size:18px;margin:0 8px}
-.hr-item .nm{flex:1;font-size:14px;color:var(--t1)}
-.hr-item .ct{font-size:12px;color:var(--t3)}
-.bar-list{display:flex;flex-direction:column;gap:8px}
-.bar-item{display:flex;align-items:center;gap:8px}
-.bar-item .nm{width:36px;font-size:12px;color:var(--t2)}
-.bar-item .br{flex:1;height:8px;background:var(--bg);border-radius:4px;overflow:hidden}
-.bar-item .br-in{height:100%;background:var(--g);border-radius:4px;transition:width .5s}
-.bar-item .ct{font-size:11px;color:var(--t3);min-width:24px;text-align:right}
-/* 帮助 */
-.hp{padding:16px}
-.hp .q{font-size:14px;font-weight:600;color:var(--t1);padding:12px 0;border-bottom:1px solid var(--bd)}
-.hp .a{font-size:13px;color:var(--t2);line-height:1.7;padding:8px 0 12px}
-/* 登录 */
-.lg-bg{background:linear-gradient(135deg,#10b981,#059669);flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#fff;padding:40px}
-.lg-bg .lo{font-size:64px;margin-bottom:14px}
-.lg-bg .tt{font-size:24px;font-weight:700;margin-bottom:4px}
-.lg-bg .ds{font-size:13px;opacity:.8;margin-bottom:40px}
-.lg-bx{width:100%;background:rgba(255,255,255,.15);border-radius:14px;padding:20px;backdrop-filter:blur(10px)}
-.lg-bx input{width:100%;padding:12px;border-radius:10px;border:none;font-size:14px;margin-bottom:10px;outline:none;background:rgba(255,255,255,.9);color:var(--t1)}
-.lg-bx .rw{display:flex;gap:8px}
-.lg-bx .rw input{flex:1;margin-bottom:0}
-.lg-bx .cbtn{background:rgba(255,255,255,.25);color:#fff;padding:10px 14px;border-radius:10px;font-size:12px;white-space:nowrap;border:none;cursor:pointer}
-.lg-bx .sbtn{width:100%;padding:12px;background:#fff;color:var(--g);border-radius:10px;font-size:15px;font-weight:700;margin-top:14px;cursor:pointer;border:none}
-/* 通用 */
-.toast{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(0,0,0,.7);color:#fff;padding:8px 18px;border-radius:8px;font-size:13px;z-index:1000;opacity:0;transition:opacity .2s;pointer-events:none;pointer-events:none}
-.toast.on{opacity:1}
-.ml{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.4);display:none;align-items:center;justify-content:center;z-index:999}
-.ml.on{display:flex}
-.ml-b{background:#fff;border-radius:14px;padding:22px;width:280px;text-align:center}
-.ml-b .mt{font-size:16px;font-weight:600;margin-bottom:8px;color:var(--t1)}
-.ml-b .mc{font-size:13px;color:var(--t2);margin-bottom:18px;line-height:1.5}
-.ml-b .mb{display:flex;gap:10px}
-.ml-b .b{flex:1;padding:10px;border-radius:20px;font-size:14px;cursor:pointer;border:none;font-weight:500}
-.ml-b .b1{background:var(--bg);color:var(--t1)}
-.ml-b .b2{background:var(--g);color:#fff}
-.empty{padding:60px 0;text-align:center;color:var(--t3);font-size:14px}
-.empty i{display:block;font-size:44px;margin-bottom:12px;font-style:normal;opacity:.35}
-.load{display:flex;align-items:center;justify-content:center;padding:36px;color:var(--t3);font-size:13px;gap:8px}
-.load::before{content:'';width:16px;height:16px;border:2px solid var(--bd);border-top-color:var(--g);border-radius:50%;animation:sp .6s linear infinite}
-@keyframes sp{to{transform:rotate(360deg)}}
+.ti-icon{font-size:22px;line-height:1;transition:transform .18s cubic-bezier(.34,1.56,.64,1)}
+.ti.on .ti-icon{transform:scale(1.12) translateY(-1px)}
+.ti-badge{position:absolute;top:2px;right:calc(50% - 17px);background:var(--r);color:#fff;font-size:9px;min-width:16px;height:16px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-weight:600;padding:0 3px;animation:badgePop .3s ease}
+@keyframes badgePop{0%{transform:scale(0)}60%{transform:scale(1.2)}100%{transform:scale(1)}}
+
+/* ===== 首页头部 - v5.2 增强渐变 ===== */
+.home-header{padding:28px 20px 24px;background:linear-gradient(135deg,#10b981 0%,#059669 40%,#047857 80%,#065f46 100%);color:#fff;position:relative;overflow:hidden}
+.home-header::after{content:'';position:absolute;top:-30px;right:-20px;width:130px;height:130px;border-radius:50%;background:rgba(255,255,255,.07)}
+.home-header::before{content:'';position:absolute;bottom:-45px;left:-35px;width:150px;height:150px;border-radius:50%;background:rgba(255,255,255,.05)}
+
+/* 聚焦模式切换按钮 */
+.focus-toggle{display:inline-flex;align-items:center;gap:5px;background:rgba(255,255,255,.18);padding:4px 12px;border-radius:20px;font-size:11.5px;margin-left:auto;cursor:pointer;transition:all var(--tr);border:1.5px solid transparent;font-weight:500}
+.focus-toggle:active{transform:scale(.95)}
+.focus-toggle.active{background:rgba(255,255,255,.28);border-color:rgba(255,255,255,.4);box-shadow:0 2px 8px rgba(0,0,0,.1)}
+
+.greeting-row{display:flex;align-items:center}
+.greeting{font-size:14px;opacity:.88;margin-bottom:4px}
+.home-header h1{font-size:25px;font-weight:800;letter-spacing:.5px;text-shadow:0 1px 3px rgba(0,0,0,.1)}
+.date-info{font-size:12px;opacity:.72;margin-top:6px}
+
+/* 今日概览条 */
+.today-bar{display:flex;gap:10px;margin-top:14px;padding:12px 14px;background:rgba(255,255,255,.13);border-radius:12px;backdrop-filter:saturate(1.3)}
+.today-stat{flex:1;text-align:center}
+.today-stat-num{font-size:20px;font-weight:800}
+.today-stat-lbl{font-size:10px;opacity:.75;margin-top:2px}
+
+/* 搜索框 - v5.2 圆润增强 */
+.search-box{padding:0 14px;margin-top:-12px;position:relative;z-index:5}
+.search-in{display:flex;align-items:center;background:var(--card);border-radius:24px;padding:11px 17px;gap:10px;box-shadow:var(--sh2);border:2px solid transparent;transition:all var(--tr)}
+.search-in:focus-within{border-color:var(--g);box-shadow:var(--sh2),0 0 0 4px rgba(16,185,129,.1)}
+.search-in input{flex:1;border:none;background:transparent;font-size:14.5px;outline:none;color:var(--t1);letter-spacing:.3px;font-weight:400}
+.search-in input::placeholder{color:var(--t3)}
+
+/* 分类标签 - v5.2 更精致 */
+.cats{display:flex;padding:14px 16px 10px;gap:8px;overflow-x:auto;background:var(--card);scroll-snap-type:x mandatory}
+.cats::-webkit-scrollbar{display:none}
+.cat-tag{padding:7px 18px;border-radius:20px;font-size:13px;color:var(--t2);background:var(--bg);white-space:nowrap;cursor:pointer;transition:all var(--tr);flex-shrink:0;scroll-snap-align:start;font-weight:500;border:2px solid transparent}
+.cat-tag:active{transform:scale(.94)}
+.cat-tag.on{background:var(--g);color:#fff;border-color:var(--g);box-shadow:0 3px 12px rgba(16,185,129,.32);font-weight:600}
+
+/* ===== 任务卡片 - v5.2 全新设计 ===== */
+.task-card{background:var(--card);margin:0 12px 10px;border-radius:var(--rx);padding:15px 17px;box-shadow:var(--sh);cursor:pointer;transition:all .2s cubic-bezier(.25,.46,.45,.94);position:relative;border-left:4.5px solid transparent;overflow:hidden}
+.task-card:active{transform:scale(.976);box-shadow:var(--sh)}
+.task-card.p-high{border-left-color:var(--r)}
+.task-card.p-mid{border-left-color:var(--o)}
+.task-card.p-low{border-left-color:var(--b)}
+
+/* 到期状态样式 */
+.task-card.due-overdue{background:linear-gradient(135deg,#fff 0%, #fef2f2 100%)}
+.task-card.due-overdue .tc-title{color:var(--r)}
+.task-card.due-today{background:linear-gradient(135deg,#fff 0%, #fffbeb 100%)}
+
+.task-card .tc-top{display:flex;align-items:flex-start;gap:11px}
+.task-card .tc-check{width:26px;height:26px;border-radius:50%;border:2.5px solid #d1d5db;flex-shrink:0;margin-top:1px;display:flex;align-items:center;justify-content:center;font-size:14px;color:transparent;transition:all .25s cubic-bezier(.34,1.56,.64,1);cursor:pointer}
+.task-card .tc-check:active{transform:scale(.82)}
+.task-card .tc-check.done{background:var(--g);border-color:var(--g);color:#fff;box-shadow:0 3px 10px rgba(16,185,129,.35);animation:checkPop .3s ease}
+@keyframes checkPop{0%{transform:scale(1.3)}100%{transform:scale(1)}}
+.task-card .tc-body{flex:1;min-width:0}
+.task-card .tc-title{font-size:15.5px;font-weight:600;color:var(--t1);line-height:1.45;margin-bottom:4px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;word-break:break-all;transition:all var(--tr)}
+.task-card .tc-title.done{text-decoration:line-through;color:var(--t3)}
+.task-card .tc-desc{font-size:12.5px;color:var(--t2);line-height:1.45;margin-bottom:7px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.task-card .tc-meta{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--t3);flex-wrap:wrap}
+.task-card .tc-cat{padding:2px 9px;border-radius:10px;background:var(--g2);color:var(--g3);font-weight:500}
+.task-card .tc-time{}
+.task-card .tc-due{padding:2px 9px;border-radius:10px;font-weight:600;white-space:nowrap}
+.task-card .tc-due.overdue{color:var(--r);background:var(--r2);animation:pulse 2s infinite}
+.task-card .tc-due.today{color:#b45309;background:#fff7ed}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.65}}
+.task-card .tc-priority{margin-left:auto;padding:2px 9px;border-radius:10px;font-weight:600}
+.task-card .tc-priority.high{color:var(--r);background:var(--r2)}
+.task-card .tc-priority.mid{color:var(--o);background:#fff7ed}
+.task-card .tc-priority.low{color:var(--b);background:#eff6ff}
+
+/* 快速添加栏 - v5.2 增强 */
+.quick-add{display:flex;align-items:center;padding:12px 14px;background:var(--card);border-top:1px solid var(--bd);gap:10px;flex-shrink:0}
+.quick-add input{flex:1;padding:12px 17px;border:2px solid var(--bd);border-radius:24px;font-size:14px;outline:none;background:var(--bg);color:var(--t1);transition:all var(--tr);letter-spacing:.3px;font-weight:400}
+.quick-add input::placeholder{color:var(--t3)}
+.quick-add input:focus{border-color:var(--g);box-shadow:0 0 0 4px rgba(16,185,129,.1)}
+.quick-add .add-btn{width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,var(--g),var(--g3));color:#fff;font-size:26px;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;transition:all .2s cubic-bezier(.34,1.56,.64,1);box-shadow:0 3px 12px rgba(16,185,129,.35)}
+.quick-add .add-btn:active{transform:scale(0.88);box-shadow:0 1px 4px rgba(16,185,129,.2)}
+
+/* ===== 发布/编辑页 - v5.2 增强 ===== */
+.fm{padding:18px 16px}
+.fg{margin-bottom:20px}
+.fg label{display:block;font-size:13px;font-weight:600;color:var(--t1);margin-bottom:8px}
+.fg input,.fg textarea,.fg select{width:100%;padding:14px 16px;border:2px solid var(--bd);border-radius:12px;font-size:15px;outline:none;background:var(--card);color:var(--t1);transition:all var(--tr)}
+.fg input:focus,.fg textarea:focus,.fg select:focus{border-color:var(--g);box-shadow:0 0 0 4px rgba(16,185,129,.08)}
+.fg textarea{height:95px;resize:none;line-height:1.55}
+.priority-opts{display:flex;gap:10px}
+.po{flex:1;padding:13px;text-align:center;border-radius:12px;font-size:14px;cursor:pointer;border:2px solid transparent;background:var(--bg);color:var(--t2);transition:all var(--tr);font-weight:500}
+.po:active{transform:scale(.96)}
+.po.phigh{--pc:var(--r);--pb:var(--r2)}.po.pmid{--pc:var(--o);--pb:#fff7ed}.po.plow{--pc:var(--b);--pb:#eff6ff}
+.po.on{color:var(--pc);background:var(--pb);border-color:currentColor;box-shadow:0 2px 10px rgba(0,0,0,.06);font-weight:600}
+
+.btn-main{background:linear-gradient(135deg,var(--g),var(--g3));color:#fff;text-align:center;padding:16px;border-radius:13px;font-size:16px;font-weight:700;cursor:pointer;transition:all .2s cubic-bezier(.34,1.56,.64,1);letter-spacing:1px;box-shadow:0 4px 14px rgba(16,185,129,.32)}
+.btn-main:active{transform:scale(.978);box-shadow:0 1px 4px rgba(16,185,129,.2)}
+
+/* ===== 统计页 - v5.2 全新设计 ===== */
+.stat-big{background:linear-gradient(135deg,var(--g),var(#059669),#047857);border-radius:var(--rx);padding:28px 20px;text-align:center;box-shadow:0 6px 24px rgba(16,185,129,.28);margin-bottom:16px;position:relative;overflow:hidden}
+.stat-big::before{content:'';position:absolute;top:-25px;right:-25px;width:90px;height:90px;border-radius:50%;background:rgba(255,255,255,.12)}
+.stat-big::after{content:'';position:absolute;bottom:-30px;left:-20px;width:70px;height:70px;border-radius:50%;background:rgba(255,255,255,.07)}
+.stat-big-num{font-size:48px;font-weight:800;color:#fff;text-shadow:0 2px 5px rgba(0,0,0,.1)}
+.stat-big-lbl{font-size:13px;color:rgba(255,255,255,.85);margin-top:4px;letter-spacing:.5px}
+
+/* 效率评分环 */
+.score-ring{display:flex;align-items:center;gap:20px;background:var(--card);border-radius:var(--rx);padding:20px;box-shadow:var(--sh);margin-bottom:14px}
+.score-circle{width:90px;height:90px;position:relative;flex-shrink:0}
+.score-circle svg{width:90px;height:90px;transform:rotate(-90deg)}
+.score-circle .score-val{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:22px;font-weight:800;color:var(--g)}
+.score-info h3{font-size:14px;font-weight:600;margin-bottom:6px}
+.score-info p{font-size:12px;color:var(--t2);line-height:1.6;margin:0}
+
+/* 连续打卡卡片 */
+.streak-card{background:linear-gradient(135deg,#fbbf24 0%,#f59e0b 50%,#d97706 100%);border-radius:var(--rx);padding:20px;box-shadow:0 4px 16px rgba(245,158,11,.25);margin-bottom:14px;display:flex;align-items:center;gap:16px;color:#fff}
+.streak-icon{font-size:40px}
+.streak-info{flex:1}
+.streak-num{font-size:36px;font-weight:800;line-height:1}
+.streak-unit{font-size:14px;opacity:.85}
+.streak-hint{font-size:11px;opacity:.75;margin-top:2px}
+.streak-flame{font-size:32px}
+
+/* ===== 我的页面 - v5.2 增强 ===== */
+.profile-head{padding:30px 20px 22px;background:linear-gradient(135deg,var(--g) 0%,#059669 50%,#047857 100%);color:#fff;text-align:center;position:relative;overflow:hidden}
+.profile-head::after{content:'';position:absolute;top:-25px;right:-15px;width:110px;height:110px;border-radius:50%;background:rgba(255,255,255,.07)}
+.profile-avatar{width:68px;height:68px;border-radius:50%;background:rgba(255,255,255,.2);margin:0 auto 10px;display:flex;align-items:center;justify-content:center;font-size:32px;border:3px solid rgba(255,255,255,.3);backdrop-filter:saturate(1.2);box-shadow:0 4px 15px rgba(0,0,0,.1)}
+.profile-name{font-size:19px;font-weight:700}
+.profile-id{font-size:11px;opacity:.6;margin-top:3px}
+.stats-row{display:flex;background:var(--card);margin:10px 14px;border-radius:var(--rx);overflow:hidden;box-shadow:var(--sh)}
+.stat-item{flex:1;text-align:center;padding:15px 0}
+.stat-item+.stat-item{border-left:1px solid var(--bd)}
+.stat-num{font-size:23px;font-weight:800;color:var(--g)}
+.stat-lbl{font-size:11px;color:var(--t3);margin-top:3px}
+
+/* 功能菜单增强 */
+.menu-list{margin:10px 14px;background:var(--card);border-radius:var(--rx);overflow:hidden;box-shadow:var(--sh)}
+.menu-item{display:flex;align-items:center;padding:15px 18px;border-bottom:1px solid var(--bg);cursor:pointer;transition:background .12s;-webkit-tap-highlight-color:transparent}
+.menu-item:last-child{border:none}
+.menu-item:active{background:var(--bg)}
+.menu-icon{font-size:19px;width:28px;text-align:center;margin-right:13px}
+.menu-text{flex:1;font-size:15px;font-weight:500}
+.menu-arrow{font-size:17px;color:var(--t3)}
+
+/* 新增菜单项：一键完成 */
+.action-btn{display:block;width:calc(100% - 28px);margin:10px 14px;padding:15px;border-radius:var(--rx);text-align:center;font-size:15px;font-weight:600;cursor:pointer;transition:all var(--tr);border:none}
+.action-btn-primary{background:linear-gradient(135deg,var(--g),var(--g3));color:#fff;box-shadow:0 3px 12px rgba(16,185,129,.25)}
+.action-btn-primary:active{transform:scale(.98);box-shadow:0 1px 4px rgba(16,185,129,.15)}
+
+/* ===== 通用组件 - v5.2 增强 ===== */
+.toast{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) scale(.9);background:rgba(0,0,0,.78);color:#fff;padding:12px 26px;border-radius:12px;font-size:14px;z-index:9999;opacity:0;transition:all .25s cubic-bezier(.4,0,.2,1);pointer-events:none;white-space:nowrap;font-weight:500;backdrop-filter:blur(6px);max-width:80vw}
+.toast.show{opacity:1;transform:translate(-50%,-50%) scale(1)}
+.empty{text-align:center;padding:60px 20px;color:var(--t3);font-size:14px}
+.empty-icon{font-size:54px;margin-bottom:12px;animation:bounceIn .55s ease}
+@keyframes bounceIn{0%{transform:scale(.4);opacity:0}60%{transform:scale(1.08)}100%{transform:scale(1);opacity:1}}
+.empty-hint{font-size:12px;color:var(--t3);margin-top:8px;line-height:1.6}
+.modal-mask{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.48);display:flex;align-items:center;justify-content:center;z-index:999;animation:fadeMask .22s ease;backdrop-filter:blur(3px)}
+.modal-mask.hidden{display:none}
+@keyframes fadeMask{from{opacity:0}to{opacity:1}}
+.modal-box{background:var(--card);border-radius:20px;padding:28px 26px;width:300px;text-align:center;box-shadow:var(--sh3);animation:slideUp .28s cubic-bezier(.34,1.56,.64,1)}
+@keyframes slideUp{from{transform:translateY(24px);opacity:0}to{transform:translateY(0);opacity:1}}
+.modal-title{font-size:18px;font-weight:700;color:var(--t1);margin-bottom:12px}
+.modal-msg{font-size:14px;color:var(--t2);margin-bottom:24px;line-height:1.65;white-space:pre-wrap;word-break:break-all}
+.modal-btns{display:flex;gap:10px}
+.modal-btn{flex:1;padding:12px;border-radius:24px;font-size:14px;cursor:pointer;border:none;font-weight:600;transition:all .12s}
+.modal-btn:active{transform:scale(.96)}
+.modal-btn-cancel{background:var(--bg);color:var(--t1)}
+.modal-btn-ok{background:linear-gradient(135deg,var(--g),var(--g3));color:#fff;box-shadow:0 3px 10px rgba(16,185,129,.28)}
+
+/* 下拉提示 */
+.pull-tip{display:flex;justify-content:center;padding:8px 0;color:var(--t3);font-size:12px;transition:opacity .3s;opacity:0;pointer-events:none}
+.pull-tip.show{opacity:1}
+
+/* ===== 骨架屏 v5.2 ===== */
+.skeleton{background:linear-gradient(90deg,var(--bg) 25%,#eee 50%,var(--bg) 75%);background-size:200% 100%;animation:shimmer 1.5s infinite;border-radius:8px}
+.skeleton-header{height:140px;border-radius:0}
+.skeleton-search{height:48px;margin:0 14px;border-radius:24px}
+.skeleton-cats{height:38px;margin:14px 16px 10px;border-radius:20px}
+.skeleton-card{height:90px;margin:0 12px 10px;border-radius:var(--rx)}
+@keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+
 /* 安全区域适配 */
-@supports(padding:env(safe-area-inset-top)){
-.P{padding-top:env(safe-area-inset-top);height:calc(100vh - env(safe-area-inset-top))}
-.tb{padding-bottom:calc(14px + env(safe-area-inset-bottom))}
-.cb{padding-bottom:calc(20px + env(safe-area-inset-bottom))}
+@supports(padding:max(env(safe-area-inset-bottom), 0px)){
+.tb{padding-bottom:calc(4px + env(safe-area-inset-bottom))}
 }
-/* 左滑返回指示条 */
-.swipe-hint{position:absolute;top:0;left:0;right:0;height:3px;background:var(--g);border-radius:0 0 4px 4px;transition:width .15s;width:0;pointer-events:none;z-index:200}
+
+/* 滚动条美化 */
+.sv::-webkit-scrollbar{width:0}
 </style>
 </head>
 <body>
 <div class="P" id="app">
-  <div class="swipe-hint" id="swipeHint"></div>
 
-  <!-- 首页 -->
-  <div class="pg on" id="pg-home">
-    <div class="hd"><span class="tt">万能任务</span><span class="rt" @click="nav('pg-pub')">+ 发布</span></div>
-    <div class="sv">
-      <div class="sch"><div class="sch-in"><i style="font-size:16px;color:var(--t3);font-style:normal">🔍</i><input placeholder="搜索任务..." v-model="kw" @keyup.enter="doSearch"></div></div>
-      <div class="scats"><span class="ct" :class="{on:curCat===c}" v-for="c in catList" @click="curCat=c;doSearch()">{{c}}</span></div>
-      <div class="stat-bar">
-        <div class="si"><span class="sv">{{homeStats.today}}</span><span class="sl">今日新增</span></div>
-        <div class="si"><span class="sv">{{homeStats.hotCat||'-'}}</span><span class="sl">热门</span></div>
-        <div class="si"><span class="sv">{{homeStats.activeUsers}}</span><span class="sl">活跃</span></div>
-      </div>
-      <div class="tc" v-for="t in tasks" @click="openDetail(t)">
-        <div class="tl"><span class="tl-tag">{{t.catName||'其他'}}</span>{{t.title}}</div>
-        <div class="ds">{{t.description||'暂无描述'}}</div>
-        <div class="ft">
-          <div class="au"><div class="av">{{t.avatar_emoji||'?'}}</div><span class="nm">{{t.nickname}}</span></div>
-          <div style="display:flex;align-items:center;gap:8px">
-            <span class="bd">{{t.bid_count||t.bids?(Array.isArray(t.bids)?t.bids.length:(t.bid_count||0)):0}}人接单</span>
-            <span class="st">{{statusText(t.status)}}</span>
-          </div>
-        </div>
-      </div>
-      <div class="empty" v-if="!tasks.length&&!loading"><i>📋</i>暂无任务，去发布一个吧</div>
-      <div class="load" v-if="loading">加载中...</div>
-      <div style="text-align:center;padding:16px" v-if="hasMore&&!loading"><span class="bc b1" style="display:inline-block;padding:10px 32px;border-radius:20px;font-size:14px;cursor:pointer" @click="loadMore">加载更多</span></div>
-    </div>
-    <div class="tb"><div class="ti on" @click="nav('pg-home')"><span class="tic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9,22 9,12 15,12 15,22"/></svg></span>首页</div><div class="ti" @click="nav('pg-pub')"><span class="tic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg></span>发布</div><div class="ti" @click="nav('pg-chats')"><span class="tic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg></span>消息<div class="dg" v-if="totalUnread">{{totalUnread}}</div></div><div class="ti" @click="nav('pg-me')"><span class="tic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span>我的</div></div>
+<!-- ========== 首页 ========== -->
+<div class="pg on" id="pg-home">
+  <div class="hd hd-green" id="homeHd">
+    <span class="tt">万能任务</span>
+    <span class="rt" @click="showAbout">设置</span>
   </div>
 
-  <!-- 发布 -->
-  <div class="pg" id="pg-pub">
-    <div class="hd"><span class="bk" @click="nav('pg-home')">‹</span><span class="tt">发布任务</span></div>
-    <div class="sv">
-      <div class="fm">
-        <div class="fg"><label>标题</label><input placeholder="简单描述你的需求" v-model="pub.title" maxlength="40"></div>
-        <div class="fg"><label>详细描述</label><textarea placeholder="详细说明任务内容、时间、要求等..." v-model="pub.desc"></textarea></div>
-        <div class="fg"><label>分类</label><div class="tgs"><span class="tg" :class="{on:pub.cat===c}" v-for="c in pubCats" @click="pub.cat=c">{{c}}</span></div></div>
-        <div class="fg"><label>图片（选填，最多3张）</label>
-          <div class="img-upload">
-            <div class="img-up-item" v-for="(img,i) in pubImages"><img :src="img"><span class="del" @click="pubImages.splice(i,1)">✕</span></div>
-            <div class="img-up-add" v-if="pubImages.length<3" @click="pickPubImage"><i>+</i><span>添加</span></div>
-          </div>
-          <input type="file" id="pubFileInput" ref="pubFile" accept="image/*" style="display:none" @change="onPubImage">
-        </div>
+  <div style="display:flex;flex-direction:column;flex:1;overflow:hidden">
+    <!-- 问候头部 v5.2增强 -->
+    <div class="home-header">
+      <div class="greeting-row">
+        <span class="greeting">{{greetingText}}</span>
+        <span class="focus-toggle" :class="{active:todayFocusMode}" @click="toggleFocus">{{todayFocusMode?'🎯 聚焦中':'🎯 聚焦'}}</span>
+      </div>
+      <h1>{{userName||'用户'}}的任务</h1>
+      <div class="date-info">{{todayStr}}</div>
+      
+      <!-- 今日概览 -->
+      <div class="today-bar" v-if="tasks.length>0">
+        <div class="today-stat"><div class="today-stat-num" style="color:#fff">{{pendingCount}}</div><div class="today-stat-lbl">待办</div></div>
+        <div class="today-stat"><div class="today-stat-num" style="color:#fcd34d">{{dueTodayCount||0}}</div><div class="today-stat-lbl">今日到期</div></div>
+        <div class="today-stat"><div class="today-stat-num" style="color:#fecaca">{{overdueCount||0}}</div><div class="today-stat-lbl">已过期</div></div>
+        <div class="today-stat"><div class="today-stat-num" style="color:#bbf7d0">{{streak}}</div><div class="today-stat-lbl">连续天数</div></div>
       </div>
     </div>
-    <div class="btn" @click="doPublish">立即发布</div>
-    <div class="tb"><div class="ti" @click="nav('pg-home')"><span class="tic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9,22 9,12 15,12 15,22"/></svg></span>首页</div><div class="ti on" @click="nav('pg-pub')"><span class="tic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg></span>发布</div><div class="ti" @click="nav('pg-chats')"><span class="tic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg></span>消息<div class="dg" v-if="totalUnread">{{totalUnread}}</div></div><div class="ti" @click="nav('pg-me')"><span class="tic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span>我的</div></div>
-  </div>
 
-  <!-- 消息列表 -->
-  <div class="pg" id="pg-chats">
-    <div class="hd"><span class="tt">消息</span></div>
-    <div class="sv">
-      <div class="ci" v-for="c in chatList" @click="openChat(c)">
-        <div class="av">{{(c.peer&&c.peer.avatar_emoji)||'?'}}</div>
-        <div class="if"><div class="nm">{{c.peer?c.peer.nickname:''}}</div><div class="mg">{{c.lastMsg||'开始聊天吧'}}</div></div>
-        <div class="mt"><div class="t2">{{timeAgo(c.lastTime)}}</div><div class="ur" v-if="c.unread">{{c.unread}}</div></div>
-      </div>
-      <div class="empty" v-if="!chatList.length&&!loading"><i>💬</i>暂无消息</div>
-    </div>
-    <div class="tb"><div class="ti" @click="nav('pg-home')"><span class="tic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9,22 9,12 15,12 15,22"/></svg></span>首页</div><div class="ti" @click="nav('pg-pub')"><span class="tic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg></span>发布</div><div class="ti on" @click="nav('pg-chats')"><span class="tic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg></span>消息<div class="dg" v-if="totalUnread">{{totalUnread}}</div></div><div class="ti" @click="nav('pg-me')"><span class="tic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span>我的</div></div>
-  </div>
+    <!-- 搜索 -->
+    <div class="search-box"><div class="search-in">
+      <span style="font-size:15.5px;color:var(--t3)">🔍</span>
+      <input placeholder="搜索任务..." v-model="kw" @keyup.enter="doSearch">
+      <span v-if="kw" @click.stop="kw=''" style="font-size:17px;color:var(--t3);cursor:pointer;padding:2px">&times;</span>
+    </div></div>
 
-  <!-- 聊天 -->
-  <div class="pg" id="pg-chat" style="position:relative">
-    <div class="hd"><span class="bk" @click="stopPolling();nav('pg-chats')">‹</span><span class="tt">{{curChat.peer?curChat.peer.nickname:''}}</span></div>
-    <div class="ma" id="msgBox">
-      <div class="mx" :class="{me:m.sender_id===me.id,ot:m.sender_id!==me.id}" v-for="m in chatMsgs">
-        <div class="av" v-if="m.sender_id!==me.id">{{m.avatar_emoji||'?'}}</div>
-        <div v-if="m.type==='text'" class="bb">{{m.content}}</div>
-        <div v-if="m.type==='image'" class="bb imgbb" @click="previewImg(m.content)"><img :src="m.content"></div>
-        <div v-if="m.type==='voice'" class="bb" :style="{minWidth:'80px'}" @click="playVoice(m)">
-          <div class="vb" :class="{playing:playingVoice===m.id}">
-            <div class="bars"><span class="bar"></span><span class="bar"></span><span class="bar"></span></div>
-          </div>
-        </div>
-        <div class="vd" v-if="m.type==='voice'">{{m.duration||'?'}}"</div>
-        <div class="av" v-if="m.sender_id===me.id">{{me.avatar_emoji||'?'}}</div>
-      </div>
+    <!-- 分类 -->
+    <div class="cats">
+      <span class="cat-tag" :class="{on:curCat===c}" v-for="c in catList" @click="curCat=c;filterTasks()">{{c}}</span>
     </div>
-    <div class="cb">
-      <span class="ic" @click="pickChatImage">📷</span>
-      <span class="ic" @touchstart.prevent="startRec" @touchend.prevent="stopRec" @mousedown="startRec" @mouseup="stopRec">🎤</span>
-      <input placeholder="说点什么..." v-model="msgInput" @keyup.enter="sendMsg">
-      <span class="send" @click="sendMsg">发送</span>
-    </div>
-    <input type="file" id="chatImgInput" accept="image/*" style="display:none" @change="onChatImage">
-    <div class="rec-ui" :class="{on:recording}">
-      <div class="ri">🎙️</div>
-      <div class="rt">{{recSec < 10 ? '0'+recSec : recSec}}s</div>
-      <div class="rh">松开结束，最多60秒</div>
-    </div>
-    <div class="pv" :class="{on:previewing}" @click="previewing=false">
-      <span class="close">✕</span>
-      <img :src="previewUrl">
-    </div>
-  </div>
 
-  <!-- 详情 -->
-  <div class="pg" id="pg-detail">
-    <div class="hd"><span class="bk" @click="nav('pg-home')">‹</span><span class="tt">任务详情</span></div>
-    <div class="sv">
-      <div class="dh"><div class="av">{{detail.avatar_emoji||'?'}}</div><div><div class="nm">{{detail.nickname||'用户'}}</div><div class="tm">{{timeAgo(detail.created_at)}}</div></div><span class="sg">{{statusText(detail.status)}}</span></div>
-      <div class="db">
-        <div class="tl">{{detail.title||''}}</div>
-        <div class="ds">{{detail.description||'暂无描述'}}</div>
-        <div class="imgs" v-if="detail.images&&detail.images.length"><img v-for="img in detail.images" :src="img" @click="previewImg(img)"></div>
-        <div class="tgs"><span class="tg">{{detail.catName||'其他'}}</span></div>
+    <!-- 下拉刷新提示 -->
+    <div class="pull-tip" :class="{show:refreshTip}">↓ 松手刷新任务列表</div>
+
+    <!-- 骨架屏 -->
+    <template v-if="showSkeleton">
+      <div style="padding:10px 0">
+        <div class="skeleton skeleton-card"></div>
+        <div class="skeleton skeleton-card"></div>
+        <div class="skeleton skeleton-card"></div>
+        <div class="skeleton skeleton-card" style="height:60px"></div>
       </div>
-      <div class="dm">
-        <div class="di"><div class="dl">接单</div><div class="dv">{{detail.bid_count||detail.bids?(Array.isArray(detail.bids)?detail.bids.length:(detail.bid_count||0)):0}}</div></div>
-        <div class="di"><div class="dl">点赞</div><div class="dv">{{detail.likes||0}}</div></div>
-        <div class="di"><div class="dl">浏览</div><div class="dv">{{detail.views||0}}</div></div>
-      </div>
-      <div class="bds" v-if="detail.bids&&detail.bids.length">
-        <div class="hd"><span class="tt">接单申请</span><span class="ct">{{detail.bids.length}}人</span></div>
-        <div class="bd" v-for="b in detail.bids" :style="{opacity: b.status==='rejected'?'0.5':'1'}">
-          <div class="av">{{b.avatar_emoji||'?'}}</div>
-          <div style="flex:1;min-width:0">
-            <div style="display:flex;align-items:center;gap:6px">
-              <span class="nm">{{b.nickname}}</span>
-              <span :style="{fontSize:'10px',color:statusColor(b.status),background:statusColor(b.status)+'22',padding:'1px 7px',borderRadius:'8px'}">{{statusText(b.status)}}</span>
+    </template>
+
+    <!-- 任务列表 -->
+    <div class="sv" id="homeList"
+         v-show="!showSkeleton"
+         @touchstart.passive="onTouchStart"
+         @touchmove.passive="onTouchMove"
+         @touchend="onTouchEnd">
+      <div class="task-card"
+        :class="['p-'+(t.priority||'mid'), {done: t.done}, dueClass(t)]"
+        v-for="(t,idx) in filteredTasks" :key="t.id"
+        @click="openTask(t)"
+        @touchstart.longpress="onLongPress(t,$event)"
+        :style="{animationDelay: (idx*0.03)+'s'}">
+        <div class="tc-top">
+          <span class="tc-check" :class="{done:t.done}" @click.stop="toggleDone(t)">{{t.done?'✓':''}}</span>
+          <div class="tc-body">
+            <div class="tc-title" :class="{done:t.done}">{{t.title}}</div>
+            <div class="tc-desc" v-if="!t.done && t.desc">{{t.desc}}</div>
+            <div class="tc-meta" v-if="!t.done">
+              <span class="tc-cat">{{t.category||'其他'}}</span>
+              <span class="tc-time">{{fmtTime(t.createdAt)}}</span>
+              <span class="tc-due" :class="{overdue:getDueStatus(t)==='overdue', today:getDueStatus(t)==='today'}" v-if="dueInfo(t)">{{dueInfo(t)}}</span>
+              <span class="tc-priority" :class="t.priority||'mid'">{{priorityLabel(t.priority)}}</span>
             </div>
-            <div class="msg">{{b.message||'可接单'}}</div>
-          </div>
-          <button v-if="detail.canAcceptBid&&b.status==='pending'" @click.stop="acceptBid(b)" style="background:var(--g);color:#fff;border:none;padding:5px 12px;border-radius:14px;font-size:12px;cursor:pointer;white-space:nowrap">接受</button>
-        </div>
-      </div>
-      <div class="empty" v-if="!detail.bids||!detail.bids.length" style="padding:20px">暂无接单申请</div>
-    </div>
-    <div class="da">
-      <div class="act" @click="toggleLike"><i>{{liked?'❤️':'🤍'}}</i>点赞</div>
-      <div class="act" @click="toast('已分享')"><i>↗️</i>分享</div>
-      <div class="rl">
-        <span class="bc b1" @click="chatWithOwner">💬 联系</span>
-        <!-- 已完成状态 -->
-        <span v-if="detail.status==='completed'" style="flex:1;background:var(--b);color:#fff;padding:10px;border-radius:20px;font-size:14px;text-align:center;opacity:0.8">已完成</span>
-        <!-- 发布者：完成验收按钮 -->
-        <span v-else-if="detail.canComplete" @click="markComplete" class="bc" style="flex:1;background:var(--g3);color:#fff;border-radius:20px;cursor:pointer;text-align:center;font-size:14px;padding:10px">✓ 确认完成</span>
-        <!-- 发布者：进行中状态 -->
-        <span v-else-if="detail.user_id===me.id" class="bc b1" style="opacity:0.5;flex:1">我的任务</span>
-        <!-- 已申请接单 -->
-        <span v-else-if="detail.myBidId" class="bc b1" style="opacity:0.6;flex:1">等待确认</span>
-        <!-- 可接单 -->
-        <span v-else-if="detail.status==='ongoing'" @click="doBid" class="bc b2" style="flex:1;cursor:pointer">接 单</span>
-        <!-- 已接单（别人） -->
-        <span v-else-if="detail.status==='assigned'" class="bc b1" style="opacity:0.5;flex:1">已被接</span>
-        <span v-else class="bc b1" style="opacity:0.5;flex:1">{{statusText(detail.status)}}</span>
-      </div>
-    </div>
-  </div>
-
-  <!-- 我的 -->
-  <div class="pg" id="pg-me">
-    <div class="hd"><span class="tt">我的</span></div>
-    <div class="sv">
-      <div class="ph"><div class="av">{{me.avatar_emoji||'?'}}</div><div class="nm">{{me.nickname||'未登录'}}</div><div class="id" v-if="me.id">ID {{me.id}}</div></div>
-      <div class="mc"><div class="ms">
-        <div class="mi"><span class="mn">{{myStats.tasks||0}}</span><span class="ml">发布</span></div>
-        <div class="mi"><span class="mn">{{myStats.bids||0}}</span><span class="ml">接单</span></div>
-        <div class="mi"><span class="mn">{{myStats.rating||'-'}}</span><span class="ml">评分</span></div>
-      </div></div>
-      <div class="pm">
-        <div class="pg2" @click="loadMyTasks();nav('pg-mytasks')"><i class="pi">📋</i><span class="lb">我的任务</span><span class="ar">›</span></div>
-        <div class="pg2" @click="nav('pg-stats')"><i class="pi">📊</i><span class="lb">数据分析</span><span class="ar">›</span></div>
-        <div class="pg2" @click="nav('pg-help')"><i class="pi">❓</i><span class="lb">帮助</span><span class="ar">›</span></div>
-        <div class="pg2" @click="nav('pg-login')"><i class="pi">🚪</i><span class="lb">切换账号</span><span class="ar">›</span></div>
-      </div>
-    </div>
-    <div class="tb"><div class="ti" @click="nav('pg-home')"><i>🏠</i>首页</div><div class="ti" @click="nav('pg-pub')"><i>➕</i>发布</div><div class="ti" @click="nav('pg-chats')"><i>💬</i>消息<div class="dg" v-if="totalUnread">{{totalUnread}}</div></div><div class="ti on"><i>👤</i>我的</div></div>
-  </div>
-
-  <!-- 我的任务 -->
-  <div class="pg" id="pg-mytasks">
-    <div class="hd"><span class="bk" @click="nav('pg-me')">‹</span><span class="tt">我的任务</span></div>
-    <div class="tabs"><div class="tab" :class="{on:mtab===0}" @click="mtab=0">我发布的</div><div class="tab" :class="{on:mtab===1}" @click="mtab=1">我接的</div></div>
-    <div class="sv" style="padding:10px 12px">
-      <div class="tc" v-for="t in myTaskList" @click="t.task_id?openDetail({id:t.task_id}):openDetail(t)">
-        <div class="tl"><span class="tl-tag">{{t.catName||'其他'}}</span>{{t.title}}</div>
-        <div class="ft"><span class="st">{{statusText(t.task_status||t.status)}}</span><span style="margin-left:auto;font-size:11px;color:var(--t3)">{{timeAgo(t.created_at)}}</span></div>
-      </div>
-      <div class="empty" v-if="!myTaskList.length"><i>📋</i>暂无任务</div>
-    </div>
-  </div>
-
-  <!-- 数据分析 -->
-  <div class="pg" id="pg-stats">
-    <div class="hd"><span class="bk" @click="nav('pg-me')">‹</span><span class="tt">数据分析</span></div>
-    <div class="sv" style="padding:12px 16px">
-      <div class="an-card">
-        <div class="ti"><i class="ic">📈</i>任务总览</div>
-        <div class="ac">
-          <div class="di"><div class="dv">{{stats.total||0}}</div><div class="dl">全部</div></div>
-          <div class="di"><div class="dv" style="color:var(--o)">{{stats.ongoing||0}}</div><div class="dl">进行中</div></div>
-          <div class="di"><div class="dv" style="color:var(--b)">{{stats.completed||0}}</div><div class="dl">已完成</div></div>
-        </div>
-      </div>
-      <div class="an-card" v-if="stats.catStats&&stats.catStats.length">
-        <div class="ti"><i class="ic">🏷️</i>分类分布</div>
-        <div class="bar-list">
-          <div class="bar-item" v-for="c in stats.catStats">
-            <span class="nm">{{c.name}}</span>
-            <div class="br"><div class="br-in" :style="{width:c.pct+'%',background:c.name==='票券'?'var(--g)':c.name==='游戏'?'var(--b)':c.name==='生活'?'var(--o)':'var(--p)'}"></div></div>
-            <span class="ct">{{c.count}}</span>
           </div>
         </div>
       </div>
-      <div class="an-card" v-if="stats.topUsers&&stats.topUsers.length">
-        <div class="ti"><i class="ic">🏅</i>活跃排行</div>
-        <div class="hr-list">
-          <div class="hr-item" v-for="(u,i) in stats.topUsers">
-            <span class="rk" :class="{g:i===0,s:i===1}">{{i+1}}</span>
-            <span class="em">{{u.avatar_emoji||'?'}}</span>
-            <span class="nm">{{u.nickname}}</span>
-            <span class="ct">{{u.task_count}}任务</span>
+
+      <div class="empty" v-if="!filteredTasks.length && !kw">
+        <div class="empty-icon">📋</div>
+        <div v-if="todayFocusMode">聚焦模式下没有待办任务 🎉</div>
+        <div v-else>暂无任务</div>
+        <div class="empty-hint" v-if="!todayFocusMode">在下方输入框快速添加新任务<br>或点击 + 按钮</div>
+      </div>
+      <div class="empty" v-if="!filteredTasks.length && kw">
+        <div class="empty-icon">🔍</div>
+        <div>未找到匹配的任务</div>
+        <div class="empty-hint">试试其他关键词</div>
+      </div>
+    </div>
+
+    <!-- 快速添加 -->
+    <div class="quick-add">
+      <input placeholder="添加新任务，回车快速创建..." v-model="quickInput" @keyup.enter="quickAdd" ref="quickInputEl">
+      <span class="add-btn" @click="quickAdd">+</span>
+    </div>
+  </div>
+
+  <!-- 底栏 -->
+  <div class="tb">
+    <div class="ti on" data-page="home"><span class="ti-icon">📋</span><span>任务</span><span class="ti-badge" v-if="pendingCount>0">{{pendingCount>99?'99+':pendingCount}}</span></div>
+    <div class="ti" data-page="stats" @click="nav('pg-stats')"><span class="ti-icon">📊</span><span>统计</span></div>
+    <div class="ti" data-page="me" @click="nav('pg-me')"><span class="ti-icon">👤</span><span>我的</span></div>
+  </div>
+</div>
+
+<!-- ========== 统计页 v5.2 ========== -->
+<div class="pg" id="pg-stats">
+  <div class="hd hd-white"><span class="bk" @click="nav('pg-home')">‹</span><span class="tt">数据统计</span></div>
+  <div class="sv" style="padding:14px 16px">
+    <!-- 总数大卡片 -->
+    <div class="stat-big">
+      <div class="stat-big-num">{{tasks.length}}</div>
+      <div class="stat-big-lbl">总任务数</div>
+    </div>
+    
+    <!-- 核心指标行 -->
+    <div class="stats-row" style="margin:0 0 16px">
+      <div class="stat-item"><div class="stat-num" style="color:var(--g)">{{doneCount}}</div><div class="stat-lbl">已完成</div></div>
+      <div class="stat-item"><div class="stat-num" style="color:var(--o)">{{pendingCount}}</div><div class="stat-lbl">进行中</div></div>
+      <div class="stat-item"><div class="stat-num" style="color:var(--r)">{{highPriorityCount}}</div><div class="stat-lbl">高优先</div></div>
+      <div class="stat-item"><div class="stat-num" style="color:var(--p)">{{streak}}</div><div class="stat-lbl">连续天</div></div>
+    </div>
+
+    <!-- 效率评分 -->
+    <div class="score-ring">
+      <div class="score-circle">
+        <svg width="90" height="90" viewBox="0 0 90 90">
+          <circle cx="45" cy="45" r="38" fill="none" stroke="#e5e7eb" stroke-width="8"/>
+          <circle cx="45" cy="45" r="38" fill="none" stroke="var(--g)" stroke-width="8"
+                  stroke-linecap="round"
+                  :stroke-dasharray="239"
+                  :stroke-dashoffset="239-(239*(efficiencyScore/100))"
+                  style="transition:stroke-dashoffset .8s cubic-bezier(.4,0,.2,1)"/>
+        </svg>
+        <div class="score-val">{{efficiencyScore}}<span style="font-size:12px;color:var(--t3)">分</span></div>
+      </div>
+      <div class="score-info">
+        <h3>⚡ 效率评分</h3>
+        <p>基于完成率、按时率<br>和连续打卡综合计算<br><span style="color:var(--g);font-weight:600">{{efficiencyScore>=80?'优秀 👏':efficiencyScore>=60?'不错 💪':'加油 💪'}}</span></p>
+      </div>
+    </div>
+    
+    <!-- 连续打卡 -->
+    <div class="streak-card" v-if="streak>0">
+      <span class="streak-icon">🔥</span>
+      <div class="streak-info">
+        <div><span class="streak-num">{{streak}}</span> <span class="streak-unit">天</span></div>
+        <div class="streak-hint">连续完成任务，继续保持！</div>
+      </div>
+      <span class="streak-flame">✨</span>
+    </div>
+
+    <!-- 完成率环形图 -->
+    <div style="background:var(--card);border-radius:var(--rx);padding:22px;text-align:center;box-shadow:var(--sh);margin-bottom:14px">
+      <div style="font-size:14px;font-weight:600;color:var(--t1);margin-bottom:16px">🎯 完成率</div>
+      <div style="position:relative;width:120px;height:120px;margin:0 auto">
+        <svg width="120" height="120" viewBox="0 0 120 120">
+          <circle cx="60" cy="60" r="50" fill="none" stroke="#e5e7eb" stroke-width="11"/>
+          <circle cx="60" cy="60" r="50" fill="none" stroke="var(--g)" stroke-width="11"
+                  stroke-linecap="round"
+                  :stroke-dasharray="314"
+                  :stroke-dashoffset="314-(314*(tasks.length?doneCount/tasks.length:0))"
+                  transform="rotate(-90 60 60)"
+                  style="transition:stroke-dashoffset .7s cubic-bezier(.4,0,.2,1)"/>
+        </svg>
+        <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%)">
+          <div style="font-size:26px;font-weight:800;color:var(--g)">{{tasks.length?Math.round(doneCount/tasks.length*100):0}}</div>
+          <div style="font-size:11px;color:var(--t3)">%</div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- 分类统计 -->
+    <div style="background:var(--card);border-radius:var(--rx);padding:18px;box-shadow:var(--sh);margin-bottom:14px">
+      <div style="font-size:14px;font-weight:600;color:var(--t1);margin-bottom:14px">📂 分类分布</div>
+      <div v-for="(cnt,cat) in categoryStats" :key="cat" style="display:flex;align-items:center;gap:10px;margin-bottom:13px">
+        <span style="font-size:13px;color:var(--t2);width:52px;flex-shrink:0">{{cat||'未分类'}}</span>
+        <div style="flex:1;height:10px;background:var(--bg);border-radius:5px;overflow:hidden">
+          <div style="height:100%;background:linear-gradient(90deg,var(--g),var(--g3));border-radius:5px;transition:width .5s cubic-bezier(.4,0,.2,1)" :style="{width:(totalTasks?Math.round(cnt/totalTasks*100):0)+'%'}"></div>
+        </div>
+        <span style="font-size:12px;color:var(--t3);min-width:26px;text-align:right;font-weight:600">{{cnt}}</span>
+      </div>
+      <div v-if="!Object.keys(categoryStats).length" style="text-align:center;padding:18px;color:var(--t3);font-size:13px">暂无数据</div>
+    </div>
+    
+    <!-- 本周完成趋势 -->
+    <div style="background:var(--card);border-radius:var(--rx);padding:18px;box-shadow:var(--sh)">
+      <div style="font-size:14px;font-weight:600;color:var(--t1);margin-bottom:14px">📈 本周完成趋势</div>
+      <div style="display:flex;align-items:flex-end;gap:6px;height:100px;padding-bottom:6px">
+        <div v-for="(n,i) in weekData" :key="i" style="flex:1;display:flex;flex-direction:column;align-items:center;gap:5px">
+          <span style="font-size:11px;color:var(--g);font-weight:600">{{n||''}}</span>
+          <div style="width:100%;background:var(--g2);border-radius:5px 5px 0 0;transition:height .5s cubic-bezier(.4,0,.2,1);min-height:5px;position:relative" :style="{height:n?Math.max(n*6,8)+'px':'5px'}">
+            <div v-if="n" style="position:absolute;bottom:0;left:0;right:0;height:100%;background:linear-gradient(180deg,var(--g) 0%,var(--g3) 100%);border-radius:5px 5px 0 0"></div>
           </div>
+          <span style="font-size:10px;color:var(--t3)">{{weekLabels[i]}}</span>
         </div>
       </div>
     </div>
   </div>
-
-  <!-- 帮助 -->
-  <div class="pg" id="pg-help">
-    <div class="hd"><span class="bk" @click="nav('pg-me')">‹</span><span class="tt">帮助</span></div>
-    <div class="sv hp">
-      <div class="q">如何发布任务？</div><div class="a">点击首页右上角「+发布」，填写标题、描述，选择分类即可。</div>
-      <div class="q">能发图片吗？</div><div class="a">发布任务时支持上传最多3张图片，聊天时也可点击📷发送图片。</div>
-      <div class="q">如何发语音？</div><div class="a">聊天时按住🎤按钮说话，松开自动发送。</div>
-      <div class="q">怎么提高信用分？</div><div class="a">按时完成任务、获得好评可提升信用分。信用分越高越容易接到单。</div>
-      <div class="q">遇到问题怎么办？</div><div class="a">可在「我的」→「帮助」中查看常见问题，或联系客服。</div>
-    </div>
+  <div class="tb">
+    <div class="ti" data-page="home" @click="nav('pg-home')"><span class="ti-icon">📋</span><span>任务</span></div>
+    <div class="ti on" data-page="stats"><span class="ti-icon">📊</span><span>统计</span></div>
+    <div class="ti" data-page="me" @click="nav('pg-me')"><span class="ti-icon">👤</span><span>我的</span></div>
   </div>
+</div>
 
-  <!-- 登录 -->
-  <div class="pg" id="pg-login">
-    <div class="lg-bg">
-      <div class="lo">📋</div>
-      <div class="tt">万能任务</div>
-      <div class="ds">让任务对接更简单</div>
-      <div class="lg-bx">
-        <input placeholder="手机号" v-model="loginPhone">
-        <div class="rw"><input placeholder="验证码" v-model="loginCode"><button class="cbtn" @click="toast('123456')">获取</button></div>
-        <button class="sbtn" @click="doLogin">登录 / 注册</button>
-      </div>
-    </div>
+<!-- ========== 编辑页（新增/修改） ========== -->
+<div class="pg" id="pg-edit">
+  <div class="hd hd-white">
+    <span class="bk" @click="cancelEdit">‹</span>
+    <span class="tt">{{editingId ? '编辑任务' : '新建任务'}}</span>
   </div>
-
-  <!-- 评价弹窗 -->
-  <div class="ml" :class="{on:ratingOn}" @click.self="closeRatingModal" style="z-index:998">
-    <div style="background:#fff;border-radius:14px;padding:22px;width:300px;text-align:center">
-      <div style="font-size:16px;font-weight:600;color:var(--t1);margin-bottom:4px">给Ta评价</div>
-      <div style="display:flex;align-items:center;gap:8px;justify-content:center;margin-bottom:14px">
-        <span style="font-size:22px">{{ratingTo.avatar_emoji||'?'}}</span>
-        <span style="font-size:14px;color:var(--t2)">{{ratingTo.nickname||''}}</span>
+  <div class="sv">
+    <div class="fm">
+      <div class="fg">
+        <label>标题 *</label>
+        <input placeholder="输入任务标题" v-model="editForm.title" maxlength="30" ref="titleInput">
       </div>
-      <!-- 星星 -->
-      <div style="display:flex;gap:6px;justify-content:center;margin-bottom:14px">
-        <span v-for="s in 5" @click="ratingScore=s" :style="{fontSize:'28px',cursor:'pointer',opacity: s<=ratingScore?'1':'0.25',transition:'opacity .2s'}">⭐</span>
+      <div class="fg">
+        <label>描述（选填）</label>
+        <textarea placeholder="详细描述任务内容..." v-model="editForm.desc"></textarea>
       </div>
-      <!-- 标签 -->
-      <div style="display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-bottom:10px">
-        <span v-for="t in ratingTagOpts" @click="tagToggle(t)" :style="{padding:'4px 10px',borderRadius:'12px',fontSize:'12px',cursor:'pointer',background:ratingTags.indexOf(t)>=0?'var(--g2)':'var(--bg)',color:ratingTags.indexOf(t)>=0?'var(--g)':'var(--t2)',border:'1px solid '+(ratingTags.indexOf(t)>=0?'var(--g)':'transparent')}">{{t}}</span>
+      <div class="fg">
+        <label>分类</label>
+        <select v-model="editForm.category">
+          <option value="">无</option>
+          <option v-for="c in catList.filter(function(c){return c!=='全部';})" :value="c">{{c}}</option>
+        </select>
       </div>
-      <!-- 文字评价 -->
-      <textarea v-model="ratingContent" placeholder="说点什么（选填）" style="width:100%;height:60px;padding:8px;border:1px solid var(--bd);border-radius:8px;font-size:13px;resize:none;outline:none;margin-bottom:14px;box-sizing:border-box"></textarea>
-      <div style="display:flex;gap:10px">
-        <button @click="closeRatingModal" class="b b1" style="flex:1;padding:10px;border-radius:20px;font-size:14px;cursor:pointer;border:none;font-weight:500">取消</button>
-        <button @click="submitRating" style="flex:1;padding:10px;border-radius:20px;font-size:14px;cursor:pointer;border:none;background:var(--g);color:#fff;font-weight:500">提交评价</button>
+      <div class="fg">
+        <label>截止日期（选填）</label>
+        <input type="date" v-model="editForm.dueDate" style="color-scheme:normal">
+      </div>
+      <div class="fg">
+        <label>优先级</label>
+        <div class="priority-opts">
+          <div class="po plow" :class="{on:editForm.priority==='low'}" @click="editForm.priority='low'">⬇ 低</div>
+          <div class="po pmid" :class="{on:editForm.priority==='mid'||!editForm.priority}" @click="editForm.priority='mid'">→ 中</div>
+          <div class="po phigh" :class="{on:editForm.priority==='high'}" @click="editForm.priority='high'">⬆ 高</div>
+        </div>
       </div>
     </div>
   </div>
-  <div class="ml" :class="{on:modalOn}"><div class="ml-b"><div class="mt">{{modalTitle}}</div><div class="mc">{{modalContent}}</div><div class="mb"><button class="b b1" @click="closeModal(0)">取消</button><button class="b b2" @click="closeModal(1)">确定</button></div></div></div>
-  <div class="toast" :class="{on:toastOn}">{{toastMsg}}</div>
+  <div style="display:flex;gap:10px;padding:14px 16px 18px;background:var(--card);border-top:1px solid var(--bd)">
+    <div v-if="editingId" class="act-btn danger" @click="deleteTask" style="flex:1;padding:14px;border-radius:12px;font-size:14px;font-weight:600;text-align:center;cursor:pointer;background:var(--r2);color:var(--r);transition:opacity .15s">删除</div>
+    <div class="btn-main" @click="saveEdit" style="flex:editingId?2:1">{{editingId ? '保存修改' : '创建任务'}}</div>
+  </div>
+</div>
+
+<!-- ========== 我的页面 v5.2 ========== -->
+<div class="pg" id="pg-me">
+  <div class="profile-head">
+    <div class="profile-avatar">{{userEmoji||'😊'}}</div>
+    <div class="profile-name">{{userName||'用户'}}</div>
+    <div class="profile-id" v-if="userId">ID {{userId}}</div>
+  </div>
+  
+  <!-- 统计行 -->
+  <div class="stats-row">
+    <div class="stat-item"><div class="stat-num">{{tasks.length}}</div><div class="stat-lbl">全部</div></div>
+    <div class="stat-item"><div class="stat-num" style="color:var(--g)">{{doneCount}}</div><div class="stat-lbl">已完成</div></div>
+    <div class="stat-item"><div class="stat-num" style="color:var(--o)">{{pendingCount}}</div><div class="stat-lbl">进行中</div></div>
+  </div>
+
+  <!-- 一键完成 -->
+  <button class="action-btn action-btn-primary" @click="completeAllPending" v-if="pendingCount>0">
+    ✅ 一键完成所有待办（{{pendingCount}}项）
+  </button>
+
+  <!-- 菜单列表 -->
+  <div class="menu-list">
+    <div class="menu-item" @click="exportData"><span class="menu-icon">📤</span><span class="menu-text">导出数据备份</span><span class="menu-arrow">›</span></div>
+    <div class="menu-item" @click="clearCompleted"><span class="menu-icon">🗑️</span><span class="menu-text">清除已完成任务</span><span class="menu-arrow">›</span></div>
+    <div class="menu-item" @click="showHelp"><span class="menu-icon">❓</span><span class="menu-text">使用帮助</span><span class="menu-arrow">›</span></div>
+    <div class="menu-item" @click="showAbout"><span class="menu-icon">ℹ️</span><span class="menu-text">关于万能任务</span><span class="menu-arrow">›</span></div>
+  </div>
+  
+  <div style="text-align:center;padding:22px;color:var(--t3);font-size:12px;line-height:1.7">
+    万能任务 v{{VER || '5.2'}} · 简洁高效
+    <br>效率评分：<strong style="color:var(--g)">{{efficiencyScore}}</strong> 分
+    <br>连续打卡：<strong style="color:var(--o)">{{streak}}</strong> 天
+    <br>所有数据本地存储，无需联网
+  </div>
+  <div class="tb">
+    <div class="ti" data-page="home" @click="nav('pg-home')"><span class="ti-icon">📋</span><span>任务</span></div>
+    <div class="ti" data-page="stats" @click="nav('pg-stats')"><span class="ti-icon">📊</span><span>统计</span></div>
+    <div class="ti on" data-page="me"><span class="ti-icon">👤</span><span>我的</span></div>
+  </div>
+</div>
+
+<!-- ========== 弹窗 ========== -->
+<div class="modal-mask" :class="{hidden:!modalShow}" @click.self="modalCancel">
+  <div class="modal-box">
+    <div class="modal-title">{{modalTitle}}</div>
+    <div class="modal-msg">{{modalMsg}}</div>
+    <div class="modal-btns">
+      <button class="modal-btn modal-btn-cancel" @click="modalCancel" v-if="modalCancelBtn">取消</button>
+      <button class="modal-btn modal-btn-ok" @click="modalOk">{{modalOkText||'确定'}}</button>
+    </div>
+  </div>
+</div>
+<div class="toast" :class="{show:toastShow}">{{toastMsg}}</div>
+
 </div>
 <script src="vue.min.js"></script>
 <script src="app.js"></script>

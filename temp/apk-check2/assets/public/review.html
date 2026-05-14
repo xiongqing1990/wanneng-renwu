@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#007AFF">
+    <title>任务审核 - 万能任务</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", sans-serif;
+            background: #f5f5f7;
+            max-width: 375px;
+            margin: 0 auto;
+            min-height: 100vh;
+        }
+        .status-bar {
+            height: 44px;
+            background: #007AFF;
+            display: flex;
+            align-items: center;
+            padding: 0 16px;
+            color: white;
+            font-size: 14px;
+            font-weight: 600;
+            position: fixed;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            max-width: 375px;
+            z-index: 1000;
+        }
+        .status-bar .back { font-size: 16px; cursor: pointer; margin-right: 12px; }
+        .header {
+            background: #007AFF;
+            color: white;
+            padding: 60px 20px 20px;
+        }
+        .header h1 { font-size: 24px; font-weight: 700; }
+        .header p { font-size: 14px; opacity: 0.85; margin-top: 4px; }
+
+        .content { padding: 20px; }
+
+        .tabs {
+            display: flex;
+            background: white;
+            border-radius: 12px;
+            padding: 4px;
+            margin-bottom: 16px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+        .tab {
+            flex: 1;
+            padding: 12px;
+            text-align: center;
+            font-size: 14px;
+            font-weight: 500;
+            border-radius: 10px;
+            cursor: pointer;
+            color: #666;
+            transition: all 0.2s;
+        }
+        .tab.active {
+            background: #007AFF;
+            color: white;
+        }
+        .tab .badge {
+            display: inline-block;
+            background: #ff3b30;
+            color: white;
+            font-size: 11px;
+            padding: 2px 6px;
+            border-radius: 10px;
+            margin-left: 4px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 12px;
+        }
+        .card-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: #1d1d1f;
+            flex: 1;
+        }
+        .card-tag {
+            font-size: 11px;
+            padding: 4px 8px;
+            border-radius: 6px;
+            margin-left: 8px;
+        }
+        .tag-pending { background: #fff3e0; color: #ff9500; }
+        .tag-approved { background: #e8f5e9; color: #34c759; }
+        .tag-rejected { background: #ffebee; color: #ff3b30; }
+
+        .card-info {
+            font-size: 13px;
+            color: #666;
+            margin-bottom: 8px;
+        }
+        .card-desc {
+            font-size: 13px;
+            color: #999;
+            line-height: 1.5;
+            margin-bottom: 12px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        .card-meta {
+            display: flex;
+            gap: 16px;
+            font-size: 12px;
+            color: #999;
+            margin-bottom: 12px;
+        }
+        .card-meta span { display: flex; align-items: center; gap: 4px; }
+
+        .card-actions {
+            display: flex;
+            gap: 10px;
+            padding-top: 12px;
+            border-top: 1px solid #f0f0f0;
+        }
+        .btn {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .btn-approve { background: #34c759; color: white; }
+        .btn-approve:active { background: #2da44e; }
+        .btn-reject { background: #f0f0f0; color: #ff3b30; }
+        .btn-reject:active { background: #e0e0e0; }
+
+        .empty {
+            text-align: center;
+            padding: 60px 20px;
+            color: #8e8e93;
+        }
+        .empty-icon { font-size: 64px; margin-bottom: 16px; }
+        .empty-text { font-size: 15px; }
+
+        .toast {
+            position: fixed;
+            top: 60px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0,0,0,0.8);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 24px;
+            font-size: 14px;
+            z-index: 2000;
+            animation: fadeIn 0.3s;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateX(-50%) translateY(-10px); }
+            to { opacity: 1; transform: translateX(-50%) translateY(0); }
+        }
+
+        .tab-bar {
+            position: fixed;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            max-width: 375px;
+            background: white;
+            border-top: 1px solid #e5e5ea;
+            display: flex;
+            padding: 8px 0 20px;
+            z-index: 100;
+        }
+        .tab-item {
+            flex: 1;
+            text-align: center;
+            padding: 8px 0;
+            cursor: pointer;
+            color: #8e8e93;
+            font-size: 10px;
+        }
+        .tab-item.active { color: #007AFF; }
+        .tab-icon { font-size: 22px; margin-bottom: 2px; }
+
+        .stats-bar {
+            display: flex;
+            background: white;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 16px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+        .stat-item {
+            flex: 1;
+            text-align: center;
+        }
+        .stat-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: #007AFF;
+        }
+        .stat-label {
+            font-size: 12px;
+            color: #999;
+            margin-top: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="status-bar">
+        <a href="profile.html" class="back">←</a>
+        <span>任务审核</span>
+    </div>
+
+    <div class="header">
+        <h1>📋 任务审核</h1>
+        <p>审核用户发布的任务，确保平台质量</p>
+    </div>
+
+    <div class="content" style="padding-bottom: 100px;">
+        <div class="stats-bar">
+            <div class="stat-item">
+                <div class="stat-value" id="pendingCount">0</div>
+                <div class="stat-label">待审核</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="approvedCount">0</div>
+                <div class="stat-label">已通过</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="rejectedCount">0</div>
+                <div class="stat-label">已拒绝</div>
+            </div>
+        </div>
+
+        <div class="tabs">
+            <div class="tab active" onclick="switchTab('pending')">
+                待审核<span class="badge" id="pendingBadge">0</span>
+            </div>
+            <div class="tab" onclick="switchTab('approved')">已通过</div>
+            <div class="tab" onclick="switchTab('rejected')">已拒绝</div>
+        </div>
+
+        <div id="taskList"></div>
+    </div>
+
+    <div class="tab-bar">
+        <a href="index.html" class="tab-item">
+            <div class="tab-icon">🏠</div><div>首页</div>
+        </a>
+        <a href="chat.html" class="tab-item">
+            <div class="tab-icon">💬</div><div>聊天</div>
+        </a>
+        <a href="publish.html" class="tab-item">
+            <div class="tab-icon">📝</div><div>发布</div>
+        </a>
+        <a href="profile.html" class="tab-item active">
+            <div class="tab-icon">👤</div><div>我的</div>
+        </a>
+    </div>
+
+    <script>
+        let currentTab = 'pending';
+
+        // 获取所有任务
+        function getAllTasks() {
+            const userTasks = JSON.parse(localStorage.getItem('tasks') || '[]');
+            const sampleTasks = [
+                {
+                    id: 1,
+                    title: '开发微信小程序商城',
+                    desc: '需要开发完整的微信小程序商城，包含商品展示、购物车、支付等功能模块',
+                    category: '开发',
+                    budget: 8000,
+                    publisher: '张老板',
+                    time: '2小时前',
+                    status: 'pending'
+                },
+                {
+                    id: 2,
+                    title: '设计企业官网首页',
+                    desc: '现代化企业官网首页设计，风格简洁大气，符合企业级标准',
+                    category: '设计',
+                    budget: 2000,
+                    publisher: '李经理',
+                    time: '5小时前',
+                    status: 'approved'
+                },
+                {
+                    id: 3,
+                    title: '撰写产品宣传文案',
+                    desc: '为新产品撰写吸引眼球的宣传文案，要求转化率高',
+                    category: '文案',
+                    budget: 500,
+                    publisher: '王小白',
+                    time: '1天前',
+                    status: 'rejected'
+                }
+            ];
+            return [...userTasks, ...sampleTasks];
+        }
+
+        // 保存任务状态
+        function saveTaskStatus(taskId, status) {
+            const userTasks = JSON.parse(localStorage.getItem('tasks') || '[]');
+            const taskIndex = userTasks.findIndex(t => t.id === taskId);
+            if (taskIndex !== -1) {
+                userTasks[taskIndex].status = status;
+                localStorage.setItem('tasks', JSON.stringify(userTasks));
+            }
+        }
+
+        // 渲染统计
+        function renderStats() {
+            const tasks = getAllTasks();
+            const pending = tasks.filter(t => t.status === 'pending').length;
+            const approved = tasks.filter(t => t.status === 'approved').length;
+            const rejected = tasks.filter(t => t.status === 'rejected').length;
+
+            document.getElementById('pendingCount').textContent = pending;
+            document.getElementById('approvedCount').textContent = approved;
+            document.getElementById('rejectedCount').textContent = rejected;
+            document.getElementById('pendingBadge').textContent = pending;
+        }
+
+        // 渲染列表
+        function renderList() {
+            const tasks = getAllTasks().filter(t => t.status === currentTab);
+            const list = document.getElementById('taskList');
+
+            if (tasks.length === 0) {
+                const emptyText = {
+                    pending: '暂无待审核任务',
+                    approved: '暂无已通过任务',
+                    rejected: '暂无已拒绝任务'
+                };
+                list.innerHTML = `
+                    <div class="empty">
+                        <div class="empty-icon">📭</div>
+                        <div class="empty-text">${emptyText[currentTab]}</div>
+                    </div>
+                `;
+                return;
+            }
+
+            list.innerHTML = tasks.map(task => `
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">${task.title}</div>
+                        <div class="card-tag tag-${task.status}">${
+                            task.status === 'pending' ? '待审核' :
+                            task.status === 'approved' ? '已通过' : '已拒绝'
+                        }</div>
+                    </div>
+                    <div class="card-info">
+                        <span>📁 ${task.category}</span>
+                        <span style="margin-left: 12px;">💰 ¥${task.budget}</span>
+                    </div>
+                    <div class="card-desc">${task.desc || task.description || ''}</div>
+                    <div class="card-meta">
+                        <span>👤 ${task.publisher}</span>
+                        <span>⏰ ${task.time}</span>
+                    </div>
+                    ${task.status === 'pending' ? `
+                    <div class="card-actions">
+                        <button class="btn btn-approve" onclick="approveTask(${task.id})">✅ 通过</button>
+                        <button class="btn btn-reject" onclick="rejectTask(${task.id})">❌ 拒绝</button>
+                    </div>
+                    ` : ''}
+                </div>
+            `).join('');
+        }
+
+        // 切换标签
+        function switchTab(tab) {
+            currentTab = tab;
+            document.querySelectorAll('.tab').forEach((el, i) => {
+                el.classList.toggle('active', 
+                    (tab === 'pending' && i === 0) ||
+                    (tab === 'approved' && i === 1) ||
+                    (tab === 'rejected' && i === 2)
+                );
+            });
+            renderList();
+        }
+
+        // 通过任务
+        function approveTask(taskId) {
+            saveTaskStatus(taskId, 'approved');
+            renderStats();
+            renderList();
+            showToast('任务已通过审核');
+        }
+
+        // 拒绝任务
+        function rejectTask(taskId) {
+            const reason = prompt('请输入拒绝原因（可选）：');
+            saveTaskStatus(taskId, 'rejected');
+            if (reason) {
+                // 可以保存拒绝原因
+                const tasks = JSON.parse(localStorage.getItem('tasks') || '[]');
+                const taskIndex = tasks.findIndex(t => t.id === taskId);
+                if (taskIndex !== -1) {
+                    tasks[taskIndex].rejectReason = reason;
+                    localStorage.setItem('tasks', JSON.stringify(tasks));
+                }
+            }
+            renderStats();
+            renderList();
+            showToast('任务已拒绝');
+        }
+
+        // Toast提示
+        function showToast(message) {
+            const existing = document.querySelector('.toast');
+            if (existing) existing.remove();
+
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.textContent = message;
+            document.body.appendChild(toast);
+
+            setTimeout(() => toast.remove(), 2000);
+        }
+
+        // 初始化
+        renderStats();
+        renderList();
+    </script>
+</body>
+</html>

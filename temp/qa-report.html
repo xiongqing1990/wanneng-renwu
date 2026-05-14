@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>QA测试报告 - 万能任务APP v4.9.1</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,"Segoe UI",PingFang SC,sans-serif;background:#f5f6fa;color:#333;max-width:900px;margin:0 auto;padding:20px}
+.header{background:linear-gradient(135deg,#1677FF,#4096FF);color:#fff;padding:24px;border-radius:12px;margin-bottom:20px}
+.header h1{font-size:22px;margin-bottom:8px}.header p{opacity:.85;font-size:14px}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px}
+.stat-card{background:#fff;border-radius:10px;padding:16px;text-align:center;box-shadow:0 1px 4px rgba(0,0,0,.06)}
+.stat-num{font-size:28px;font-weight:bold}.stat-label{font-size:12px;color:#888;margin-top:4px}
+.section{background:#fff;border-radius:10px;padding:18px;margin-bottom:14px;box-shadow:0 1px 4px rgba(0,0,0,.06)}
+.section h2{font-size:16px;margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid #f0f0f0}
+.fail-item{background:#fff2f0;border-left:3px solid #FF4D4F;padding:10px 14px;margin-bottom:8px;border-radius:0 8px 8px 0}
+.opt-card{background:#fafbfc;border:1px solid #eee;border-radius:8px;padding:14px;margin-bottom:10px}
+.opt-p0{border-left:3px solid #FF4D4F}.opt-p1{border-left:3px solid #FAAD14}.opt-p2{border-left:3px solid #1677FF}.opt-p3{border-left:3px solid #999}
+.tag{display:inline-block;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:600}
+.tag-pass{background:#f6ffed;color:#52C41A;border:1px solid #b7eb8f}.tag-fail{background:#fff2f0;color:#FF4D4F;border:1px solid #ffccc7}
+.tag-warn{background:#fffbe6;color:#d48806;border:1px solid #ffe58f}
+.result-row{display:flex;align-items:center;padding:6px 0;border-bottom:1px solid #f9f9f9;font-size:13px}
+.result-row:last-child{border-bottom:none}
+.status-icon{width:20px;margin-right:8px;font-size:14px}
+.footer{text-align:center;color:#bbb;font-size:12px;padding:20px}
+</style>
+</head>
+<body>
+<div class="header">
+    <h1>🔬 QA测试报告</h1>
+    <p>万能任务APP v4.9.1 · 生成时间: 2026/5/14 14:45:23 · 耗时: 0.0s</p>
+</div>
+
+<div class="stats">
+    <div class="stat-card"><div class="stat-num">76</div><div class="stat-label">总测试数</div></div>
+    <div class="stat-card"><div class="stat-num" style="color:#52C41A">34</div><div class="stat-label">✅ 通过</div></div>
+    <div class="stat-card"><div class="stat-num" style="color:#FF4D4F">42</div><div class="stat-label">❌ 失败</div></div>
+    <div class="stat-card"><div class="stat-num" style="color:#888">0</div><div class="stat-label">⏭️ 跳过</div></div>
+</div><div class="section" style="border-left:4px solid #FF4D4F">
+<h2 style="color:#FF4D4F">❌ 发现 42 个问题</h2>
+<p style="padding:10px 0;color:#666">以下测试未通过，请修复后重新测试。</p>
+</div><div class="section">
+<h2>🔴 失败详情 (42)</h2><div class="fail-item">
+<strong>[1. 基础架构] AppCore对象存在且版本为4.9.1</strong><br>
+<span style="color:#FF4D4F;font-size:12px">AppCore 不存在（undefined/null）</span>
+</div><div class="fail-item">
+<strong>[1. 基础架构] AppUpdater对象存在且版本一致</strong><br>
+<span style="color:#FF4D4F;font-size:12px">AppUpdater 不存在（undefined/null）</span>
+</div><div class="fail-item">
+<strong>[1. 基础架构] AppCore与AppUpdater版本一致</strong><br>
+<span style="color:#FF4D4F;font-size:12px">AppCore is not defined</span>
+</div><div class="fail-item">
+<strong>[1. 基础架构] AppCore包含必要模块</strong><br>
+<span style="color:#FF4D4F;font-size:12px">AppCore is not defined</span>
+</div><div class="fail-item">
+<strong>[1. 基础架构] AppUpdater包含必要API</strong><br>
+<span style="color:#FF4D4F;font-size:12px">AppUpdater is not defined</span>
+</div><div class="fail-item">
+<strong>[2. 数据层] allTasks数据存在且有足够条目</strong><br>
+<span style="color:#FF4D4F;font-size:12px">allTasks is not defined</span>
+</div><div class="fail-item">
+<strong>[2. 数据层] categories定义完整（>=8个分类）</strong><br>
+<span style="color:#FF4D4F;font-size:12px">categories is not defined</span>
+</div><div class="fail-item">
+<strong>[2. 数据层] sortOptions定义完整（>=4个选项）</strong><br>
+<span style="color:#FF4D4F;font-size:12px">sortOptions is not defined</span>
+</div><div class="fail-item">
+<strong>[2. 数据层] USER_LEVELS用户等级定义完整（1-10级）</strong><br>
+<span style="color:#FF4D4F;font-size:12px">USER_LEVELS is not defined</span>
+</div><div class="fail-item">
+<strong>[2. 数据层] 任务数据字段完整性</strong><br>
+<span style="color:#FF4D4F;font-size:12px">allTasks is not defined</span>
+</div><div class="fail-item">
+<strong>[2. 数据层] 预算值均为正数</strong><br>
+<span style="color:#FF4D4F;font-size:12px">allTasks is not defined</span>
+</div><div class="fail-item">
+<strong>[2. 数据层] 信用分在合理范围(500-1000)</strong><br>
+<span style="color:#FF4D4F;font-size:12px">allTasks is not defined</span>
+</div><div class="fail-item">
+<strong>[3. 渲染函数可用性] 函数 renderCategories 存在且可调用</strong><br>
+<span style="color:#FF4D4F;font-size:12px">renderCategories 类型错误: 期望function, 实际undefined</span>
+</div><div class="fail-item">
+<strong>[3. 渲染函数可用性] 函数 renderSortBar 存在且可调用</strong><br>
+<span style="color:#FF4D4F;font-size:12px">renderSortBar 类型错误: 期望function, 实际undefined</span>
+</div><div class="fail-item">
+<strong>[3. 渲染函数可用性] 函数 renderTasks 存在且可调用</strong><br>
+<span style="color:#FF4D4F;font-size:12px">renderTasks 类型错误: 期望function, 实际undefined</span>
+</div><div class="fail-item">
+<strong>[3. 渲染函数可用性] 函数 setCategory 存在且可调用</strong><br>
+<span style="color:#FF4D4F;font-size:12px">setCategory 类型错误: 期望function, 实际undefined</span>
+</div><div class="fail-item">
+<strong>[3. 渲染函数可用性] 函数 setType 存在且可调用</strong><br>
+<span style="color:#FF4D4F;font-size:12px">setType 类型错误: 期望function, 实际undefined</span>
+</div><div class="fail-item">
+<strong>[3. 渲染函数可用性] 函数 setSort 存在且可调用</strong><br>
+<span style="color:#FF4D4F;font-size:12px">setSort 类型错误: 期望function, 实际undefined</span>
+</div><div class="fail-item">
+<strong>[3. 渲染函数可用性] 函数 handleSearch 存在且可调用</strong><br>
+<span style="color:#FF4D4F;font-size:12px">handleSearch 类型错误: 期望function, 实际undefined</span>
+</div><div class="fail-item">
+<strong>[3. 渲染函数可用性] 函数 goPublish 存在且可调用</strong><br>
+<span style="color:#FF4D4F;font-size:12px">goPublish 类型错误: 期望function, 实际undefined</span>
+</div><div class="fail-item">
+<strong>[3. 渲染函数可用性] 函数 showAdCenter 存在且可调用</strong><br>
+<span style="color:#FF4D4F;font-size:12px">showAdCenter 类型错误: 期望function, 实际undefined</span>
+</div><div class="fail-item">
+<strong>[3. 渲染函数可用性] 函数 viewTask 存在且可调用</strong><br>
+<span style="color:#FF4D4F;font-size:12px">viewTask 类型错误: 期望function, 实际undefined</span>
+</div><div class="fail-item">
+<strong>[3. 渲染函数可用性] 函数 switchTab 存在且可调用</strong><br>
+<span style="color:#FF4D4F;font-size:12px">switchTab 类型错误: 期望function, 实际undefined</span>
+</div><div class="fail-item">
+<strong>[3. 渲染函数可用性] 函数 showNotif 存在且可调用</strong><br>
+<span style="color:#FF4D4F;font-size:12px">showNotif 类型错误: 期望function, 实际undefined</span>
+</div><div class="fail-item">
+<strong>[3. 渲染函数可用性] 函数 initApp 存在且可调用</strong><br>
+<span style="color:#FF4D4F;font-size:12px">initApp 类型错误: 期望function, 实际undefined</span>
+</div><div class="fail-item">
+<strong>[3. 渲染函数可用性] 函数 getPublisherRating 存在且可调用</strong><br>
+<span style="color:#FF4D4F;font-size:12px">getPublisherRating 类型错误: 期望function, 实际undefined</span>
+</div><div class="fail-item">
+<strong>[4. 分类筛选逻辑] 默认选中"全部"分类</strong><br>
+<span style="color:#FF4D4F;font-size:12px">currentCategory is not defined</span>
+</div><div class="fail-item">
+<strong>[4. 分类筛选逻辑] setCategory切换到ticket分类</strong><br>
+<span style="color:#FF4D4F;font-size:12px">currentCategory is not defined</span>
+</div><div class="fail-item">
+<strong>[4. 分类筛选逻辑] setCategory切换回all</strong><br>
+<span style="color:#FF4D4F;font-size:12px">currentCategory is not defined</span>
+</div><div class="fail-item">
+<strong>[4. 分类筛选逻辑] setType切换到短期</strong><br>
+<span style="color:#FF4D4F;font-size:12px">taskTypeFilter is not defined</span>
+</div><div class="fail-item">
+<strong>[4. 分类筛选逻辑] setType切换到长期</strong><br>
+<span style="color:#FF4D4F;font-size:12px">taskTypeFilter is not defined</span>
+</div><div class="fail-item">
+<strong>[4. 分类筛选逻辑] setType切换回全部</strong><br>
+<span style="color:#FF4D4F;font-size:12px">taskTypeFilter is not defined</span>
+</div><div class="fail-item">
+<strong>[5. 排序逻辑] 默认排序为smart</strong><br>
+<span style="color:#FF4D4F;font-size:12px">currentSort is not defined</span>
+</div><div class="fail-item">
+<strong>[5. 排序逻辑] 切换到credit排序</strong><br>
+<span style="color:#FF4D4F;font-size:12px">currentSort is not defined</span>
+</div><div class="fail-item">
+<strong>[5. 排序逻辑] 切换到newest排序</strong><br>
+<span style="color:#FF4D4F;font-size:12px">currentSort is not defined</span>
+</div><div class="fail-item">
+<strong>[5. 排序逻辑] 切换到budget_high排序</strong><br>
+<span style="color:#FF4D4F;font-size:12px">currentSort is not defined</span>
+</div><div class="fail-item">
+<strong>[5. 排序逻辑] 恢复默认排序</strong><br>
+<span style="color:#FF4D4F;font-size:12px">currentSort is not defined</span>
+</div><div class="fail-item">
+<strong>[8. 页面跳转链接] switchTab跳转到正确页面</strong><br>
+<span style="color:#FF4D4F;font-size:12px">Cannot read properties of undefined (reading 'length')</span>
+</div><div class="fail-item">
+<strong>[10. 自动更新系统] 配置了多镜像源下载地址</strong><br>
+<span style="color:#FF4D4F;font-size:12px">AppUpdater is not defined</span>
+</div><div class="fail-item">
+<strong>[10. 自动更新系统] 镜像源URL模板含{tag}和{version}占位符</strong><br>
+<span style="color:#FF4D4F;font-size:12px">AppUpdater is not defined</span>
+</div><div class="fail-item">
+<strong>[10. 自动更新系统] 版本比较函数compareVersions正确性</strong><br>
+<span style="color:#FF4D4F;font-size:12px">AppUpdater is not defined</span>
+</div><div class="fail-item">
+<strong>[10. 自动更新系统] GitHub Release API URL正确</strong><br>
+<span style="color:#FF4D4F;font-size:12px">AppUpdater is not defined</span>
+</div></div><div class="section">
+<h2>💡 优化建议 (6)</h2><div class="opt-card opt-p1">
+<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+<span class="tag" style="background:#ffe58f;color:#d48806">P1</span>
+<strong>示例数据量偏少</strong>
+</div>
+<div style="font-size:12px;color:#888;margin-bottom:4px">当前: 当前仅12个示例任务，用户体验不够丰富</div>
+<div style="font-size:13px;margin-bottom:4px">💡 建议: 增加至20-30个覆盖更多场景的示例任务（不同等级、类型、分类组合）</div>
+<div style="font-size:12px;color:#52C41A">✨ 收益: 让首页看起来更充实、功能演示更全面</div>
+</div><div class="opt-card opt-p1">
+<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+<span class="tag" style="background:#ffe58f;color:#d48806">P1</span>
+<strong>生产环境日志清理</strong>
+</div>
+<div style="font-size:12px;color:#888;margin-bottom:4px">当前: 代码中残留console.log调试语句</div>
+<div style="font-size:13px;margin-bottom:4px">💡 建议: 统一通过AppCore.config.DEBUG开关控制日志输出，生产版关闭</div>
+<div style="font-size:12px;color:#52C41A">✨ 收益: 减少性能开销，避免泄露内部信息</div>
+</div><div class="opt-card opt-p2">
+<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+<span class="tag" style="background:#e8f4ff;color:#1677FF">P2</span>
+<strong>搜索防抖优化</strong>
+</div>
+<div style="font-size:12px;color:#888;margin-bottom:4px">当前: 搜索输入每次按键都触发重新渲染</div>
+<div style="font-size:13px;margin-bottom:4px">💡 建议: 添加300ms debounce防抖，用户停止输入后才执行搜索</div>
+<div style="font-size:12px;color:#52C41A">✨ 收益: 高频输入时减少50%以上不必要的渲染计算</div>
+</div><div class="opt-card opt-p2">
+<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+<span class="tag" style="background:#e8f4ff;color:#1677FF">P2</span>
+<strong>DOM批量更新优化</strong>
+</div>
+<div style="font-size:12px;color:#888;margin-bottom:4px">当前: 循环中多次修改innerHTML导致多次reflow</div>
+<div style="font-size:13px;margin-bottom:4px">💡 建议: 使用DocumentFragment或一次性拼接完再赋值innerHML</div>
+<div style="font-size:12px;color:#52C41A">✨ 收益: 大量任务卡片时提升渲染速度30%+</div>
+</div><div class="opt-card opt-p3">
+<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+<span class="tag" style="background:#f0f0f0;color:#666">P3</span>
+<strong>离线缓存策略</strong>
+</div>
+<div style="font-size:12px;color:#888;margin-bottom:4px">当前: 未利用已有的CacheManager进行数据缓存</div>
+<div style="font-size:13px;margin-bottom:4px">💡 建议: 对任务列表等静态数据做本地缓存，减少重复渲染等待</div>
+<div style="font-size:12px;color:#52C41A">✨ 收益: 二次打开速度提升80%+</div>
+</div><div class="opt-card opt-p3">
+<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+<span class="tag" style="background:#f0f0f0;color:#666">P3</span>
+<strong>深色模式预留</strong>
+</div>
+<div style="font-size:12px;color:#888;margin-bottom:4px">当前: 当前只有浅色主题</div>
+<div style="font-size:13px;margin-bottom:4px">💡 建议: 在CSS变量层预留深色模式切换能力（prefers-color-scheme）</div>
+<div style="font-size:12px;color:#52C41A">✨ 收益: 未来一键支持系统级暗色模式，提升夜间体验</div>
+</div></div><div class="section">
+<h2>📋 全部测试结果</h2><div class="result-row">
+<span class="status-icon" style="color:#52C41A">✅</span>
+<span style="flex:1">[] app-core.js loaded OK</span>
+<span class="tag tag-pass">PASS</span>
+</div><div class="result-row">
+<span class="status-icon" style="color:#52C41A">✅</span>
+<span style="flex:1">[] app-update.js loaded OK</span>
+<span class="tag tag-pass">PASS</span>
+</div><div class="result-row">
+<span class="status-icon" style="color:#52C41A">✅</span>
+<span style="flex:1">[] index.html script loaded OK</span>
+<span class="tag tag-pass">PASS</span>
+</div><div class="result-row">
+<span class="status-icon" style="color:#52C41A">✅</span>
+<span style="flex:1">[] DOM Ready triggered OK</span>
+<span class="tag tag-pass">PASS</span>
+</div><div class="result-row">
+<span class="status-icon" style="color:#FF4D4F">❌</span>
+<span style="flex:1">[1. 基础架构] AppCore对象存在且版本为4.9.1</span>
+<span class="tag tag-fail">FAIL</span>
+</div><div class="result-row">
+<span class="status-icon" style="color:#FF4D4F">❌</span>
+<span style="flex:1">[1. 基础架构] AppUpdater对象存在且版本一致</span>
+<span class="tag tag-fail">FAIL</span>
+</div><div class="result-row">
+<span class="status-icon" style="color:#FF4D4F">❌</span>
+<span style="flex:1">[1. 基础架构] AppCore与AppUpdater版本一致</span>
+<span class="tag tag-fail">FAIL</span>
+</div><div class="result-row">
+<span class="status-icon" style="color:#FF4D4F">❌</span>
+<span style="flex:1">[1. 基础架构] AppCore包含必要模块</span>
+<span class="tag tag-fail">FAIL</span>
+</div><div class="result-row">
+<span class="status-icon" style="color:#FF4D4F">❌</span>
+<span style="flex:1">[1. 基础架构] AppUpdater包含必要API</span>
+<span class="tag tag-fail">FAIL</span>
+</div><div class="result-row">
+<span class="status-icon" style="color:#FF4D4F">❌</span>
+<span style="flex:1">[2. 数据层] allTasks数据存在且有足够条目</span>
+<span class="tag tag-fail">FAIL</span>
+</div><div class="result-row">
+<span class="status-icon" style="color:#FF4D4F">❌</span>
+<span style="flex:1">[2. 数据层] categories定义完整（>=8个分类）</span>
+<span class="tag tag-fail">FAIL</span>
+</div><div class="result-row">
+<span class="status-icon" style="color:#FF4D4F">❌</span>
+<span style="flex:1">[2. 数据层] sortOptions定义完整（>=4个选项）</span>
+<span class="tag tag-fail">FAIL</span>
+</div><div class="result-row">
+<span class="status-icon" style="color:#FF4D4F">❌</span>
+<span style="flex:1">[2. 数据层] USER_LEVELS用户等级定义完整（1-10级）</span>
+<span class="tag tag-fail">FAIL</span>
+</div><div class="result-row">
+<span class="status-icon" style="color:#FF4D4F">❌</span>
+<span style="flex:1">[2. 数据层] 任务数据字段完整性</span>
+<span class="tag tag-fail">FAIL</span>
+</div><div class="result-row">
+<span class="status-icon" style="color:#FF4D4F">❌</span>
+<span style="flex:1">[2. 数据层] 预算值均为正数</span>
+<span class="tag tag-fail">FAIL</span>
+</div><div class="result-row">
+<span class="status-icon" style="color:#FF4D4F">❌</span>
+<span style="flex:1">[2. 数据层] 信用分在合理范围(500-1000)</span>
+<span class="tag tag-fail">FAIL</span>
+</div><div class="result-row">
+<span class="status-icon" style="color:#FF4D4F">❌</span>
+<span style="flex:1">[3. 渲染函数可用性] 函数 renderCategories 存在且可调用</span>
+<span class="tag tag-fail">FAIL</span>
+</div><div class="result-row">
+<span class="status-icon" style="color:#FF4D4F">❌</span>
+<span style="flex:1">[3. 渲染函数可用性] 函数 renderSortBar 存在且可调用</span>
+<span class="tag tag-fail">FAIL</span>
+</div><div class="result-row">
+<span class="status-icon" style="color:#FF4D4F">❌</span>
+<span style="flex:1">[3. 渲染函数可用性] 函数 renderTasks 存在且可调用</span>
+<span class="tag tag-fail">FAIL</span>
+</div><div class="result-row">
+<span class="status-icon" style="color:#FF4D4F">❌</span>
+<span style="flex:1">[3. 渲染函数可用性] 函数 setCategory 存在且可调用</span>
+<span class="tag tag-fail">FAIL</span>
+</div><div class="result-row">
+<span class="status-icon" style="color:#FF4D4F">❌</span>
+<span style="flex:1">[3. 渲染函数可用性] 函数 setType 存在且可调用</span>
+<span class="tag tag-fail">FAIL</span>
+</div><div class="result-row">
+<span class="status-icon" style="color:#FF4D4F">❌</span>
+<span style="flex:1">[3. 渲染函数可用性] 函数 setSort 存在且可调用</span>
+<span class="tag tag-fail">FAIL</span>
+</div><div class="result-row">
+<span class="status-icon" style="color:#FF4D4F">❌</span>
+<span style="flex:1">[3. 渲染函数可用性] 函数 handleSearch 存在且可调用</span>
+<span class="tag tag-fail">FAIL</span>
+</div><div class="result-row">
+<span class="status-icon" style="color:#FF4D4F">❌</span>
+<span style="flex:1">[3. 渲染函数可用性] 函数 goPublish 存在且可调用</span>
+<span class="tag tag-fail">FAIL</span>
+</div><div class="result-row">
+<span class="status-icon" style="color:#FF4D4F">❌</span>
+<span style="flex:1">[3. 渲染函数可用性] 函数 showAdCenter 存在且可调用</span>
+<span class="tag tag-fail">FAIL</span>
+</div><div class="result-row">
+<span class="status-icon" style="color:#FF4D4F">❌</span>
+<span style="flex:1">[3. 渲染函数可用性] 函数 viewTask 存在且可调用</span>
+<span class="tag tag-fail">FAIL</span>
+</div><div class="result-row">
+<span class="status-icon" style="color:#FF4D4F">❌</span>
+<span style="flex:1">[3. 渲染函数可用性] 函数 switchTab 存在且可调用</span>
+<span class="tag tag-fail">FAIL</span>
+</div><div class="result-row">
+<span class="status-icon" style="color:#FF4D4F">❌</span>
+<span style="flex:1">[3. 渲染函数可用性] 函数 showNotif 存在且可调用</span>
+<span class="tag tag-fail">FAIL</span>
+</div><div class="result-row">
+<span class="status-icon" style="color:#FF4D4F">❌</span>
+<span style="flex:1">[3. 渲染函数可用性] 函数 initApp 存在且可调用</span>
+<span class="tag tag-fail">FAIL</span>
+</div><div class="result-row">
+<span class="status-icon" style="color:#FF4D4F">❌</span>
+<span style="flex:1">[3. 渲染函数可用性] 函数 getPublisherRating 存在且可调用</span>
+<span class="tag tag-fail">FAIL</span>
+</div><div class="result-row">
+<span class="status-icon" style="color:#FF4D4F">❌</span>
+<span style="flex:1">[4. 分类筛选逻辑] 默认选中"全部"分类</span>
+<span class="tag tag-fail">FAIL</span>
+</div><div class="result-row">
+<span class="status-icon" style="color:#FF4D4F">❌</span>
+<span style="flex:1">[4. 分类筛选逻辑] setCategory切换到ticket分类</span>
+<span class="tag tag-fail">FAIL</span>
+</div><div class="result-row">
+<span class="status-icon" style="color:#FF4D4F">❌</span>
+<span style="flex:1">[4. 分类筛选逻辑] setCategory切换回all</span>
+<span class="tag tag-fail">FAIL</span>
+</div><div class="result-row">
+<span class="status-icon" style="color:#FF4D4F">❌</span>
+<span style="flex:1">[4. 分类筛选逻辑] setType切换到短期</span>
+<span class="tag tag-fail">FAIL</span>
+</div><div class="result-row">
+<span class="status-icon" style="color:#FF4D4F">❌</span>
+<span style="flex:1">[4. 分类筛选逻辑] setType切换到长期</span>
+<span class="tag tag-fail">FAIL</span>
+</div><div class="result-row">
+<span class="status-icon" style="color:#FF4D4F">❌</span>
+<span style="flex:1">[4. 分类筛选逻辑] setType切换回全部</span>
+<span class="tag tag-fail">FAIL</span>
+</div><div class="result-row">
+<span class="status-icon" style="color:#FF4D4F">❌</span>
+<span style="flex:1">[5. 排序逻辑] 默认排序为smart</span>
+<span class="tag tag-fail">FAIL</span>
+</div><div class="result-row">
+<span class="status-icon" style="color:#FF4D4F">❌</span>
+<span style="flex:1">[5. 排序逻辑] 切换到credit排序</span>
+<span class="tag tag-fail">FAIL</span>
+</div><div class="result-row">
+<span class="status-icon" style="color:#FF4D4F">❌</span>
+<span style="flex:1">[5. 排序逻辑] 切换到newest排序</span>
+<span class="tag tag-fail">FAIL</span>
+</div><div class="result-row">
+<span class="status-icon" style="color:#FF4D4F">❌</span>
+<span style="flex:1">[5. 排序逻辑] 切换到budget_high排序</span>
+<span class="tag tag-fail">FAIL</span>
+</div><div class="result-row">
+<span class="status-icon" style="color:#FF4D4F">❌</span>
+<span style="flex:1">[5. 排序逻辑] 恢复默认排序</span>
+<span class="tag tag-fail">FAIL</span>
+</div><div class="result-row">
+<span class="status-icon" style="color:#52C41A">✅</span>
+<span style="flex:1">[6. 搜索过滤] 搜索关键词"电影票"能匹配到任务</span>
+<span class="tag tag-pass">PASS</span>
+</div><div class="result-row">
+<span class="status-icon" style="color:#52C41A">✅</span>
+<span style="flex:1">[6. 搜索过滤] 清空搜索后恢复正常显示</span>
+<span class="tag tag-pass">PASS</span>
+</div><div class="result-row">
+<span class="status-icon" style="color:#52C41A">✅</span>
+<span style="flex:1">[7. 发布者评级] getPublisherRating返回正确评级</span>
+<span class="tag tag-pass">PASS</span>
+</div><div class="result-row">
+<span class="status-icon" style="color:#52C41A">✅</span>
+<span style="flex:1">[7. 发布者评级] 低信用分返回最低等级</span>
+<span class="tag tag-pass">PASS</span>
+</div><div class="result-row">
+<span class="status-icon" style="color:#52C41A">✅</span>
+<span style="flex:1">[8. 页面跳转链接] goPublish跳转到publish.html</span>
+<span class="tag tag-pass">PASS</span>
+</div><div class="result-row">
+<span class="status-icon" style="color:#FF4D4F">❌</span>
+<span style="flex:1">[8. 页面跳转链接] switchTab跳转到正确页面</span>
+<span class="tag tag-fail">FAIL</span>
+</div><div class="result-row">
+<span class="status-icon" style="color:#52C41A">✅</span>
+<span style="flex:1">[8. 页面跳转链接] viewTask生成正确的详情页URL</span>
+<span class="tag tag-pass">PASS</span>
+</div><div class="result-row">
+<span class="status-icon" style="color:#52C41A">✅</span>
+<span style="flex:1">[9. UI样式规范（简洁白）] header背景色为白色（非渐变蓝）</span>
+<span class="tag tag-pass">PASS</span>
+</div><div class="result-row">
+<span class="status-icon" style="color:#52C41A">✅</span>
+<span style="flex:1">[9. UI样式规范（简洁白）] 主题色为#1677FF科技蓝</span>
+<span class="tag tag-pass">PASS</span>
+</div><div class="result-row">
+<span class="status-icon" style="color:#52C41A">✅</span>
+<span style="flex:1">[9. UI样式规范（简洁白）] body背景为浅灰色(#f7f8fa)</span>
+<span class="tag tag-pass">PASS</span>
+</div><div class="result-row">
+<span class="status-icon" style="color:#52C41A">✅</span>
+<span style="flex:1">[9. UI样式规范（简洁白）] 搜索框背景为#f5f6fa</span>
+<span class="tag tag-pass">PASS</span>
+</div><div class="result-row">
+<span class="status-icon" style="color:#52C41A">✅</span>
+<span style="flex:1">[9. UI样式规范（简洁白）] 发布按钮使用纯色背景（非渐变）</span>
+<span class="tag tag-pass">PASS</span>
+</div><div class="result-row">
+<span class="status-icon" style="color:#52C41A">✅</span>
+<span style="flex:1">[9. UI样式规范（简洁白）] meta viewport禁止缩放</span>
+<span class="tag tag-pass">PASS</span>
+</div><div class="result-row">
+<span class="status-icon" style="color:#52C41A">✅</span>
+<span style="flex:1">[9. UI样式规范（简洁白）] 标题含万能任务关键词</span>
+<span class="tag tag-pass">PASS</span>
+</div><div class="result-row">
+<span class="status-icon" style="color:#FF4D4F">❌</span>
+<span style="flex:1">[10. 自动更新系统] 配置了多镜像源下载地址</span>
+<span class="tag tag-fail">FAIL</span>
+</div><div class="result-row">
+<span class="status-icon" style="color:#FF4D4F">❌</span>
+<span style="flex:1">[10. 自动更新系统] 镜像源URL模板含{tag}和{version}占位符</span>
+<span class="tag tag-fail">FAIL</span>
+</div><div class="result-row">
+<span class="status-icon" style="color:#FF4D4F">❌</span>
+<span style="flex:1">[10. 自动更新系统] 版本比较函数compareVersions正确性</span>
+<span class="tag tag-fail">FAIL</span>
+</div><div class="result-row">
+<span class="status-icon" style="color:#FF4D4F">❌</span>
+<span style="flex:1">[10. 自动更新系统] GitHub Release API URL正确</span>
+<span class="tag tag-fail">FAIL</span>
+</div><div class="result-row">
+<span class="status-icon" style="color:#52C41A">✅</span>
+<span style="flex:1">[11. 错误处理健壮性] initApp有try-catch包裹</span>
+<span class="tag tag-pass">PASS</span>
+</div><div class="result-row">
+<span class="status-icon" style="color:#52C41A">✅</span>
+<span style="flex:1">[11. 错误处理健壮性] DOMContentLoaded多重保障机制</span>
+<span class="tag tag-pass">PASS</span>
+</div><div class="result-row">
+<span class="status-icon" style="color:#52C41A">✅</span>
+<span style="flex:1">[11. 错误处理健壮性] showNotif函数可安全调用（无DOM时不出错）</span>
+<span class="tag tag-pass">PASS</span>
+</div><div class="result-row">
+<span class="status-icon" style="color:#52C41A">✅</span>
+<span style="flex:1">[12. 资源文件完整性] 资源文件存在: index.html</span>
+<span class="tag tag-pass">PASS</span>
+</div><div class="result-row">
+<span class="status-icon" style="color:#52C41A">✅</span>
+<span style="flex:1">[12. 资源文件完整性] 资源文件存在: app-core.js</span>
+<span class="tag tag-pass">PASS</span>
+</div><div class="result-row">
+<span class="status-icon" style="color:#52C41A">✅</span>
+<span style="flex:1">[12. 资源文件完整性] 资源文件存在: app-update.js</span>
+<span class="tag tag-pass">PASS</span>
+</div><div class="result-row">
+<span class="status-icon" style="color:#52C41A">✅</span>
+<span style="flex:1">[12. 资源文件完整性] 资源文件存在: vue.min.js</span>
+<span class="tag tag-pass">PASS</span>
+</div><div class="result-row">
+<span class="status-icon" style="color:#52C41A">✅</span>
+<span style="flex:1">[12. 资源文件完整性] 资源文件存在: service-worker.js</span>
+<span class="tag tag-pass">PASS</span>
+</div><div class="result-row">
+<span class="status-icon" style="color:#52C41A">✅</span>
+<span style="flex:1">[12. 资源文件完整性] 资源文件存在: manifest.json</span>
+<span class="tag tag-pass">PASS</span>
+</div><div class="result-row">
+<span class="status-icon" style="color:#52C41A">✅</span>
+<span style="flex:1">[12. 资源文件完整性] 资源文件存在: chat.html</span>
+<span class="tag tag-pass">PASS</span>
+</div><div class="result-row">
+<span class="status-icon" style="color:#52C41A">✅</span>
+<span style="flex:1">[12. 资源文件完整性] 资源文件存在: chat-detail.html</span>
+<span class="tag tag-pass">PASS</span>
+</div><div class="result-row">
+<span class="status-icon" style="color:#52C41A">✅</span>
+<span style="flex:1">[12. 资源文件完整性] 资源文件存在: profile.html</span>
+<span class="tag tag-pass">PASS</span>
+</div><div class="result-row">
+<span class="status-icon" style="color:#52C41A">✅</span>
+<span style="flex:1">[12. 资源文件完整性] 资源文件存在: publish.html</span>
+<span class="tag tag-pass">PASS</span>
+</div><div class="result-row">
+<span class="status-icon" style="color:#52C41A">✅</span>
+<span style="flex:1">[12. 资源文件完整性] 资源文件存在: task-detail.html</span>
+<span class="tag tag-pass">PASS</span>
+</div><div class="result-row">
+<span class="status-icon" style="color:#52C41A">✅</span>
+<span style="flex:1">[12. 资源文件完整性] 资源文件存在: plan.html</span>
+<span class="tag tag-pass">PASS</span>
+</div><div class="result-row">
+<span class="status-icon" style="color:#52C41A">✅</span>
+<span style="flex:1">[12. 资源文件完整性] 资源文件存在: review.html</span>
+<span class="tag tag-pass">PASS</span>
+</div><div class="result-row">
+<span class="status-icon" style="color:#52C41A">✅</span>
+<span style="flex:1">[12. 资源文件完整性] 资源文件存在: App.css</span>
+<span class="tag tag-pass">PASS</span>
+</div></div>
+
+<div class="footer">万能任务APP QA System v1.0 · 自动生成</div>
+</body></html>
