@@ -1,24 +1,24 @@
 {
   "version": 2,
-  "name": "万能任务APP",
+  "name": "wanneng-renwu",
   "builds": [
     {
-      "src": "mobile-preview.html",
+      "src": "index.html",
       "use": "@vercel/static"
     },
     {
-      "src": "install-guide.html",
+      "src": "app.js",
       "use": "@vercel/static"
     },
     {
-      "src": "generate-icons.html",
+      "src": "www/**",
       "use": "@vercel/static"
     }
   ],
   "routes": [
     {
       "src": "/",
-      "dest": "/mobile-preview.html"
+      "dest": "/index.html"
     },
     {
       "src": "/(.*)",
